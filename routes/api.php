@@ -3,10 +3,12 @@
 use App\Http\Controllers\CalendarApiController;
 use App\Http\Controllers\EquipmentApiController;
 use App\Http\Controllers\MaintenanceApiController;
+use App\Http\Controllers\PriorityApiController;
 use App\Http\Controllers\ProjectApiController;
 use App\Http\Controllers\RolesPermissionsController;
 use App\Http\Controllers\TaskApiController;
 use App\Http\Controllers\UserApiController;
+use App\Http\Controllers\TeamApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -23,4 +25,6 @@ Route::apiResources ([
     'equipments'=>EquipmentApiController::class,
     'calendars'=>CalendarApiController::class,
     'maintenances'=>MaintenanceApiController::class,
+    'teams'=>TeamApiController::class,
+    'priority'=>PriorityApiController::class,
 ]);

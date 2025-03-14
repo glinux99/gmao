@@ -1,6 +1,5 @@
-// resources/js/services/taskServices.js
-import { ref } from "vue";
-import axios from "axios";
+import axios from 'axios';
+import { ref } from 'vue';
 
 export default function useTasks() {
     const tasks = ref([]);
@@ -9,12 +8,11 @@ export default function useTasks() {
     const isLoading = ref(false);
 
     const getTasks = async () => {
-        isLoading.value = true;
         errors.value = {};
+        isLoading.value = true;
         try {
-            const response = await axios.get("/api/tasks");
+            const response = await axios.get('/api/tasks');
             tasks.value = response.data.data;
-            console.log(tasks.value);
         } catch (e) {
             errors.value = e.response.data.errors;
         } finally {
@@ -23,8 +21,8 @@ export default function useTasks() {
     };
 
     const getTask = async (id) => {
-        isLoading.value = true;
         errors.value = {};
+        isLoading.value = true;
         try {
             const response = await axios.get(`/api/tasks/${id}`);
             task.value = response.data.data;
@@ -36,91 +34,70 @@ export default function useTasks() {
     };
 
     const storeTask = async (data) => {
-        isLoading.value = true;
         errors.value = {};
-        console.log("sssssssss");
-        console.log(data);
+        isLoading.value = true;
         try {
-            const response = await axios.post("/api/tasks", data);
-            task.value = response.data.data;
-            return true; // Success
-        } catch (error) {
-            errors.value = error.response.data.errors;
-            return false; // Failure
+            const response = await axios.post('/api/tasks', data);
+            tasks.value.push(response.data.data);
+             return true;
+        } catch (e) {
+            errors.value = e.response.data.error;
+            return false;
         } finally {
             isLoading.value = false;
         }
     };
 
     const updateTask = async (id, data) => {
-        isLoading.value = true;
         errors.value = {};
+        isLoading.value = true;
         try {
             const response = await axios.put(`/api/tasks/${id}`, data);
-            task.value = response.data.data;
-            return true; // Success
-        } catch (error) {
-            errors.value = error.response.data.errors;
-            return false; // Failure
+            const index = tasks.value.findIndex((t) => t.id === id);
+            if (index !== -1) {
+                tasks.value[index] = response.data.data;
+            }
+            return true;
+        } catch (e) {
+            errors.value = e.response.data.errors;
+            return false;
         } finally {
             isLoading.value = false;
         }
     };
 
-    const deleteTask = async (id) => {
-        isLoading.value = true;
+    const destroyTask = async (id) => {
         errors.value = {};
+        isLoading.value = true;
         try {
             await axios.delete(`/api/tasks/${id}`);
-            return true; // Success
-        } catch (error) {
-            errors.value = error.response.data.errors;
-            return false; // Failure
+            tasks.value = tasks.value.filter((task) => task.id !== id);
+        } catch (e) {
+            errors.value = e.response.data.errors;
         } finally {
             isLoading.value = false;
         }
     };
 
-    // New functions for fetching related data:
     const getTaskCategories = async () => {
-        isLoading.value = true;
-        errors.value = {};
-        try {
-            const response = await axios.get("/api/tasks");
-            return response.data.data;
-        } catch (error) {
-            errors.value = error.response.data.errors;
-            return [];
-        } finally {
-            isLoading.value = false;
-        }
-    };
-
-    const getUsers = async () => {
-        isLoading.value = true;
-        errors.value = {};
-        try {
-            const response = await axios.get("/api/users");
-            return response.data.data;
-        } catch (error) {
-            errors.value = error.response.data.errors;
-            return [];
-        } finally {
-            isLoading.value = false;
-        }
-    };
+        return [
+            "Préventive",
+            "Corrective",
+            "Predictive",
+            "Inspection"
+        ];
+    }
 
     return {
         tasks,
         task,
+        errors,
+        isLoading,
         getTasks,
         getTask,
         storeTask,
         updateTask,
-        deleteTask,
-        getTaskCategories, // Export the new functions
-        getUsers, // Export the new functions
-        errors,
-        isLoading,
+        destroyTask,
+        getTaskCategories
     };
 }

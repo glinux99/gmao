@@ -52,22 +52,22 @@ import modalComponent from "./components/modals/modalComponent.vue";
 // import userAgentSecurity from "./pages/users/userAgentSecurity.vue";
 // import userAgentSetting from "./pages/users/userAgentSetting.vue";
 // import userDetailsAgent from "./pages/users/userDetailsAgent.vue";
+import Accordion from 'primevue/accordion';
+import AccordionContent from 'primevue/accordioncontent';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionPanel from 'primevue/accordionpanel';
 import taskChart from "./components/charts/taskChart.vue";
 import testChart from "./components/charts/testChart.vue";
 import calendarList from "./pages/calendar/calendarList.vue";
 import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
+import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
 import addRole from "./pages/roles/addRole.vue";
 import roleList from "./pages/roles/roleList.vue";
 import roleView from "./pages/roles/roleView.vue";
 import taskList from "./pages/task/taskList.vue";
-
-
-import Accordion from 'primevue/accordion';
-import AccordionContent from 'primevue/accordioncontent';
-import AccordionHeader from 'primevue/accordionheader';
-import AccordionPanel from 'primevue/accordionpanel';
+import teamList from "./teams/teamList.vue";
 // import loginUser from "./pages/auth/loginUser.vue";
 // import signUp from "./pages/auth/signUp.vue";
 // import storeList from "./pages/stores/storeList.vue";
@@ -129,6 +129,8 @@ const app = createApp({
         maintenanceList,
         testChart,
         taskChart,
+        teamList,
+        priorityList,
         // initEntreprise,
         // enterpriseComponent,
         // loginUser,
@@ -190,6 +192,13 @@ app.component('Accordion', Accordion);
 app.component('AccordionPanel', AccordionPanel);
 app.component('AccordionHeader', AccordionHeader);
 app.component('AccordionContent', AccordionContent);
+
+import Dialog from 'primevue/dialog';
+
+import Dropdown from 'primevue/dropdown';
+app.component('Dropdown', Dropdown);
+app.component("Dialog", Dialog);
+
 app.use(i18nVue, {
     shared: false,
     theme: {

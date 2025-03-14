@@ -2,98 +2,72 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\TaskAssigned;
 use App\Models\Task;
-use App\Models\User;
-use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\DB;
 
 class TaskApiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
-        $tasks= Task::with(['project', 'owner', 'user'])->get();
-        return response(['data'=>$tasks]);
+        $tasks = Task::with('project', 'instructions')->get(); // Eager load instructions
+        return response()->json(['data' => $tasks]);
     }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        // return response(['data'=> $request->all()]);
-
-      try {
-        $task=Task::create($request->all());
-        $user = User::find($task->user_id);
-
-        if($user){
-            // Send email notification
-        //    Mail::to($user->email)->send(new TaskAssigned($task, $user));
-            // Send an email via a notification
-            $user->notify(new TaskAssignedNotification($task,$user, [
-            ]));
-       }
-        return response(['data'=>$task]);
-      } catch (\Throwable $th) {
-       return $th->getMessage();
-        //throw $th;
-      }
-    }
-
-    /**
-     * Display the specified resource.
-     */
     public function show(Task $task)
     {
-        //
+        $task->load('project', 'instructions'); // Eager load instructions
+        return response()->json(['data' => $task]);
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Task $task)
+    public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $task)
-    {
+        DB::beginTransaction();
         try {
-        $task= Task::find($task);
-        $user = User::find($task->user_id);
-        $request['owner']=$request->owner->id ?? null;
-        $task->update($request->all());
-        if($user){
-           Mail::to($user->email)->send(new TaskAssigned($task, $user));
+            $taskData = $request->except('instructions');
+            $task = Task::create($taskData);
+
+            // Create instructions
+            if ($request->has('instructions')) {
+                foreach ($request->input('instructions') as $instructionData) {
+                    $task->instructions()->create($instructionData);
+                }
+            }
+
+            DB::commit();
+            return response()->json(['data' => $task], 201);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        } catch (\Throwable $th) {
-            //throw $th;
-            return $th->getMessage();
+    }
+    public function update(Request $request, Task $task)
+    {
+        DB::beginTransaction();
+        try {
+            $taskData = $request->except('instructions');
+            $task->update($taskData);
+
+            // Update or create instructions
+            if ($request->has('instructions')) {
+                // Delete existing instructions
+                $task->instructions()->delete();
+
+                // Create new instructions
+                foreach ($request->input('instructions') as $instructionData) {
+                    $task->instructions()->create($instructionData);
+                }
+            }
+            DB::commit();
+            return response()->json(['data' => $task]);
+        } catch (\Exception $e) {
+            DB::rollback();
+            return response()->json(['error' => $e->getMessage()], 500);
         }
-        return response()->json(['data'=> $task]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+        return response()->json(null, 204);
     }
 }

@@ -8,6 +8,7 @@ use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\ProjectApiController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\UnityController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRepportController;
+use App\Http\Controllers\TeamController;
 use App\Models\User;
 use App\Notifications\NewRegister;
 use Illuminate\Support\Facades\Artisan;
@@ -75,6 +77,8 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'equipments'=>EquipmentController::class,
         'calendars'=>CalendarController::class,
         'maintenances'=>MaintenanceController::class,
+        'teams' => TeamController::class,
+        'priorities'=>PriorityController::class,
 
     ]);
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');

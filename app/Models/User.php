@@ -73,4 +73,9 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(Maintenance::class, 'maintenance_techniciens', 'technicien_id', 'maintenance_id');
     }
+    public function teams(): BelongsToMany
+{
+    return $this->belongsToMany(Team::class);
+}
+
 }

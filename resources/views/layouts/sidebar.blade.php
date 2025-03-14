@@ -278,12 +278,12 @@
                     </div>
                 </div>
                 <div class="menu-item">
-                    <a class="menu-link" href="{{ route('technicians.index') }}">
+                    <a class="menu-link" href="{{ route('teams.index') }}">
                         <span class="menu-icon">
                             <!--begin::Svg Icon | path: icons/duotune/coding/cod003.svg-->
                             <span class="menu-icon">
                                 <span class="menu-icon">
-                                    <i class="ki-duotone ki-group text-muted fs-1"><span
+                                    <i class="ki-duotone ki-user-tick text-muted fs-1"><span
                                         class="path1"></span><span class="path2"></span></i>
                             </span>
                         </span>
@@ -397,6 +397,15 @@
                                 class="path2"></span></i>
                         </span>
                         <span class="menu-title">Rapports</span>
+                    </a>
+                </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('priorities.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-calendar-8 fs-3 position-absolute"><span class="path1"></span><span
+                                class="path2"></span></i>
+                        </span>
+                        <span class="menu-title">Priorité du système</span>
                     </a>
                 </div>
                            </div>

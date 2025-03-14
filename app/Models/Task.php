@@ -30,6 +30,8 @@ class Task extends Model
         'comments', //added previously
         "tools",
         "instruction_id",
+        'assigned_user_id',
+        'assigned_team_id'
     ];
 
     /**
@@ -87,6 +89,10 @@ class Task extends Model
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+    public function instructions()
+    {
+        return $this->hasMany(Instruction::class);
     }
 }
 
