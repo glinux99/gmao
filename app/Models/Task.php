@@ -31,7 +31,7 @@ class Task extends Model
         "tools",
         "instruction_id",
         'assigned_user_id',
-        'assigned_team_id'
+        'assigned_user_id'
     ];
 
     /**

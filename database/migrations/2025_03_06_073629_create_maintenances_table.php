@@ -13,8 +13,12 @@ return new class extends Migration
     {
         Schema::create('maintenances', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('assigned_user_id')->nullable();
+            $table->unsignedBigInteger('assigned_team_id')->nullable();
             $table->unsignedBigInteger('equipment_id')->nullable();
             $table->foreign('equipment_id')->references('id')->on('equipment')->onDelete('set null');
+            $table->foreign('assigned_user_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('assigned_team_id')->references('id')->on('teams')->onDelete('set null');
             $table->string('work_order')->nullable();
             $table->double('nbre_tacherons')->nullable()->default(0);
             $table->string('materiels')->nullable();
@@ -26,6 +30,7 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('status')->default('pending'); // e.g., pending, in_progress, completed
             $table->unsignedBigInteger('user_id')->nullable(); // Add technician_id
+
              $table->foreign('user_id')->references('id')->on('users')->onDelete('set null'); // Foreign key to technicians table
             $table->timestamps();
         });

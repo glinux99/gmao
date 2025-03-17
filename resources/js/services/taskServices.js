@@ -81,10 +81,10 @@ export default function useTasks() {
 
     const getTaskCategories = async () => {
         return [
-            "Préventive",
-            "Corrective",
-            "Predictive",
-            "Inspection"
+           {"name":  "Préventive"},
+           {"name":  "Corrective"},
+            {"name": "Predictive"},
+           {"name": "Inspection"}
         ];
     }
 

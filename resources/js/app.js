@@ -39,84 +39,19 @@ import { i18nVue } from "laravel-vue-i18n";
 import { createApp } from "vue";
 // import routers from "./router";
 // import store from "./store/index.js";
-import modalComponent from "./components/modals/modalComponent.vue";
-// import initEntreprise from "./pages/entreprises/initEntreprise.vue";
-// import enterpriseComponent from "./pages/entreprises/enterpriseComponent.vue";
-// import dashBoard from "./pages/dashBoard.vue";
-// import userList from "./pages/users/userList.vue";
-// import userDetails from "./pages/users/userDetails.vue";
-// import userAgentActivity from "./pages/users/userAgentActivity.vue";
-// import userAgentApiKeyLog from "./pages/users/userAgentApiKeyLog.vue";
-// import userAgentDeclaration from "./pages/users/userAgentDeclaration.vue";
-// import userAgentFacture from "./pages/users/userAgentSecurity.vue";
-// import userAgentSecurity from "./pages/users/userAgentSecurity.vue";
-// import userAgentSetting from "./pages/users/userAgentSetting.vue";
-// import userDetailsAgent from "./pages/users/userDetailsAgent.vue";
-import Accordion from 'primevue/accordion';
-import AccordionContent from 'primevue/accordioncontent';
-import AccordionHeader from 'primevue/accordionheader';
-import AccordionPanel from 'primevue/accordionpanel';
+import Aura from '@primeuix/themes/aura';
+import PrimeVue from 'primevue/config';
 import taskChart from "./components/charts/taskChart.vue";
 import testChart from "./components/charts/testChart.vue";
+import modalComponent from "./components/modals/modalComponent.vue";
 import calendarList from "./pages/calendar/calendarList.vue";
 import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
 import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
-import addRole from "./pages/roles/addRole.vue";
 import roleList from "./pages/roles/roleList.vue";
-import roleView from "./pages/roles/roleView.vue";
 import taskList from "./pages/task/taskList.vue";
 import teamList from "./teams/teamList.vue";
-// import loginUser from "./pages/auth/loginUser.vue";
-// import signUp from "./pages/auth/signUp.vue";
-// import storeList from "./pages/stores/storeList.vue";
-// import posList from "./pages/pointOfSale/posList.vue";
-// import productStore from "./pages/products/productStore.vue";
-// import productDetails from "./pages/products/productDetails.vue";
-// import catalogueService from "./pages/products/catalogueService.vue";
-// import productList from "./pages/products/productList.vue";
-// import categoryAdd from "./pages/categories/categoryAdd.vue";
-// import categoryList from "./pages/categories/categoryList.vue";
-// import mesureUnityAdd from "./pages/mesureUnity/mesureUnityAdd.vue";
-// import enterpriseAdd from "./pages/entreprises/enterpriseAdd.vue";
-// import enterpriseList from "./pages/entreprises/enterpriseList.vue";
-// import enterpriseCount from "./pages/entreprises/enterpriseCount.vue";
-// import priceAdd from "./pages/prices/priceAdd.vue";
-// import ficheStock from "./pages/stocks/ficheStock.vue";
-// import valoryStock from "./pages/stocks/valoryStock.vue";
-// import approvisionnementStock from "./pages/stocks/approvisionnementStock.vue";
-// import stockTableComponent from "./pages/stocks/stockTableComponent.vue";
-// import destockageStock from "./pages/stocks/destockageStock.vue";
-// // import posList from "./pages/pos/posList.vue";
-// import exportPdf from "./pages/pos/exportPdf.vue";
-// import logoComponent from "./components/logo/logoComponent.vue";
-// import logoLgComponent from "./components/logo/logoLgComponent.vue";
-// import inventoryRepport from "./pages/stocks/inventoryRepport.vue";
-// import moneyList from "./pages/moneys/moneyList.vue";
-// import moneyEntry from "./pages/moneys/moneyEntry.vue";
-// import moneyDefault from "./pages/moneys/moneyDefault.vue";
-// import moneyOut from "./pages/moneys/moneyOut.vue";
-// import moneyAccount from "./pages/moneys/moneyAccount.vue";
-// import redirectApp from "./pages/redirect/redirectApp.vue";
-// import cardTemplate from "./pages/stocks/cardTemplate.vue";
-// import storeView from "./pages/stores/storeView.vue";
-// import posView from "./pages/pointOfSale/posView.vue";
-// import excel from "vue-excel-export";
-// import customerList from "./pages/customers/customerList.vue";
-// import providerList from "./pages/providers/providerList.vue";
-// import navLinkComponent from "./components/navLinkComponent.vue";
-// import facturationList from "./pages/facturation/facturationList.vue";
-// import inventoryEnterprise from "./pages/inventory/inventoryEnterprise.vue";
-// import storeDefault from "./pages/stores/storeDefault.vue";
-// const app = createApp(App);
-// app.use(routers);
-// app.mount("#contentVue");
-// Vue.prototype.$userAuth = document.querySelector("meta[name='user_auth']").getAttribute('content');
-
-// Vue.config.productionTip = false;
-import Aura from '@primeuix/themes/aura';
-import PrimeVue from 'primevue/config';
 const app = createApp({
     components: {
         // dashBoard,
@@ -131,73 +66,34 @@ const app = createApp({
         taskChart,
         teamList,
         priorityList,
-        // initEntreprise,
-        // enterpriseComponent,
-        // loginUser,
-        // signUp,
-        // storeList,
-        // // posList,
         modalComponent,
-        // productStore,
-        // productDetails,
-        // catalogueService,
-        // categoryAdd,
-        // categoryList,
-        // productList,
-        // mesureUnityAdd,
-        // enterpriseAdd,
-        // enterpriseList,
-        // enterpriseCount,
-        // priceAdd,
-        // ficheStock,
-        // posList,
-        // valoryStock,
-        // exportPdf,
-        // approvisionnementStock,
-        // inventoryRepport,
-        // destockageStock,
-        // logoComponent,
-        // logoLgComponent,
-        // moneyList,
-        // userDetails,
-        addRole,
-        roleView,
-        // userDetailsAgent,
-        // userAgentSetting,
-        // userAgentApiKeyLog,
-        // userAgentDeclaration,
-        // userAgentFacture,
-        // userAgentSecurity,
-        // userAgentActivity,
-        // redirectApp,
-        // stockTableComponent,
-        // cardTemplate,
-        // storeView,
-        // posView,
-        // navLinkComponent,
-        // moneyEntry,
-        // moneyOut,
-        // moneyAccount,
-        // customerList,
-        // providerList,
-        // moneyDefault,
-        // facturationList,
-        // inventoryEnterprise,
-        // storeDefault,
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
-app.use(PrimeVue);
-app.component('Accordion', Accordion);
-app.component('AccordionPanel', AccordionPanel);
-app.component('AccordionHeader', AccordionHeader);
-app.component('AccordionContent', AccordionContent);
 
+import 'primeicons/primeicons.css';
+import AutoComplete from 'primevue/autocomplete';
+import Button from 'primevue/button';
+import Calendar from 'primevue/calendar';
+import Card from 'primevue/card';
+import Chips from 'primevue/chips';
 import Dialog from 'primevue/dialog';
-
 import Dropdown from 'primevue/dropdown';
+import InputText from 'primevue/inputtext';
+import MultiSelect from 'primevue/multiselect';
+import RadioButton from 'primevue/radiobutton';
+
 app.component('Dropdown', Dropdown);
+app.component("Calendar", Calendar);
 app.component("Dialog", Dialog);
+app.component('InputText', InputText);
+app.component('RadioButton', RadioButton);
+app.component('Button', Button);
+app.component('Card', Card);
+app.component('MultiSelect', MultiSelect);
+app.component('Chips', Chips);
+app.component('AutoComplete', AutoComplete);
+
 
 app.use(i18nVue, {
     shared: false,
@@ -212,7 +108,22 @@ app.use(i18nVue, {
     },
     // resolve: (lang) => import(`../lang/${lang}.json`),
 });
-
+app.use(PrimeVue, {
+    zIndex: {
+        modal: 1057,        //dialog, drawer
+        overlay: 1000,      //select, popover
+        menu: 1000,         //overlay menus
+        tooltip: 1100       //tooltip
+    },
+    theme:{
+        preset: Aura,
+        options:{
+            prefix: 'bs',
+            darkModeSelector: true,
+            csslayer: false
+        }
+    }
+});
 // app.config.globalProperties.$store = store;
 // import * as Vue from "vue";
 // import App from "./App.vue";

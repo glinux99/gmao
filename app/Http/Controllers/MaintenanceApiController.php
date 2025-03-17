@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Maintenance;
-use App\Models\Task; // Import the Task model
+use App\Models\Task;
+use App\Models\Material;
+use App\Models\Category;
+use App\Models\Instruction;
 use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class MaintenanceApiController extends Controller
 {
@@ -52,12 +56,29 @@ class MaintenanceApiController extends Controller
     public function store(Request $request)
     {
         try {
+            DB::beginTransaction();
             // Create the maintenance record
-            $maintenance = Maintenance::create($request->except('techniciens'));
+            $maintenance = Maintenance::create($request->except(['techniciens','materials','instructions']));
 
             // Assign technicians if provided
             if ($request->has('techniciens')) {
                 $maintenance->technicians()->attach($request->techniciens);
+            }
+             // Handle materials
+            if ($request->has('materials')) {
+                foreach ($request->materials as $materialData) {
+                    $material = Material::find($materialData['material_id']);
+                    if ($material) {
+                        $maintenance->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                    }
+                }
+            }
+            // Handle instructions
+            if ($request->has('instructions')) {
+                foreach ($request->instructions as $instructionData) {
+                    $instruction = new Instruction($instructionData);
+                    $maintenance->instructions()->save($instruction);
+                }
             }
 
             // Split the description into individual tasks
@@ -88,14 +109,17 @@ class MaintenanceApiController extends Controller
                     $this->sendTaskNotifications($task, $maintenance);
                 }
             }
+            DB::commit();
 
         } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
                 return response()->json(['errors' => $e->errors()], 422);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['error' => $th->getMessage()], 500);
         }
 
-        return response()->json(['data' => $maintenance->load('technicians')]);
+        return response()->json(['data' => $maintenance->load(['technicians','materials','instructions'])]);
     }
     protected function sendTaskNotifications(Task $task, Maintenance $maintenance)
     {
@@ -162,23 +186,38 @@ class MaintenanceApiController extends Controller
     public function update(Request $request, Maintenance $maintenance)
     {
         try {
-            $validatedData = $request->validate([
-                'equipment_id' => 'required|exists:equipments,id',
-                'work_order' => 'required|string|max:255',
-                'man_hours' => 'required|numeric',
-                'maintenance_cost' => 'required|numeric',
-                'start_date' => 'required|date',
-                'end_date' => 'nullable|date',
-                'description' => 'required|string|max:255',
-                'status' => 'required|in:pending,in_progress,completed',
-                'user_id' => 'required|exists:users,id',
-            ]);
-            $maintenance->update($validatedData);
+            DB::beginTransaction();
 
-             return response()->json(['data' => $maintenance]);
+            $maintenance->update($request->all());
+            // Sync technicians
+            if ($request->has('techniciens')) {
+                $maintenance->technicians()->sync($request->techniciens);
+            }
+            // Sync materials
+            $maintenance->materials()->detach();
+            if ($request->has('materials')) {
+                foreach ($request->materials as $materialData) {
+                    $material = Material::find($materialData['material_id']);
+                    if ($material) {
+                        $maintenance->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                    }
+                }
+            }
+            // Sync instructions
+            $maintenance->instructions()->delete();
+            if ($request->has('instructions')) {
+                foreach ($request->instructions as $instructionData) {
+                    $instruction = new Instruction($instructionData);
+                    $maintenance->instructions()->save($instruction);
+                }
+            }
+            DB::commit();
+             return response()->json(['data' => $maintenance->load(['technicians','materials','instructions'])]);
         } catch (\Illuminate\Validation\ValidationException $e) {
+            DB::rollBack();
                 return response()->json(['errors' => $e->errors()], 422);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }

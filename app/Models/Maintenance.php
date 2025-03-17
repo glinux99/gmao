@@ -4,23 +4,29 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Maintenance extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'equipment_id',
-        'work_order',
-        'nbre_tacherons',
-        'materiels',
-        'man_hours',
-        'maintenance_cost',
-        'start_date',
-        'end_date',
         'description',
         'status',
+        'work_order',
+        'equipment_id',
         'user_id',
+        'start_date',
+        'end_date',
+        'man_hours',
+        // 'delay',
+        'maintenance_cost',
+        'nbre_tacherons',
+        'assigned_user_id',
+        'assigned_team_id',
+        'frequency',
+        'daysOfWeek'
     ];
 
     public function equipment()
@@ -36,5 +42,13 @@ class Maintenance extends Model
     public function technicians()
     {
         return $this->belongsToMany(User::class, 'maintenance_techniciens', 'maintenance_id', 'technicien_id');
+    }
+    public function materials(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'maintenance_material')->withPivot('quantity');
+    }
+    public function instructions(): HasMany
+    {
+        return $this->hasMany(Instruction::class);
     }
 }

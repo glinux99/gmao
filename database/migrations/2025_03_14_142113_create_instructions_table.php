@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('instructions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('task_id'); // Foreign key linking to the task
+            $table->foreignId('maintenance_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('task_id')->nullable(); // Foreign key linking to the task
             $table->text('description'); // The instruction text
-            $table->enum('response_type', ['checkbox', 'text', 'number']); // Type of response
+            $table->enum('response_type', ['checkbox', 'text / valeur', 'number','text']); // Type of response
             $table->timestamps();
 
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');

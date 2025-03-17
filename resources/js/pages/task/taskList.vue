@@ -2,28 +2,6 @@
     <div>
         <div class="app-main flex-column flex-row-fluid" id="kt_app_main">
             <div class="card flex justify-center">
-        <Button  @click="visible = true">dddddddddd</Button>
-        <Dialog v-model:visible="visible" modal header="Edit Profile" :style="{ width: '25rem' }">
-            <template #header>
-                <div class="inline-flex items-center justify-center gap-2">
-                    <Avatar image="https://primefaces.org/cdn/primevue/images/avatar/amyelsner.png" shape="circle" />
-                    <span class="font-bold whitespace-nowrap">Amy Elsner</span>
-                </div>
-            </template>
-            <span class="text-surface-500 dark:text-surface-400 block mb-8">Update your information.</span>
-            <div class="flex items-center gap-4 mb-4">
-                <label for="username" class="font-semibold w-24">Username</label>
-                <InputText id="username" class="flex-auto" autocomplete="off" />
-            </div>
-            <div class="flex items-center gap-4 mb-2">
-                <label for="email" class="font-semibold w-24">Email</label>
-                <InputText id="email" class="flex-auto" autocomplete="off" />
-            </div>
-            <template #footer>
-                <Button label="Cancel" text severity="secondary" @click="visible = false" autofocus />
-                <Button label="Save" outlined severity="secondary" @click="visible = false" autofocus />
-            </template>
-        </Dialog>
     </div>
             <div class="d-flex flex-column flex-column-fluid">
                 <div id="kt_app_toolbar" class="app-toolbar pb-3 pb-lg-6">
@@ -253,187 +231,277 @@
             </div>
         </div>
         <!-- ... -->
-        <modal-component :id="'task-modal'" positionModal="center mw-800px" :form="form" @instance-modal="submitTask">
-            <template #title>{{ isEditMode ? 'Modifier' : 'Créer' }} une Tâche</template>
-            <template #body>
-                <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
-                    data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
-                    data-kt-scroll-dependencies="#kt_modal_add_user_header"
-                    data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
-                    <div class="row">
-                        <div class="col-md-6" v-if="projects.length">
-                            <div class="my-6">
-                                <label class="col-form-label fw-bold fs-6">
-                                    <span class="required">Projet</span>
-                                    <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
-                                        title="categorie"></i>
-                                </label>
-                                <div class="fv-row">
-                                    <select class="form-select form-select-solid mb-3 mb-lg-0" aria-label="project"
-                                        v-model="form.project_id">
-                                        <option v-for="project in projects" :value="project.id" :key="project.id">
-                                            {{ project.name }}
-                                        </option>
-                                    </select>
-                                </div>
-                            </div>
+        <Dialog
+    :id="id"
+    :header="isEditMode ? 'Modifier une Tâche' : 'Créer une Tâche'"
+    v-model:visible="visible"
+    :style="{ width: '800px' }"
+    position="center"
+    :modal="true"
+    :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    @hide="closeModal"
+    :closable="true"
+  >
+    <template #header>
+      {{ isEditMode ? 'Modifier' : 'Créer' }} une Tâche
+    </template>
+    <div
+      class="d-flex flex-column scroll-y px-3 px-lg-5 "
+    >
+    <Card   class="bg-secondary">
+       <template #content>
+        <div class="row">
+            <div class="fv-row fv-plugins-icon-container col-md-6 col-md-6">
+          <label class="required fw-semibold fs-6 mb-2">Titre</label>
+          <InputText
+            type="text"
+            name="designation"
+            class="form-control  mb-3 mb-lg-0"
+            placeholder="titre de la tâche"
+            v-model="form.description"
+            required
+          />
+          <div
+            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
+          ></div>
+        </div>
+        <div class="fv-row fv-plugins-icon-container col-md-6">
+          <label class="required fw-semibold fs-6 mb-2">Responsable</label>
+          <Dropdown
+            v-model="form.owner"
+            :options="users"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Sélectionner un responsable"
+            class="w-full md:w-14rem"
+          />
+          <div
+            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
+          ></div>
+        </div>
+        <div class="col-md-6 ">
+          <!--begin::Label-->
+          <label class="fw-semibold fs-6 mb-2">
+            <span class="">Status</span>
+          </label>
+          <!--end::Label-->
+          <!--begin::Col-->
+          <div class="fv-row ">
+            <Dropdown
+              v-model="form.status"
+              :options="[
+                { name: 'En attente', value: 'pending' },
+                { name: 'En cours', value: 'in_progress' },
+                { name: 'Terminée', value: 'completed' },
+                { name: 'Annulée', value: 'canceled' },
+              ]"
+              optionLabel="name"
+              optionValue="value"
+              placeholder="Sélectionner un status"
+              class="w-full md:w-14rem"
+            />
+          </div>
+          <!--end::Col-->
+        </div>
+        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
+          <label class="required fw-semibold fs-6 mb-2">Priorité</label>
+          <Dropdown
+            v-model="form.priority"
+            :options="priorities"
+            optionLabel="title"
+            optionValue="title"
+            placeholder="Sélectionner une priorité"
+            class="w-full md:w-14rem"
+          />
+        </div>
+        </div>
+       </template>
+    </Card>
+
+      <div class="row">
+        <div class="col-md-6" v-if="projects.length">
+          <div class="my-6">
+            <label class="col-form-label fw-bold fs-6">
+              <span class="required">Projet</span>
+              <i
+                class="fas fa-exclamation-circle ms-1 fs-7"
+                data-bs-toggle="tooltip"
+                title="categorie"
+              ></i>
+            </label>
+            <div class="fv-row">
+              <Dropdown
+                v-model="form.project_id"
+                :options="projects"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Sélectionner un projet"
+                class="w-full md:w-14rem"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <Card class="mt-2 bg-secondary">
+        <template #title>
+            Assigner à
+        </template>
+        <template #content>
+            <div class="fv-row  fv-plugins-icon-container row">
+                    <div class="col-md-6">
+                        <div class="form-check form-check-custom form-check-solid mb-3">
+                        <RadioButton
+                            inputId="assignToUser"
+                            value="user"
+                            v-model="form.assignToType"
+                            name="assignToType"
+                        />
+                        <label class="form-check-label" for="assignToUser">
+                            Technicien
+                        </label>
                         </div>
-                        <div :class="projects.length>0? 'col-md-6': ''">
-                            <div class="my-6">
-                                <!--begin::Label-->
-                                <label class="col-form-label fw-bold fs-6">
-                                    <span class="required">Catégorie</span>
-                                    <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
-                                        title="catégorie de tâche"></i>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="">
-                                    <select class="form-select form-select-solid mb-3 mb-lg-0"
-                                        aria-label="categorie de la tâche" v-model="form.category">
-                                        <option value="Préventive">Préventive</option>
-                                        <option value="Corrective">Corrective</option>
-                                        <option value="Predictive">Predictive</option>
-                                        <option value="Inspection">Inspection</option>
-                                    </select>
-                                </div>
-                                <!--end::Col-->
-                            </div>
+                        <div class="form-check form-check-custom form-check-solid">
+                        <RadioButton
+                            inputId="assignToTeam"
+                            value="team"
+                            v-model="form.assignToType"
+                            name="assignToType"
+                        />
+                        <label class="form-check-label" for="assignToTeam">
+                            Équipe
+                        </label>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6 col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Titre</label>
-                            <input type="text" name="designation" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="titre de la tâche" v-model="form.description" required>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Responsable</label>
-                            <select class="form-select form-select-solid mb-3 mb-lg-0"
-                                aria-label="Proprietaire de la tâche" v-model="form.owner">
-                                <option value="">Selectionner un responsable</option>
-
-                                <option v-for="user in users" :value="user.id" :key="user.id">
-                                    {{ user.name }}
-                                </option>
-                            </select>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container">
-                      <button class="btn btn-primary" @click="addInstruction">Ajouter une instruction</button>
-                        <div v-for="(instruction, index) in form.instructions" :key="index" class="my-3 border p-2 rounded">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <label class="fw-bold">Instruction {{ index + 1 }}</label>
-                                <button class="btn btn-sm btn-danger" @click="removeInstruction(index)">Supprimer</button>
-                            </div>
-                            <textarea class="form-control" v-model="instruction.description" placeholder="Description de l'instruction"></textarea>
-                            <select class="form-select mt-2" v-model="instruction.response_type">
-                                <option value="checkbox">Checkbox</option>
-                                <option value="text">Text</option>
-                                <option value="number">Number</option>
-                            </select>
-                        </div>
-                    </div>
-                        <div class="row mb-6">
-                            <!--begin::Label-->
-                            <label class="col-lg-4 col-form-label fw-bold fs-6">
-                                <span class="required">Status</span>
-                                <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip"
-                                    title="Status"></i>
-                            </label>
-                            <!--end::Label-->
-                            <!--begin::Col-->
-                            <div class="col-lg-8 fv-row">
-                                <select class="form-select form-select-solid mb-3 mb-lg-0"
-                                    aria-label="Status de la tâche" v-model="form.status">
-                                    <option value="pending">En attente</option>
-                                    <option value="in_progress">En cours</option>
-                                    <option value="completed">Terminée</option>
-                                    <option value="canceled">Annulée</option>
-                                </select>
-                            </div>
-                            <!--end::Col-->
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container row">
-                            <div class="col-md-4">
-                                <label class="required fw-semibold fs-6 mb-2">Assigner à</label>
-                            </div>
-                            <div class="col-md-8">
-                                <div class="form-check form-check-custom form-check-solid mb-3">
-                                    <input class="form-check-input" type="radio" value="user" id="assignToUser"
-                                        v-model="form.assignToType" name="assignToType" checked />
-                                    <label class="form-check-label" for="assignToUser">
-                                        Technicien
-                                    </label>
-                                </div>
-                                <div class="form-check form-check-custom form-check-solid">
-                                    <input class="form-check-input" type="radio" value="team" id="assignToTeam"
-                                        v-model="form.assignToType" name="assignToType" />
-                                    <label class="form-check-label" for="assignToTeam">
-                                        Équipe
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Conditional rendering for user/team selection -->
+                    <div class="col-md-6">
                         <div v-if="form.assignToType === 'user'" class="fv-row mb-7">
-                            <label class="required fw-semibold fs-6 mb-2">Technicien</label>
-                            <select class="form-select form-select-solid mb-3 mb-lg-0" v-model="form.assigned_user_id">
-                                <option value="">Sélectionner un technicien</option>
-                                <option v-for="user in users" :value="user.id" :key="user.id">{{ user.name }}</option>
-                            </select>
-                        </div>
-                        <div v-else-if="form.assignToType === 'team'" class="fv-row mb-7">
-                            <label class="required fw-semibold fs-6 mb-2">Équipe</label>
-                            <select class="form-select form-select-solid mb-3 mb-lg-0" v-model="form.assigned_team_id">
-                                <option value="">Sélectionner une équipe</option>
-                                <option v-for="team in teams" :value="team.id" :key="team.id">{{ team.name }}</option>
-                            </select>
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Priorité</label>
-                            <select class="form-select form-select-solid mb-3 mb-lg-0"
-                                aria-label="Priorité de la tâche" v-model="form.priority">
-                                <option v-for="priority in priorities" :value="priority.id" :key="priority.id">
-                                    {{ priority.title }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Date de debut</label>
-                            <input type="datetime-local" name="start_date" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Date de debut" v-model="form.start_date" required>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
-                        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Date de fin</label>
-                            <input type="datetime-local" name="due_date" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Date de fin" v-model="form.due_date" required>
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div>
+          <label class="required fw-semibold fs-6 mb-2">Technicien</label>
+          <Dropdown
+            v-model="form.assigned_user_id"
+            :options="users"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Sélectionner un technicien"
+            class="w-full md:w-14rem"
+          />
+        </div>
+        <div v-else-if="form.assignToType === 'team'" class="fv-row mb-7">
+          <label class="required fw-semibold fs-6 mb-2">Équipe</label>
+          <Dropdown
+            v-model="form.assigned_team_id"
+            :options="teams"
+            optionLabel="name"
+            optionValue="id"
+            placeholder="Sélectionner une équipe"
+            class="w-full md:w-14rem"
+          />
+        </div>
                     </div>
+            </div>
+        <!-- Conditional rendering for user/team selection -->
+
+        </template>
+      </Card>
+      <div class="row mt-3">
+        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
+          <label class="required fw-semibold fs-6 mb-2">Date de debut</label>
+          <Calendar
+            v-model="form.start_date"
+            dateFormat="yy-mm-dd"
+            showTime
+            hourFormat="24"
+            class="form-control form-control-solid mb-3 mb-lg-0"
+            placeholder="Date de debut"
+            required
+          />
+          <div
+            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
+          ></div>
+        </div>
+        <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
+          <label class="required fw-semibold fs-6 mb-2">Date de fin</label>
+          <Calendar
+            v-model="form.due_date"
+            dateFormat="yy-mm-dd"
+            showTime
+            hourFormat="24"
+            class="form-control form-control-solid mb-3 mb-lg-0"
+            placeholder="Date de fin"
+            required
+          />
+          <div
+            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
+          ></div>
+        </div>
+      </div>
+       <Card class="bg-secondary">
+           <template #content>
+            <div class="fv-row mb-7 fv-plugins-icon-container">
+                <div class="d-flex justify-content-end">
+                     <Button label="Ajouter une instruction" icon="pi pi-plus-circle" @click="addInstruction" severity="warn" class="p-button-primary"/>
                 </div>
-            </template>
-        </modal-component>
+          <div
+            v-for="(instruction, index) in form.instructions"
+            :key="index"
+            class="my-1 border rounded"
+          >
+            <div class="d-flex justify-content-between align-items-center">
+              <label class="fw-bold">Instruction {{ index + 1 }}</label>
+
+            </div>
+            <div class="row">
+                <div class="col-md-8">
+                    <InputText
+                    type="text"
+                    name="designation"
+                    class="form-control  mb-3 mb-lg-0"
+                    placeholder="Description de l'instruction"
+                    v-model="instruction.description"
+                    @input="addInstructionValue('description',instruction.description, index)"
+                />
+                </div>
+                <div class="col-md-3">
+                    <Dropdown
+                        class="w-full md:w-14rem"
+                        v-model="instruction.response_type"
+                        :options="['checkbox', 'text / valeur']"
+                        placeholder="Type de reponse"
+                        @change="addInstructionValue('response_type',instruction.response_type, index)"
+                    />
+                </div>
+                <div class="col-md-1 d-flex align-items-start justify-content-start"  @click="removeInstruction(index)">
+                    <button ><i class="fa fa-trash text-danger m-0 p-0 display-6"></i></button>
+                </div>
+            </div>
+          </div>
+        </div>
+           </template>
+        </Card>
+    </div>
+    <template #footer>
+      <Button
+        label="Annuler"
+        icon="pi pi-times"
+        severity="secondary"
+        variant="text"
+        class="p-button-text"
+        @click="closeModal"
+      />
+      <Button
+        label="Enregistrer"
+        icon="pi pi-check"
+        severity="warn"
+        class="p-button-primary"
+        raised
+        @click="submitTask"
+      />
+    </template>
+  </Dialog>
 
     </div>
 </template>
-
 <script>
 import { useCookie } from "@vue-composable/cookie";
-import { DatePicker, Dialog } from "primevue";
 import { computed, onMounted, reactive, ref } from "vue";
-import modalComponent from "../../components/modals/modalComponent.vue";
 import useInstructions from '../../services/instructionServices.js';
 import usePriorities from "../../services/priorityServices.js";
 import useProjects from "../../services/projectServices.js";
@@ -441,11 +509,6 @@ import useTasks from "../../services/taskServices.js";
 import useTeams from "../../services/teamServices.js"; // Import useTeams
 import useUsers from "../../services/userservices.js";
 export default {
-    components: {
-        DatePicker,
-        modalComponent,
-        Dialog
-    },
     setup() {
         const {
             tasks,
@@ -464,7 +527,7 @@ export default {
         const searchQuery = ref('');
         const showTableView = ref(false);
         const { priorities, getPriorities } = usePriorities();
-        const {instructions,storeInstruction,deleteInstruction,getInstructions}=useInstructions ();
+        const {storeInstruction,deleteInstruction,getInstructions}=useInstructions ();
         const form = reactive({
             id: null,
             priority: "Moyen", //set default value
@@ -487,8 +550,10 @@ export default {
             assignToType: 'user', // Default to assigning to a user
             assigned_user_id: null,
             assigned_team_id: null,
+            instructions:[]
         });
-
+        const instructions = ref({})
+        const visible=ref(false);
           // Function to calculate the delay
         const calculateDelay = () => {
             if (form.start_date && form.due_date) {
@@ -546,6 +611,7 @@ export default {
 
         const submitTask = async () => {
             let success = false;
+            console.log({...form});
             // Check if it's assigned to a user or a team
             if (form.assignToType === 'user') {
                 form.assigned_team_id = null;
@@ -559,22 +625,23 @@ export default {
             }
             if (success) {
                 await getTasks();
-                $("#task-modal").modal("hide");
+                visible.value=false;
                 resetForm();
             }
         };
 
         const addTask = () => {
             isEditMode.value = false;
-            $("#task-modal").modal("show");
+            visible.value=true;
              form.start_date = setDefaultTime(new Date().toISOString());
              form.due_date = setDefaultTime(new Date().toISOString());
+
             resetForm();
         };
 
         const editTask = (task) => {
             isEditMode.value = true;
-            $("#task-modal").modal("show");
+            visible.value=true;
             Object.assign(form, task);
             form.start_date = setDefaultTime(form.start_date);
             form.due_date = setDefaultTime(form.due_date);
@@ -612,8 +679,14 @@ export default {
             form.assignToType = 'user';
             form.assigned_user_id = null;
             form.assigned_team_id = null;
+            form.instructions = [];
         };
-
+        const addInstruction=()=>{
+            form.instructions.push({
+                description: "",
+                response_type: ""
+            });
+        }
         const filteredTasks = computed(() => {
             return tasks.value.filter(task => {
                 return task.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
@@ -678,8 +751,18 @@ export default {
 
       const showPriorityModal = ref(false); // New: Control the priority modal visibility
       const priorityForm = reactive({});
-      const visible=ref(false);
+      const addInstructionValue=(type,value, index)=>{
+        form.instructions[index][type]=value;
+        console.log(form.instructions);
+      }
+      const removeInstruction = (index) => {
+        form.instructions.splice(index, 1);
+      };
+      const closeModal=()=>{
+        visible.value=false;
+      }
         return {
+            addInstruction,
             formatDeadline,
             showTimeFields,
             toggleView,
@@ -700,8 +783,11 @@ export default {
             searchQuery,
             filteredTasks,
             teams, //expose teams
-            priorities, //expose priorities
-            visible
+            priorities, //expose priorities,
+            visible,
+            addInstructionValue,
+            removeInstruction,
+            closeModal
 
 
         };

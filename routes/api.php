@@ -9,8 +9,10 @@ use App\Http\Controllers\RolesPermissionsController;
 use App\Http\Controllers\TaskApiController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\TeamApiController;
+use App\Http\Controllers\CategoryApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -27,4 +29,6 @@ Route::apiResources ([
     'maintenances'=>MaintenanceApiController::class,
     'teams'=>TeamApiController::class,
     'priority'=>PriorityApiController::class,
+    'categories'=>CategoryApiController::class,
+
 ]);

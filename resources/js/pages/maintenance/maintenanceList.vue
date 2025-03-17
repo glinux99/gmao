@@ -147,11 +147,11 @@
                       </td>
                       <td class="text-end">
                         <!-- <button @click="viewMaintenance(maintenance.id)"
-                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px me-3">
-                                                    <i class="ki-duotone ki-setting-3 fs-3"><span class="path1"></span><span
-                                                            class="path2"></span><span class="path3"></span><span
-                                                            class="path4"></span><span class="path5"></span></i>
-                                                </button> -->
+                                                      class="btn btn-icon btn-active-light-primary w-30px h-30px me-3">
+                                                      <i class="ki-duotone ki-setting-3 fs-3"><span class="path1"></span><span
+                                                              class="path2"></span><span class="path3"></span><span
+                                                              class="path4"></span><span class="path5"></span></i>
+                                                  </button> -->
 
                         <button
                           @click="editMaintenance(maintenance)"
@@ -253,12 +253,12 @@
 
                     <div class="card-group p-4">
                       <!-- <button @click="viewMaintenance(maintenance.id)"
-                                                class="card btn btn-light btn-active-primary my-1 me-2 ">
-                                                <span>Afficher</span>
-                                                <i class="ki-duotone ki-setting-3 fs-3"><span class="path1"></span><span
-                                                        class="path2"></span><span class="path3"></span><span
-                                                        class="path4"></span><span class="path5"></span></i>
-                                            </button> -->
+                                                  class="card btn btn-light btn-active-primary my-1 me-2 ">
+                                                  <span>Afficher</span>
+                                                  <i class="ki-duotone ki-setting-3 fs-3"><span class="path1"></span><span
+                                                          class="path2"></span><span class="path3"></span><span
+                                                          class="path4"></span><span class="path5"></span></i>
+                                              </button> -->
 
                       <button
                         @click="editMaintenance(maintenance)"
@@ -308,223 +308,414 @@
       </div>
     </div>
     <!-- ... -->
-    <modal-component
-      :id="'maintenance-modal'"
-      positionModal="center mw-700px"
-      :form="form"
-      @instance-modal="submitMaintenance"
+    <Dialog
+      :id="id"
+      :header="
+        isEditMode ? 'Modifier une Maintenance' : 'Créer une Maintenance'
+      "
+      v-model:visible="visible"
+      :style="{ width: '800px' }"
+      position="center"
+      :modal="true"
+      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+      @hide="closeModal"
+      :closable="true"
     >
-      <template #title
-        >{{ isEditMode ? "Modifier" : "Créer" }} une Maintenance</template
-      >
-      <template #body>
-        <div
-          class="d-flex flex-column scroll-y px-5 px-lg-10"
-          id="kt_modal_add_user_scroll"
-          data-kt-scroll="true"
-          data-kt-scroll-activate="true"
-          data-kt-scroll-max-height="auto"
-          data-kt-scroll-dependencies="#kt_modal_add_user_header"
-          data-kt-scroll-wrappers="#kt_modal_add_user_scroll"
-          data-kt-scroll-offset="300px"
-        >
-          <div class="row my-6" v-if="equipments.length">
-            <label class="col-lg-4 col-form-label fw-bold fs-6">
-              <span class="required">Equipement</span>
-              <i
-                class="fas fa-exclamation-circle ms-1 fs-7"
-                data-bs-toggle="tooltip"
-                title="equipement"
-              ></i>
-            </label>
-            <div class="col-lg-8 fv-row">
-              <select
-                class="form-select form-select-solid mb-3 mb-lg-0"
-                aria-label="equipement"
-                v-model="form.equipment_id"
-              >
-                <option
-                  v-for="equipment in equipments"
-                  :value="equipment.id"
-                  :key="equipment.id"
-                >
-                  {{ equipment.name }}
-                </option>
-              </select>
-            </div>
-          </div>
-
+      <Card class="bg-secondary">
+        <template #content>
           <div class="row">
-            <div class="fv-row mb-7 fv-plugins-icon-container">
-              <label class="required fw-semibold fs-6 mb-2"
-                >Taches spécifique à effectuer
-              </label>
-              <textarea
-                name="designation"
-                class="form-control form-control-solid mb-3 mb-lg-0"
-                placeholder="description des taches a effectuer"
-                v-model="form.description"
-              ></textarea>
-              <span>Separer plusiers taches par un point virgule (;)</span>
-              <div
-                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-              ></div>
-            </div>
-            <!-- <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Work Order</label>
-                             <input type="text" name="work_order" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="work_order" v-model="form.work_order" >
-                            <div
-                                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                            </div>
-                        </div> -->
-            <div class="row mb-6">
-              <!--begin::Label-->
-              <label class="col-lg-4 col-form-label fw-bold fs-6">
-                <span class="required">Status</span>
+            <div class="col-md-6">
+              <label class="col-form-label fw-bold fs-6">
+                <span class="required">designation de la maintenance</span>
                 <i
                   class="fas fa-exclamation-circle ms-1 fs-7"
                   data-bs-toggle="tooltip"
-                  title="Status"
+                  title="equipement"
                 ></i>
               </label>
-              <!--end::Label-->
-              <!--begin::Col-->
-              <div class="col-lg-8 fv-row">
-                <select
-                  class="form-select form-select-solid mb-3 mb-lg-0"
-                  aria-label="Status de la maintenance"
-                  v-model="form.status"
-                >
-                  <option value="pending">En attente</option>
-                  <option value="in_progress">En cours</option>
-                  <option value="completed">Terminée</option>
-                  <option value="canceled">Annulée</option>
-                </select>
-              </div>
-              <!--end::Col-->
-            </div>
-            <div class="fv-row mb-7 fv-plugins-icon-container row">
-              <div class="col-md-4">
-                <label class="required fw-semibold fs-6 mb-2"
-                  >Technicien Responsable</label
-                >
-              </div>
-              <div class="col-md-8">
-                <select
-                  class="form-select form-select-solid mb-3 mb-lg-0"
-                  aria-label="technicien"
-                  v-model="form.user_id"
-                >
-                  <option value="">Selectionner un technicien</option>
-                  <option v-for="user in users" :value="user.id" :key="user.id">
-                    {{ user.name }}
-                  </option>
-                </select>
-              </div>
-              <div
-                class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-              ></div>
-            </div>
-            <div class="d-flex gap-2">
-              <div class="fv-row mb-10">
-                <label class="fs-5 fw-bold form-label mb-2">
-                  Date de debut
-                </label>
-                <input
-                  type="datetime-local"
-                  name="start_date"
-                  class="form-control form-control-solid mb-3 mb-lg-0"
-                  placeholder="nom de la tâche"
-                  v-model="form.start_date"
-                  @input="calculateDelay"
-                />
-              </div>
-              <div class="fv-row mb-10">
-                <label class="fs-5 fw-bold form-label mb-2">
-                  Date de fin
-                </label>
-
-                <input
-                  type="datetime-local"
-                  name="start_date"
-                  class="form-control form-control-solid mb-3 mb-lg-0"
-                  placeholder="nom de la tâche"
-                  :min="form.start_date"
-                  v-model="form.end_date"
-                  @input="calculateDelay"
-                />
-              </div>
-              <div
-                class="fv-row mb-10 d-flex flex-column align-items-center justify-content-center"
-              >
-                <label class="fs-5 fw-bold form-label mb-2"> Deadline </label>
-                <span class="badge-success rounded p-2">
-                  {{ form.delay ? form.delay : "Immediate" }}
-                </span>
-              </div>
-            </div>
-            <div class="row">
-              <div class="fv-row mb-7 fv-plugins-icon-container">
-                <!-- <input id="technId" type="text" name="mcu" autocomplete> -->
-                <label class="required fw-semibold fs-6 mb-2"
-                  >Techniciens suplementaires</label
-                >
-                <input
+              <div class="fv-row">
+                <InputText
                   type="text"
-                  id="technId"
-                  class="form-control form-control-solid mb-3 mb-lg-0"
-                  placeholder="techniciens superieure"
-                  v-model="form.techniciens"
+                  name="designation"
+                  class="form-control mb-3 mb-lg-0"
+                  placeholder="designation de la maintenance"
+                  v-model="form.description"
+                  required
                 />
-                <div
-                  class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-                ></div>
               </div>
-              <div class="col-md-6 fv-row mb-7 fv-plugins-icon-container">
-                <label class="required fw-semibold fs-6 mb-2"
-                  >Nombre de tacherons</label
-                >
-                <input
-                  type="number"
-
-                  class="form-control form-control-solid mb-3 mb-lg-0"
-                  placeholder="0"
-                  v-model="form.nbre_tacherons"
+            </div>
+            <div class="col-md-6">
+              <label class="col-form-label fw-bold fs-6">
+                <span class="required">Equipement</span>
+                <i
+                  class="fas fa-exclamation-circle ms-1 fs-7"
+                  data-bs-toggle="tooltip"
+                  title="equipement"
+                ></i>
+              </label>
+              <div class="fv-row">
+                <Dropdown
+                  v-model="form.equipment_id"
+                  :options="equipments"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Sélectionner un equipment"
+                  class="w-full md:w-14rem"
                 />
-                <div
-                  class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-                ></div>
-              </div>
-              <div class="col-md-6 fv-row mb-7 fv-plugins-icon-container">
-                <label class="required fw-semibold fs-6 mb-2"
-                  >Materiels à utiliser</label
-                >
-                <input
-                  type="text"
-                  class="form-control form-control-solid mb-3 mb-lg-0"
-
-                  v-model="form.materiels"
-                />
-                <div
-                  class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-                ></div>
               </div>
             </div>
           </div>
-        </div>
+        </template>
+      </Card>
+      <Card class="mt-2 bg-secondary">
+        <template #title> Assigner à </template>
+        <template #content>
+          <div class="fv-row fv-plugins-icon-container row">
+            <div class="col-md-4">
+              <div class="form-check form-check-custom form-check-solid mb-3">
+                <RadioButton
+                  inputId="assignToUser"
+                  value="user"
+                  v-model="form.assignToType"
+                  name="assignToType"
+                />
+                <label class="form-check-label" for="assignToUser">
+                  Technicien
+                </label>
+              </div>
+              <div class="form-check form-check-custom form-check-solid">
+                <RadioButton
+                  inputId="assignToTeam"
+                  value="team"
+                  v-model="form.assignToType"
+                  name="assignToType"
+                />
+                <label class="form-check-label" for="assignToTeam">
+                  Équipe
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div v-if="form.assignToType === 'user'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Technicien</label>
+                <Dropdown
+                  v-model="form.assigned_user_id"
+                  :options="users"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Sélectionner un technicien"
+                  class="w-full md:w-14rem"
+                />
+              </div>
+              <div v-else-if="form.assignToType === 'team'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Équipe</label>
+                <Dropdown
+                  v-model="form.assigned_team_id"
+                  :options="teams"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Sélectionner une équipe"
+                  class="w-full md:w-14rem"
+                />
+              </div>
+            </div>
+            <div class="col-md-2">
+              <label class="fw-semibold fs-6 mb-2">
+                <span class="">Tacherons</span>
+              </label>
+              <div class="fv-row">
+                <InputText
+                  type="number"
+                  class="w-full md:w-14rem"
+                  placeholder="0"
+                  v-model="form.nbre_tacherons"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+          <!-- Conditional rendering for user/team selection -->
+        </template>
+      </Card>
+      <Card class="mt-2 bg-secondary">
+        <template #title> Programmation </template>
+        <template #content>
+          <div class="row">
+            <div class="col-md-6">
+              <label class="col-form-label fw-bold fs-6">
+                <span>Fréquence</span>
+              </label>
+              <Dropdown
+                v-model="form.frequency"
+                :options="frequencies"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Sélectionner la fréquence"
+                class="w-full md:w-14rem"
+                @change="handleFrequencyChange"
+              />
+            </div>
+            <div class="col-md-6" v-if="form.frequency === 'weekly'">
+              <label class="col-form-label fw-bold fs-6">
+                <span>Jour de la semaine</span>
+              </label>
+              <MultiSelect
+                v-model="form.daysOfWeek"
+                :options="daysOfWeek"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Sélectionner les jours"
+                class="w-full md:w-14rem"
+              />
+            </div>
+
+            <div class="col-md-6">
+              <label class="fw-bold fs-6 col-form-label">Date de debut</label>
+              <Calendar
+                v-model="form.start_date"
+                showTime
+                hourFormat="24"
+                class="w-full md:w-14rem"
+                placeholder="Date de debut"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label class="fw-bold fs-6 col-form-label">Date de fin</label>
+              <Calendar
+                v-model="form.end_date"
+                dateFormat="yy-mm-dd"
+                showTime
+                hourFormat="24"
+                class="w-full md:w-14rem"
+                placeholder="Date de fin"
+                required
+              />
+            </div>
+          </div>
+        </template>
+      </Card>
+      <Card class="bg-secondary mt-2">
+        <template #title>Matériels à utiliser</template>
+        <template #content>
+          <div class="row">
+            <div class="col-md-12">
+              <label class="col-form-label fw-bold fs-6">Matériel</label>
+              <AutoComplete
+                v-model="form.materials"
+                class="w-full md:w-14rem"
+                placeholder="Rechercher un matériel"
+                :suggestions="filteredSuggestions"
+                @complete="search"
+                field="designation"
+                optionLabel="designation"
+                optionValue="id"
+                @item-select="handleMaterialSelect"
+                multiple
+              />
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="col-form-label fw-bold fs-6">
+              Matériels ajoutés
+            </label>
+            <ul class="list-group">
+              <li
+                v-for="(material, index) in form.materials"
+                :key="index"
+                class="list-group-item  "
+              >
+                <div class="row">
+                    <div class="col-md-6 ">
+                    {{ getMaterialName(material.id) }}
+                        </div>
+                        <div class="col-md-4">
+                            <InputText
+                            type="text"
+                            name="designation"
+                            class="w-full md:w-14rem"
+                            placeholder="0"
+                            v-model=" material.quantity"
+                        />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-center">
+                            <span v-if="material.unity">
+                            {{ material.unity.designation }}
+                        </span>
+                        </div>
+                <div class="col-md-1">
+                    <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  @click="handleRemoveMaterial(index)"
+                />
+                </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </template>
+      </Card>
+      <Card class="bg-secondary mt-2">
+        <template #content>
+          <div class="fv-row mb-7 fv-plugins-icon-container">
+            <div class="d-flex justify-content-end">
+              <Button
+                label="Ajouter une instruction"
+                icon="pi pi-plus-circle"
+                @click="addInstruction"
+                severity="warn"
+                class="p-button-primary"
+              />
+            </div>
+            <div
+              v-for="(instruction, index) in form.instructions"
+              :key="index"
+              class="my-1 border rounded"
+            >
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="fw-bold">Instruction {{ index + 1 }}</label>
+              </div>
+              <div class="row">
+                <div class="col-md-8">
+                  <InputText
+                    type="text"
+                    name="designation"
+                    class="form-control mb-3 mb-lg-0"
+                    placeholder="Description de l'instruction"
+                    v-model="instruction.description"
+                    @input="
+                      addInstructionValue(
+                        'description',
+                        instruction.description,
+                        index
+                      )
+                    "
+                  />
+                </div>
+                <div class="col-md-3">
+                  <Dropdown
+                    class="w-full md:w-14rem"
+                    v-model="instruction.response_type"
+                    :options="['checkbox', 'text / valeur']"
+                    placeholder="Type de reponse"
+                    @change="
+                      addInstructionValue(
+                        'response_type',
+                        instruction.response_type,
+                        index
+                      )
+                    "
+                  />
+                </div>
+                <div
+                  class="col-md-1 d-flex align-items-start justify-content-start"
+                  @click="removeInstruction(index)"
+                >
+                  <button>
+                    <i class="fa fa-trash text-danger m-0 p-0 display-6"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+      <template #footer>
+        <Button
+          label="Annuler"
+          icon="pi pi-times"
+          severity="secondary"
+          variant="text"
+          class="p-button-text"
+          @click="closeModal"
+        />
+        <Button
+          label="Enregistrer"
+          icon="pi pi-check"
+          severity="warn"
+          class="p-button-primary"
+          raised
+          @click="submitMaintenance"
+        />
       </template>
-    </modal-component>
+    </Dialog>
+    <Dialog
+      :id="id"
+      :header="isEditMode ? 'Modifier une la quantité' : 'Ajouter une quantité'"
+      v-model:visible="qVisible"
+      :style="{ width: '400px' }"
+      position="center"
+      :modal="true"
+      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+      @hide="closeModal"
+      :closable="true"
+    >
+      <div class="">
+        <label class="col-form-label fw-bold fs-6">
+          <span class=""
+            >Quelle Quantité à utiliser pour
+            <span class="text-warning">{{ selectMaterial.designation }}</span>
+            ?</span
+          >
+        </label>
+        <div class="row">
+          <div :class="selectMaterial.unity ? 'col-md-8' : ''">
+            <div class="fv-row">
+              <InputText
+                type="text"
+                class="form-control mb-3 mb-lg-0"
+                placeholder="0"
+                v-model="selectMaterial.quantity"
+
+              />
+            </div>
+          </div>
+          <div :class="selectMaterial.unity ? 'col-md-4' : ''">
+            <div class="fv-row">
+              <InputText
+                v-if="selectMaterial.unity"
+                type="text"
+                v-model="selectMaterial.unity.designation"
+                class="form-control mb-3 mb-lg-0"
+                placeholder="0"
+                readOnly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <Button
+          label="Annuler"
+          icon="pi pi-times"
+          severity="secondary"
+          variant="text"
+          class="p-button-text"
+          @click="closeModal"
+        />
+        <Button
+          label="Enregistrer"
+          icon="pi pi-check"
+          severity="warn"
+          class="p-button-primary"
+          raised
+          @click="submitQuantity"
+        />
+      </template>
+    </Dialog>
   </div>
 </template>
 
-<script>
+  <script>
 import { useCookie } from "@vue-composable/cookie";
-import Tagify from '@yaireo/tagify';
+// import Tagify from '@yaireo/tagify';
 import { DatePicker } from "primevue";
 import { computed, onMounted, reactive, ref } from "vue";
 import modalComponent from "../../components/modals/modalComponent.vue";
+import useCategories from "../../services/categoryServices.js";
 import useEquipments from "../../services/equipmentService.js";
+import useInstructions from "../../services/instructionServices.js";
 import useMaintenances from "../../services/maintenanceService.js";
 import useUsers from "../../services/userservices.js";
 export default {
@@ -543,6 +734,8 @@ export default {
     } = useMaintenances();
     const { getUsers, users } = useUsers();
     const { getEquipments, equipments } = useEquipments();
+    const { getCategories, categories, storeCategory } = useCategories();
+    const {storeInstruction,deleteInstruction,getInstructions}=useInstructions ();
     const isEditMode = ref(false);
     const searchQuery = ref("");
     const showTableView = ref(false);
@@ -555,14 +748,15 @@ export default {
       equipment_id: null,
       user_id: null,
       start_date: null,
-      nbre_tacherons:0,
-      materiels:"",
+      nbre_tacherons: 0,
+      materiels: "",
       techniciens: [],
       start_date: null,
       end_date: null,
       man_hours: null,
       delay: null,
       maintenance_cost: null,
+      instructions:[]
     });
 
     // Set default time to 00:00 for new dates
@@ -581,38 +775,11 @@ export default {
       form.start_date = setDefaultTime(new Date().toISOString());
       form.end_date = setDefaultTime(new Date().toISOString());
       var inputx = document.getElementById("technId");
-      users.value.forEach((e)=>{
-        userList.push({value: e.name, id: e.id});
+      users.value.forEach((e) => {
+        userList.push({ value: e.name, id: e.id });
       });
-      var tagify = new Tagify(inputx, {
-        whitelist: userList,
-         dropdown: {
-          maxItems: 20,           // <- mixumum allowed rendered suggestions
-          classname: "tags-look", // <- custom classname for this dropdown,
-          enabled: 0,             // <- show suggestions on focus
-          closeOnSelect: false    // <- do not hide the suggestions dropdown once an item has been selected
-        },
-        backspace           : "edit",
-        enforceWhitelist: false,
-        // mode: "select", // Enable select mode
-      });
-
-    // tagify.on('add', (event) => {
-    //     // form.techniciens.push(event.detail.data);
-    //   });
-
-      tagify.on('add', function(e){
-    if(tagify.listeners.dropdown){
-        var tag_id = e.detail.data.code;
-        //do my code
-        form.techniciens.push(tag_id);
-    }
-});
-
-    tagify.on('remove', (event) => {
-        const removedId = event.detail.data.id;
-        form.techniciens = form.techniciens.filter(tech => tech !== removedId);
-      });
+      await getCategories();
+      filteredSuggestions.value = categories.value;
     });
 
     const submitMaintenance = async () => {
@@ -630,19 +797,22 @@ export default {
         resetForm();
       }
     };
-
+    const visible = ref(false);
     const addMaintenance = () => {
       isEditMode.value = false;
-      $("#maintenance-modal").modal("show");
+      visible.value = true;
       form.start_date = setDefaultTime(new Date().toISOString());
       form.end_date = setDefaultTime(new Date().toISOString());
-      calculateDelay();
+      //   calculateDelay();
       resetForm();
     };
 
     const editMaintenance = (maintenance) => {
       isEditMode.value = true;
       $("#maintenance-modal").modal("show");
+      form.assignToType = maintenance.assigned_user_id ? 'user' : 'team';
+      form.assigned_user_id = maintenance.assigned_user_id;
+            form.assigned_team_id = maintenance.assigned_team_id;
       calculateDelay();
       Object.assign(form, maintenance);
     };
@@ -664,14 +834,14 @@ export default {
       form.end_date = setDefaultTime(new Date().toISOString());
       form.man_hours = null;
       form.delay = null;
+      form.assignToType = 'user';
+      form.assigned_user_id = null;
+      form.assigned_team_id = null;
       form.maintenance_cost = null;
       form.nbre_tacherons = 0;
       form.materiels = "";
       form.techniciens = [];
-      const tagify = document.getElementById("technId").tagify;
-        if (tagify) {
-          tagify.removeAllTags();
-        }
+      form.instructions = [];
     };
 
     const filteredMaintenances = computed(() => {
@@ -748,8 +918,8 @@ export default {
         let timeDifference;
         let isPast = false;
 
-        if ((endDate.getTime() < now) && task.status != 'completed') {
-        //   timeDifference = endDate.getTime() - now.getTime();
+        if (endDate.getTime() < now && task.status != "completed") {
+          //   timeDifference = endDate.getTime() - now.getTime();
           isPast = true;
         } else {
           timeDifference = endDate.getTime() - startDate.getTime();
@@ -762,7 +932,7 @@ export default {
           (timeDifference % (1000 * 60 * 60)) / (1000 * 60)
         );
 
-        let delayString =  `${isPast ? 'DeadlineExceed' : ''}`;
+        let delayString = `${isPast ? "DeadlineExceed" : ""}`;
         if (days > 0) {
           delayString += `${days} jour${days > 1 ? "s" : ""} `;
         }
@@ -785,9 +955,155 @@ export default {
         return null;
       }
     };
-    const userList = reactive([ ]);
+    const userList = reactive([]);
+    const frequencies = ref([
+      { label: "Journalière", value: "daily" },
+      { label: "Hebdomadaire", value: "weekly" },
+      { label: "Bimestrielle", value: "bimonthly" },
+      { label: "Trimestrielle", value: "quarterly" },
+      { label: "Semestrielle", value: "biannual" },
+      { label: "Annuelle", value: "annual" },
+      { label: "Personnalisée", value: "custom" },
+    ]);
+
+    const daysOfWeek = ref([
+      { label: "Lundi", value: "monday" },
+      { label: "Mardi", value: "tuesday" },
+      { label: "Mercredi", value: "wednesday" },
+      { label: "Jeudi", value: "thursday" },
+      { label: "Vendredi", value: "friday" },
+      { label: "Samedi", value: "saturday" },
+      { label: "Dimanche", value: "sunday" },
+    ]);
+
+    const handleFrequencyChange = () => {
+      if (props.form.frequency !== "weekly") {
+        props.form.daysOfWeek = [];
+      }
+    };
+    const selectedMaterials = ref([]);
+    const filteredSuggestions = ref([]);
+    const search = (event) => {
+      if (event.query) {
+        filteredSuggestions.value = categories.value.filter((m) =>
+          m.designation.toLowerCase().includes(event.query.toLowerCase())
+        );
+      } else {
+        filteredSuggestions.value = categories.value;
+      }
+    };
+    const selectMaterial = reactive({
+        designation: "",
+        unity: null,
+        id:null,
+        quantity:1,
+    });
+    const quantity = ref(0);
+    const handleMaterialSelect = (e) => {
+      qVisible.value = true;
+      const existingMaterial = form.materials.find(
+        (m) => m.id == e.value.id
+      );
+      if (existingMaterial) {
+        selectMaterial.quantity = existingMaterial.quantity;
+      } else {
+        selectMaterial.quantity = 1;
+      }
+
+      selectMaterial.designation = e.value.designation;
+      selectMaterial.unity = e.value.unity;
+      selectMaterial.id = e.value.id;
+    };
+    const addMaterialToMaintenance = () => {
+      const materialId = selectMaterial.id;
+      if (materialId) {
+        const quantity = selectMaterial.quantity;
+        const existingMaterialIndex = form.materials.findIndex(
+          (m) => m.id === materialId
+        );
+        if (existingMaterialIndex !== -1) {
+          // If material already exists, update quantity
+          form.materials[existingMaterialIndex].quantity = quantity;
+        } else {
+          // Add material to the form
+          form.materials.push({
+            material_id: materialId,
+            quantity: quantity,
+          });
+        }
+        // Add the material to the chips array
+        const materialToAdd = categories.value.find((cat) => cat.id === materialId);
+        if (materialToAdd) {
+             //check if the material is already selected
+            if(!selectedMaterials.value.find((e)=>e==materialToAdd.designation)){
+                 selectedMaterials.value.push(materialToAdd.designation);
+            }
+
+        }
+        selectMaterial.quantity = 1;
+        selectMaterial.id = null;
+        selectMaterial.unity = null;
+        selectMaterial.designation = "";
+      }
+    };
+    const submitQuantity = () => {
+      addMaterialToMaintenance();
+      hideQuantityDialog();
+    };
+    const hideQuantityDialog = () => {
+      qVisible.value = false;
+      selectMaterial.quantity = 1;
+      selectMaterial.id = null;
+      selectMaterial.unity = null;
+      selectMaterial.designation = "";
+    };
+         const handleRemoveMaterial=(e)=>{
+            if (materialToRemove) {
+               const index = form.materials.indexOf(materialToRemove);
+                if (index > -1) {
+                    form.materials.splice(index, 1);
+                }
+            }
+           selectedMaterials.value= selectedMaterials.value.filter((m)=> m !== e.value);
+
+        }
+    const closeModal = () => {
+    //   visible.value = false;
+      hideQuantityDialog();
+    };
+    const qVisible = ref(false);
+    const getMaterialName = (materialId) => {
+      const material = categories.value.find((m) => m.id === materialId);
+      return material ? material.designation : "Matériel inconnu";
+    };
+    const addInstruction=()=>{
+            form.instructions.push({
+                description: "",
+                response_type: ""
+            });
+        };
+        const addInstructionValue=(type,value, index)=>{
+        form.instructions[index][type]=value;
+        console.log(form.instructions);
+      }
+      const removeInstruction = (index) => {
+        form.instructions.splice(index, 1);
+      };
     return {
+        addInstruction,
+        addInstructionValue,
+        removeInstruction,
+        getMaterialName,
+        closeModal,
+        handleRemoveMaterial,
+      selectMaterial,
+      handleMaterialSelect,
+      selectedMaterials,
+      handleFrequencyChange,
+      daysOfWeek,
+      frequencies,
       userList,
+      search,
       // setDefaultTime,
       formatDeadline,
       calculateDelay,
@@ -801,12 +1117,16 @@ export default {
       isEditMode,
       editMaintenance,
       users,
+      visible,
+      filteredSuggestions,
 
       errors,
       isLoading,
       showTableView,
       searchQuery,
       filteredMaintenances,
+      qVisible,
+      submitQuantity,
     };
   },
 };
