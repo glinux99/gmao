@@ -55,11 +55,11 @@ class TaskAssignedNotification extends Notification
                     ->greeting($this->message['greeting']?? 'Bonjour'.' '.$this->user->name.' '.$this->user->post_name.' '.$this->user->nickname  )
                     ->line($this->message['title'] ?? 'Une nouvelle tâche vous a été attribuée !')
                     ->line('Description : ' . $this->task->description)
-                    ->line('Priorité : ' . $this->task->priority)
+                    ->line('Priorité : ' . $this->task->priority->title)
                     ->line('Status : ' . $this->task->status)
                     ->line('Date de début : ' . $this->task->start_date)
                     ->line('Date de fin : ' . $this->task->due_date)
-                    ->action('Voir la tâche', config('app.url')."/tasks/".$this->task->id)
+                    ->action('Voir la tâche', url("tasks/".$this->task->id))
                     ->line('Merci!');
     }
 
@@ -75,7 +75,7 @@ class TaskAssignedNotification extends Notification
             // You can still return task data here if you need it for other channels
             'task_id' => $this->task->id,
              'task_description' => $this->task->description,
-            'task_priority' => $this->task->priority,
+            'task_priority' => $this->task->priority->title,
             'task_status' => $this->task->status,
             'task_start_date' => $this->task->start_date,
             'task_due_date' => $this->task->due_date,

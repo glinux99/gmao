@@ -9,7 +9,7 @@ Une nouvelle tâche vous a été attribuée :
 | Detail      | Information                           |
 | ----------- | ------------------------------------- |
 | Description | {{ $taskDescription }}                |
-| Priority    | {{ $taskPriority }}                   |
+| Priority    | {{ $taskPriority->title }}            |
 | Status      | {{ $taskStatus }}                     |
 | Start Date  | {{ $startDate }}                      |
 | Due Date    | {{ $dueDate }}                        |

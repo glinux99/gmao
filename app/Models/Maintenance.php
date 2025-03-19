@@ -21,6 +21,7 @@ class Maintenance extends Model
         'end_date',
         'man_hours',
         // 'delay',
+        'notified_at',
         'maintenance_cost',
         'nbre_tacherons',
         'assigned_user_id',
@@ -41,7 +42,7 @@ class Maintenance extends Model
 
     public function technicians()
     {
-        return $this->belongsToMany(User::class, 'maintenance_techniciens', 'maintenance_id', 'technicien_id');
+        return $this->belongsToMany(User::class, 'maintenance_technician', 'maintenance_id', 'user_id');
     }
     public function materials(): BelongsToMany
     {

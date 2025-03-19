@@ -23,6 +23,7 @@ $user=
 
         $this->call([
             PermissionSeeder::class,
+            PrioritySeeder::class,
         ]);
         $user->assignRole('Root');
     }

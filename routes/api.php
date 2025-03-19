@@ -10,6 +10,7 @@ use App\Http\Controllers\TaskApiController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\TeamApiController;
 use App\Http\Controllers\CategoryApiController;
+use App\Http\Controllers\InstructionApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -30,5 +31,6 @@ Route::apiResources ([
     'teams'=>TeamApiController::class,
     'priority'=>PriorityApiController::class,
     'categories'=>CategoryApiController::class,
+    'instructions'=>InstructionApiController::class,
 
 ]);

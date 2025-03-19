@@ -51,7 +51,7 @@
                                             <th class="min-w-125px">Priorité</th>
                                             <th class="min-w-125px">Status</th>
                                             <th class="min-w-125px">Projet</th>
-                                            <th class="min-w-125px">Categorie</th>
+                                            <th class="min-w-125px">Responsable</th>
                                             <th class="min-w-125px">Duree</th>
                                             <th class="text-end min-w-100px">Actions</th>
                                         </tr>
@@ -60,18 +60,11 @@
                                         <tr v-for="task in filteredTasks" :key="task.id" >
                                             <td>{{ task.description }}</td>
                                             <td>
-                                                <span v-if="task.priority=='Elevé'" class="badge badge-danger">
-                                                    {{ task.priority }}
-                                                </span>
-                                                <span v-else-if="task.priority=='Moyen'" class="badge badge-light-secondary">
-                                                    {{ task.priority }}
-                                                </span>
-                                                <span v-else-if="task.priority=='Faible'" class="badge badge-light-info">
-                                                    {{ task.priority }}
-                                                </span>
-                                                <span v-else class="badge badge-light-primary">
-                                                    {{ task.priority }}
-                                                </span>
+                                                <span class="badge" :style="'background-color: '+task.priority.color">
+                                                    <span class="text-muted mx-3">
+                                                        {{ task.priority.title }}
+                                                    </span>
+                                                    </span>
 
                                             </td>
                                             <td>
@@ -89,7 +82,7 @@
                                             </td>
                                             <td>{{ task.project ? task.project.name  : 'N/A' }}</td>
                                             <td><span class="badge badge-light-primary">
-                                                {{ task.category  }}
+                                                {{ task.assigned_user? task.assigned_user.name : 'N/A'  }}
                                             </span></td>
                                             <td class="fs-9">
 
@@ -151,7 +144,11 @@
                                                 Description: {{ task.description }}
                                             </div>
                                             <div class="fw-bold text-gray-600 mb-5">
-                                                Priorité: {{ task.priority }}
+                                                Priorité: <span class="badge" :style="'background-color: '+task.priority.color">
+                                                    <span class="text-muted mx-3">
+                                                        {{ task.priority.title }}
+                                                    </span>
+                                                    </span>
                                             </div>
                                             <div class="fw-bold text-gray-600 mb-5">
                                                 Status:
@@ -171,7 +168,7 @@
                                             </div>
                                             <div class="fw-bold text-gray-600 ">
                         Debut : {{ task.start_date }} <br />
-                        Duree :
+                        Duree : {{ task.start_date }}{{ task.start_date }}{{ task.start_date }}{{ task.start_date }}{{ task.start_date }}
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
                             {{
@@ -306,10 +303,10 @@
         <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
           <label class="required fw-semibold fs-6 mb-2">Priorité</label>
           <Dropdown
-            v-model="form.priority"
+            v-model="form.priority_id"
             :options="priorities"
             optionLabel="title"
-            optionValue="title"
+            optionValue="id"
             placeholder="Sélectionner une priorité"
             class="w-full md:w-14rem"
           />
@@ -659,7 +656,7 @@ export default {
 
         const resetForm = () => {
             form.id = null;
-            form.priority = "Moyen";
+            form.priority_id = null;
             form.status = "pending";
             form.comments = "";
             form.complete = null;

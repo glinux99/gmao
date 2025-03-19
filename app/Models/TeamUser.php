@@ -9,7 +9,7 @@ class TeamUser extends Model
 {
     use HasFactory;
 
-    protected $table = 'team_users'; // Specify the table name explicitly
+    protected $table = 'team_user'; // Specify the table name explicitly
 
     protected $fillable = [
         'team_id',

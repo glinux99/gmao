@@ -9,7 +9,7 @@ class MaintenanceTechnician extends Model
     protected static $table = 'maintenance_technician';
     protected $fillable =[
         "maintenance_id",
-        "technician_id",
+        "user_id",
         "created_at",
         "updated_at"
     ];

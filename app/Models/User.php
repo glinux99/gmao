@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
@@ -71,7 +72,7 @@ class User extends Authenticatable
     }
     public function maintenances()
     {
-        return $this->belongsToMany(Maintenance::class, 'maintenance_techniciens', 'technicien_id', 'maintenance_id');
+        return $this->belongsToMany(Maintenance::class, 'maintenance_techniciens', 'user_id', 'maintenance_id');
     }
     public function teams(): BelongsToMany
 {

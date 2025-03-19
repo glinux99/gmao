@@ -8,7 +8,7 @@ class MaintenanceTechnicien extends Model
 {
 
     protected $fillable=[
-        'maintenance_id', 'technicien_id'
+        'maintenance_id', 'user_id'
     ];
 
 }

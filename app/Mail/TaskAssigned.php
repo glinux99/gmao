@@ -54,7 +54,7 @@ class TaskAssigned extends Mailable implements ShouldQueue
             markdown: 'emails.task-assigned', // Corrected path
             with: [
                 'taskDescription' => $this->task->description,
-                'taskPriority' => $this->task->priority,
+                'taskPriority' => $this->task->priority?$this->task->priority->title : "N/A" ,
                 'taskStatus' => $this->task->status,
                 'userName' => $this->user->name,
                 'startDate' => $this->task->start_date,

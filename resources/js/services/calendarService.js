@@ -1,7 +1,7 @@
 // resources/js/services/calendarService.js
 
-import { ref } from "vue";
 import axios from "axios";
+import { ref } from "vue";
 
 export default function useCalendar() {
     const tasks = ref([]);
@@ -38,15 +38,16 @@ export default function useCalendar() {
            }
             return {
             id: task.id,
-            title: task.description ? task.description + ` (${task.user ? task.user.name : "No user"})` : "Task ID : " + task.id,
+            title: task.description ? task.description + ` (${task.assigned_user ? task.assigned_user.name : "No user"})` : "Task ID : " + task.id,
             start: task.start_date ? task.start_date : task.created_at,
-            end: formattedEndDate,
-            color: getPriorityColor(task.priority), // Use priority-based color
+            end: task.start_date ? task.start_date : task.created_at,
+            color: task.priority.color ? task.priority.color : getPriorityColor(task.priority.name), // Use priority-based color
             description: task.description ? task.description : "No description",
             projectId: task.project ? task.project.id : null, // Add project id
             projectName: task.project ? task.project.name : "No Project", // Add project name
-            owner: task.owner ? task.owner.name : "No owner",
-            user: task.user ? task.user.name : "No user",
+            owner: task.owner ? task.owner_user.name : "No owner",
+            user: task.assigned_user ? task.assigned_user.name : "No user",
+            id2:task.id,
             status: task.status,
             }
         });

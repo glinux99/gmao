@@ -156,19 +156,18 @@
   </template>
 
   <script>
-import FullCalendar from '@fullcalendar/vue3'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin from '@fullcalendar/interaction'
-import listPlugin from '@fullcalendar/list';
-import modalComponent from "../../components/modals/modalComponent.vue";
 import frLocale from '@fullcalendar/core/locales/fr';
+import dayGridPlugin from '@fullcalendar/daygrid';
+import interactionPlugin from '@fullcalendar/interaction';
+import listPlugin from '@fullcalendar/list';
+import timeGridPlugin from '@fullcalendar/timegrid';
+import FullCalendar from '@fullcalendar/vue3';
+import { onMounted, reactive, ref, watch } from 'vue';
+import modalComponent from "../../components/modals/modalComponent.vue";
 import useCalendar from '../../services/calendarService.js';
-import useTasks from '../../services/taskServices';
-import { ref, onMounted, reactive, watch } from 'vue';
-import useUsers from '../../services/userservices.js';
 import useProjects from "../../services/projectServices.js";
-import axios from 'axios';
+import useTasks from '../../services/taskServices';
+import useUsers from '../../services/userservices.js';
 
 export default {
     name: 'CalendarList',
@@ -230,11 +229,10 @@ export default {
                     content: `
                     Description : ${info.event.extendedProps.description}<br/>
                     Project : ${info.event.extendedProps.projectName} <br/>
-                    Owner : ${info.event.extendedProps.owner} <br/>
-                    User : ${info.event.extendedProps.user} <br/>
+                    Responsable : ${info.event.extendedProps.owner} <br/>
+                    Technicien : ${info.event.extendedProps.user} <br/>
                     Status : ${info.event.extendedProps.status}<br/>
                     Debut : ${info.event.start.toLocaleDateString()}<br/>
-                    Debut : ${info.event.start. toLocaleDateString()}<br/>
                     Fin : ${info.event.end ? info.event.end.toLocaleDateString() : "No end date"}
                     `,
                     html: true,
@@ -349,10 +347,7 @@ export default {
         };
 
         const editTask = (task) => {
-            isEditMode.value = true;
-            $("#task-modal").modal("show");
-            Object.assign(form, task);
-            calculateDelay();
+                window.location.pathname = "/tasks/"+task.id2;
         };
 
         const submitTask = async () => {

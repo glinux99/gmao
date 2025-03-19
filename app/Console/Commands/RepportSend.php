@@ -38,13 +38,17 @@ class RepportSend extends Command
         info("Cron Job running at ". now());
         $users = UserRepport::all();
         $stockCtrl = new StockHistoryController;
-        foreach ($users as $user) {
+        foreach ($users as $user        ) {
             # code...
+           try {
             $user->notify(new RepportSendNotifier ([
                 "title"=> "Nous espère que ce mail vous trouve bien.\n\n                        nous vous envoyons en pièce jointe le rapport sur les Entree/Sortie de la Sous station. \nVous y trouverez notamment les quantites restantes par sortie du $dateFrancais",
                         "greeting"=>"Bonjour Mr/Md ".$user->fullname,
                         "data" => $stockCtrl->export_stock(), ['as'=>"rapport_sortie_de_stock.xlsx"]
             ]));
+           } catch (\Throwable $th) {
+            //throw $th;
+           }
         }
     }
 }

@@ -51,6 +51,7 @@ import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
 import roleList from "./pages/roles/roleList.vue";
 import taskList from "./pages/task/taskList.vue";
+import taskShow from "./pages/task/taskShow.vue";
 import teamList from "./teams/teamList.vue";
 const app = createApp({
     components: {
@@ -67,6 +68,7 @@ const app = createApp({
         teamList,
         priorityList,
         modalComponent,
+        taskShow,
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
@@ -76,12 +78,15 @@ import AutoComplete from 'primevue/autocomplete';
 import Button from 'primevue/button';
 import Calendar from 'primevue/calendar';
 import Card from 'primevue/card';
+import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
 import InputText from 'primevue/inputtext';
 import MultiSelect from 'primevue/multiselect';
 import RadioButton from 'primevue/radiobutton';
+import Toast from 'primevue/toast';
+import ToastService from 'primevue/toastservice';
 
 app.component('Dropdown', Dropdown);
 app.component("Calendar", Calendar);
@@ -93,6 +98,11 @@ app.component('Card', Card);
 app.component('MultiSelect', MultiSelect);
 app.component('Chips', Chips);
 app.component('AutoComplete', AutoComplete);
+app.component('Checkbox', Checkbox);
+app.component('Toast', Toast);
+app.use(ToastService);
+
+
 
 
 app.use(i18nVue, {

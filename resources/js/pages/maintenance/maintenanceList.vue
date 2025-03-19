@@ -326,7 +326,7 @@
           <div class="row">
             <div class="col-md-6">
               <label class="col-form-label fw-bold fs-6">
-                <span class="required">designation de la maintenance</span>
+                <span class="required">Designation de la maintenance</span>
                 <i
                   class="fas fa-exclamation-circle ms-1 fs-7"
                   data-bs-toggle="tooltip"
@@ -427,8 +427,9 @@
                 <InputText
                   type="number"
                   class="w-full md:w-14rem"
-                  placeholder="0"
+                  placeholder=""
                   v-model="form.nbre_tacherons"
+                    @change="addTModal"
                   required
                 />
               </div>
@@ -535,7 +536,7 @@
                             name="designation"
                             class="w-full md:w-14rem"
                             placeholder="0"
-                            v-model=" material.quantity"
+                            v-model="material.quantity"
                         />
                         </div>
                         <div class="col-md-1 d-flex align-items-center">
@@ -628,7 +629,7 @@
           severity="secondary"
           variant="text"
           class="p-button-text"
-          @click="closeModal"
+          @click="visible=false"
         />
         <Button
           label="Enregistrer"
@@ -701,6 +702,67 @@
           class="p-button-primary"
           raised
           @click="submitQuantity"
+        />
+      </template>
+    </Dialog>
+    <Dialog
+      :id="id"
+      :header="isEditMode ? 'Modifier le paiement de tacherons' : 'Ajouter un paiement de tacherons'"
+      v-model:visible="tVisible"
+      :style="{ width: '400px' }"
+      position="center"
+      :modal="true"
+      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+      @hide="closeModal"
+      :closable="true"
+    >
+      <div class="">
+        <label class="col-form-label fw-bold fs-6">
+          <span class=""
+            >Quelle est le montant sera donné à un tacherons par
+            <span class="text-danger text-bold">heure</span>(usd)
+            ?</span
+          >
+        </label>
+        <div class="row">
+          <div class="col-md-8">
+            <div class="fv-row">
+              <InputText
+                type="text"
+                class="form-control mb-3 mb-lg-0"
+                placeholder="0"
+                              />
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="fv-row">
+              <InputText
+
+                type="text"
+
+                class="form-control mb-3 mb-lg-0"
+                placeholder="0"
+                readOnly
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <template #footer>
+        <Button
+          label="Annuler"
+          icon="pi pi-times"
+          severity="secondary"
+          variant="text"
+          class="p-button-text"
+          @click="tVisible=false"
+        />
+        <Button
+          label="Enregistrer"
+          icon="pi pi-check"
+          severity="warn"
+          class="p-button-primary"
+          raised
         />
       </template>
     </Dialog>
@@ -809,7 +871,7 @@ export default {
 
     const editMaintenance = (maintenance) => {
       isEditMode.value = true;
-      $("#maintenance-modal").modal("show");
+      visible.value = true;
       form.assignToType = maintenance.assigned_user_id ? 'user' : 'team';
       form.assigned_user_id = maintenance.assigned_user_id;
             form.assigned_team_id = maintenance.assigned_team_id;
@@ -977,8 +1039,8 @@ export default {
     ]);
 
     const handleFrequencyChange = () => {
-      if (props.form.frequency !== "weekly") {
-        props.form.daysOfWeek = [];
+      if (form.frequency !== "weekly") {
+        form.daysOfWeek = [];
       }
     };
     const selectedMaterials = ref([]);
@@ -1089,7 +1151,14 @@ export default {
       const removeInstruction = (index) => {
         form.instructions.splice(index, 1);
       };
+
+    const tVisible = ref(false);
+    const addTModal=()=>{
+        tVisible.value = true;
+    }
     return {
+        tVisible,
+        addTModal,
         addInstruction,
         addInstructionValue,
         removeInstruction,

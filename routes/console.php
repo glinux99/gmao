@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Schedule;
 // })->purpose('Display an inspiring quote')->hourly();
 // Schedule ::command('repport:send')->weekly()->wednesdays()->at('12:00');
 Schedule::command('app:check-task')->everyMinute();
+Schedule::command('maintenance:check-schedule')->dailyAt('08:00');
+
 
 // ->weekly();
 

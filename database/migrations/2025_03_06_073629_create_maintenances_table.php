@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('work_order')->nullable();
             $table->double('nbre_tacherons')->nullable()->default(0);
             $table->string('materiels')->nullable();
+            $table->string('frequency')->nullable();
+
             // $table->a('techniciens')->nullable();
             $table->decimal('man_hours', 8, 2)->nullable(); // Example: 123456.78
             $table->decimal('maintenance_cost', 10, 2)->nullable(); // Example: 12345678.90

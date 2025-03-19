@@ -41,10 +41,13 @@ class CheckTask extends Command
             $task->save();
             // Check if the user is associated with the task
             if ($task->user) {
-               // Send the email notification
+                try {
                Mail::to($task->user->email)->send(new TaskDeadlineExceeded($task));
-
-               // Log the notification
+                    
+                } catch (\Throwable $th) {
+                    //throw $th;
+                }
+               // Log the notification  
                $this->info("Notification sent for task: {$task->description} (ID: {$task->id}) to {$task->user->email}");
              }else {
                 // Log that the notification couldn't be sent

@@ -5,6 +5,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\PermissionController;
@@ -79,8 +80,10 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'maintenances'=>MaintenanceController::class,
         'teams' => TeamController::class,
         'priorities'=>PriorityController::class,
+        'instructions'=>InstructionApiController::class,
 
     ]);
+    Route::put('instruction-task', [InstructionApiController::class,'updateInstructions'])->name('instruction.updateInstructions');
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');
         // Route::get('category/destroy/{id}', [UserController::class, 'destroy'])->name('category.destroy');
         Route::get('technician/{id}', [TechnicianController::class, 'edit'])->name('technicians.edit');

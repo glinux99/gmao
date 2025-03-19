@@ -1,10 +1,12 @@
 import axios from 'axios';
+import { useToast } from 'primevue/usetoast';
 import { ref } from 'vue';
 
 export default function useInstructions() {
-    const errors = ref ({});
+    const errors = ref({});
     const isLoading = ref(false);
     const instructions = ref([]);
+    const toast = useToast();
 
     const getInstructions = async (taskId = null) => {
         errors.value = {};
@@ -18,6 +20,7 @@ export default function useInstructions() {
             instructions.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Erreur lors de la récupération des instructions', life: 3000 });
         } finally {
             isLoading.value = false;
         }
@@ -28,9 +31,11 @@ export default function useInstructions() {
         isLoading.value = true;
         try {
             const response = await axios.post('/api/instructions', data);
-             instructions.value.push(response.data.data);
+            instructions.value.push(response.data.data);
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Instruction ajoutée', life: 3000 });
         } catch (e) {
             errors.value = e.response.data.errors;
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Erreur lors de l\'ajout de l\'instruction', life: 3000 });
         } finally {
             isLoading.value = false;
         }
@@ -41,24 +46,29 @@ export default function useInstructions() {
         isLoading.value = true;
         try {
             const response = await axios.put(`/api/instructions/${id}`, data);
-              const index = instructions.value.findIndex((i) => i.id === id);
+            const index = instructions.value.findIndex((i) => i.id === id);
             if (index !== -1) {
                 instructions.value[index] = response.data.data;
             }
+            toast.add({ severity: 'success', summary: 'Success', detail: 'Instruction a été modifiée', life: 3000 });
         } catch (e) {
             errors.value = e.response.data.errors;
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Erreur lors de la modification de l\'instruction', life: 3000 });
         } finally {
             isLoading.value = false;
         }
     };
-     const deleteInstruction = async (id) => {
+
+    const deleteInstruction = async (id) => {
         errors.value = {};
         isLoading.value = true;
         try {
             await axios.delete(`/api/instructions/${id}`);
             instructions.value = instructions.value.filter((item) => item.id !== id);
+            toast.add({ severity: 'warn', summary: 'Warn', detail: 'Instruction supprimée', life: 3000 });
         } catch (e) {
             errors.value = e.response.data.errors;
+            toast.add({ severity: 'error', summary: 'Error', detail: 'Erreur lors de la suppression de l\'instruction', life: 3000 });
         } finally {
             isLoading.value = false;
         }
@@ -71,6 +81,6 @@ export default function useInstructions() {
         getInstructions,
         storeInstruction,
         updateInstruction,
-        deleteInstruction
+        deleteInstruction,
     };
 }

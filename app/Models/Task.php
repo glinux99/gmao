@@ -6,57 +6,49 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Task extends Model
 {
-    use HasFactory;
+    use HasFactory; // Added SoftDeletes trait
 
     protected $fillable = [
-        'priority',
+        'priority_id',
         'status',
         'complete',
-        'user_id',
-        'category',
-        'owner',
-        'task_id',
+        'user_id', // This is the creator of the task
+        'owner', // This is the owner of the task
+        'task_id', // This is the parent task ID (for subtasks)
         'assigned_date',
         'start_date',
         'due_date',
         'delay',
-        'description', //added previously
-        'project_id', //added previously
-        'type', //added previously
-        'comments', //added previously
+        'description',
+        'project_id',
+        'type',
+        'comments',
         "tools",
-        "instruction_id",
-        'assigned_user_id',
-        'assigned_user_id'
+        'assigned_user_id', // This is the user assigned to the task
+        'assigned_team_id', // This is the team assigned to the task
     ];
 
     /**
-     * Get the user that the task is assigned to.
+     * Get the user that created the task.
      *
      * @return BelongsTo
      */
-    public function user(): BelongsTo
+    public function creator(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
-
-    /**
-     * Get the category that the task belongs to.
-     *
-     * @return BelongsTo
-     */
-
 
     /**
      * Get the owner of the task.
      *
      * @return BelongsTo
      */
-    public function owner(): BelongsTo
+    public function owner_user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner');
     }
@@ -84,15 +76,44 @@ class Task extends Model
     /**
      * Get the project that owns the Task
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
     }
-    public function instructions()
+
+    /**
+     * Get the instructions for the task.
+     *
+     * @return HasMany
+     */
+    public function instructions(): HasMany
     {
         return $this->hasMany(Instruction::class);
     }
-}
 
+    /**
+     * Get the user assigned to the task.
+     *
+     * @return BelongsTo
+     */
+    public function assigned_user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'assigned_user_id');
+    }
+
+    /**
+     * Get the team assigned to the task.
+     *
+     * @return BelongsTo
+     */
+    public function assigned_team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class, 'assigned_team_id');
+    }
+    public function priority(): HasOne
+    {
+        return $this->hasone(Priority::class, 'id', 'priority_id');
+    }
+}
