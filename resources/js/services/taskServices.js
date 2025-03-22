@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { ref } from 'vue';
+import instance from '../api/index.js';
 
 export default function useTasks() {
     const tasks = ref([]);
@@ -11,10 +11,11 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.get('/api/tasks');
+            const response = await instance.get('/api/tasks');
             tasks.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
+            console.log("errors.value");
         } finally {
             isLoading.value = false;
         }
@@ -24,10 +25,11 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.get(`/api/tasks/${id}`);
+            const response = await instance.get(`/api/tasks/${id}`);
             task.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
+
         } finally {
             isLoading.value = false;
         }
@@ -37,7 +39,7 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.post('/api/tasks', data);
+            const response = await instance.post('/api/tasks', data);
             tasks.value.push(response.data.data);
              return true;
         } catch (e) {
@@ -52,7 +54,7 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.put(`/api/tasks/${id}`, data);
+            const response = await instance.put(`/api/tasks/${id}`, data);
             const index = tasks.value.findIndex((t) => t.id === id);
             if (index !== -1) {
                 tasks.value[index] = response.data.data;
@@ -70,7 +72,7 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            await axios.delete(`/api/tasks/${id}`);
+            await instance.delete(`/api/tasks/${id}`);
             tasks.value = tasks.value.filter((task) => task.id !== id);
         } catch (e) {
             errors.value = e.response.data.errors;

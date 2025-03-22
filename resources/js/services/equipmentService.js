@@ -1,5 +1,5 @@
 import { ref } from 'vue';
-import axios from 'axios';
+import instance from '../api/index';
 
 export default function useEquipments() {
     const equipments = ref([]);
@@ -10,7 +10,7 @@ export default function useEquipments() {
     const getEquipments = async () => {
         isLoading.value = true;
         try {
-            const response = await axios.get('/api/equipments');
+            const response = await instance.get('/api/equipments');
             equipments.value = response.data.data;
             errors.value = {};
         } catch (e) {
@@ -23,7 +23,7 @@ export default function useEquipments() {
     const getEquipment = async (id) => {
         isLoading.value = true;
         try {
-            const response = await axios.get(`/api/equipments/${id}`);
+            const response = await instance.get(`/api/equipments/${id}`);
             equipment.value = response.data.data;
             errors.value = {};
         } catch (e) {
@@ -37,7 +37,7 @@ export default function useEquipments() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.post('/api/equipments', data);
+            const response = await instance.post('/api/equipments', data);
             equipment.value = response.data.data;
              errors.value = {};
              await getEquipments();
@@ -52,7 +52,7 @@ export default function useEquipments() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.put(`/api/equipments/${id}`, data);
+            const response = await instance.put(`/api/equipments/${id}`, data);
             equipment.value = response.data.data;
             errors.value = {};
             await getEquipments();
@@ -66,7 +66,7 @@ export default function useEquipments() {
     const destroyEquipment = async (id) => {
         isLoading.value = true;
         try {
-            await axios.delete(`/api/equipments/${id}`);
+            await instance.delete(`/api/equipments/${id}`);
             await getEquipments();
             errors.value = {};
         } catch (e) {

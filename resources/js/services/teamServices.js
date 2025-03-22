@@ -1,5 +1,5 @@
-import axios from "axios";
 import { ref } from "vue";
+import instance from "../api/index";
 
 export default function useTeams() {
     const teams = ref([]);
@@ -9,7 +9,7 @@ export default function useTeams() {
     const getTeams = async () => {
         isLoading.value = true;
         try {
-            const response = await axios.get("/api/teams");
+            const response = await instance.get("/api/teams");
             teams.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -22,7 +22,7 @@ export default function useTeams() {
         isLoading.value = true;
         errors.value = [];
         try {
-            await axios.post("/api/teams", data);
+            await instance.post("/api/teams", data);
             return true;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -35,7 +35,7 @@ export default function useTeams() {
         isLoading.value = true;
         errors.value = [];
         try {
-            await axios.put(`/api/teams/${id}`, data);
+            await instance.put(`/api/teams/${id}`, data);
             return true;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -47,7 +47,7 @@ export default function useTeams() {
         isLoading.value = true;
         errors.value = [];
         try {
-            await axios.put(`/api/teams/${id}`, data);
+            await instance.put(`/api/teams/${id}`, data);
             return true;
         } catch (e) {
             errors.value = e.response.data.errors;

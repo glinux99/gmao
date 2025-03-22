@@ -1,8 +1,6 @@
-import { ref } from "vue";
-import axios from "axios";
-import routes from "../router/index.js";
-import instance from "../api/index.js";
 import { useCookie } from "@vue-composable/cookie";
+import { ref } from "vue";
+import instance from "../api/index.js";
 export default function useCategories() {
     let enterpriseId = 1;
     try {

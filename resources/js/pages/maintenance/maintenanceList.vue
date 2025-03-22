@@ -354,7 +354,8 @@
                 ></i>
               </label>
               <div class="fv-row">
-                <Dropdown
+                <InputGroup>
+                    <Dropdown
                   v-model="form.equipment_id"
                   :options="equipments"
                   optionLabel="name"
@@ -362,6 +363,8 @@
                   placeholder="Sélectionner un equipment"
                   class="w-full md:w-14rem"
                 />
+                <Button icon="pi pi-plus" severity="warn" @click="addEquipment"></Button>
+                </InputGroup>
               </div>
             </div>
           </div>
@@ -434,6 +437,9 @@
                 />
               </div>
             </div>
+            <span v-if="form.nbre_tacherons" class="fw-bold">Note:</span>
+            <span class="text-danger" v-if="form.nbre_tacherons > 0 && (form.price_tacherons == 0 || form.price_tacherons == null)"> Vous n'avez pas encore founis le prix par heure d'un tacherons!!</span>
+            <span v-if="form.nbre_tacherons > 0 && form.price_tacherons > 0">Pour ces {{ form.nbre_tacherons }} tacherons, le prix est de {{ form.nbre_tacherons * form.price_tacherons }} usd / heure</span>
           </div>
           <!-- Conditional rendering for user/team selection -->
         </template>
@@ -493,6 +499,15 @@
                 required
               />
             </div>
+            <div class="col-md-6" v-if="form.frequency != 'daily'">
+              <label class="fw-bold fs-6 col-form-label">Nombre d'heure journaliere</label>
+              <InputText
+                            type="text"
+                            class="w-full md:w-14rem"
+                            placeholder="0"
+                            v-model="form.man_hours"
+                        />
+            </div>
           </div>
         </template>
       </Card>
@@ -502,7 +517,9 @@
           <div class="row">
             <div class="col-md-12">
               <label class="col-form-label fw-bold fs-6">Matériel</label>
-              <AutoComplete
+
+              <InputGroup>
+                <AutoComplete
                 v-model="form.materials"
                 class="w-full md:w-14rem"
                 placeholder="Rechercher un matériel"
@@ -514,6 +531,13 @@
                 @item-select="handleMaterialSelect"
                 multiple
               />
+                <Button
+                icon="pi pi-plus-circle"
+                @click="addMateriels"
+                severity="warn"
+                class="p-button-primary"
+              />
+              </InputGroup>
             </div>
           </div>
           <div class="mt-4">
@@ -557,6 +581,73 @@
           </div>
         </template>
       </Card>
+      <Card class="bg-secondary mt-2">
+    <template #title> Dépenses </template>
+    <template #content>
+      <div class="row mb-4">
+        <div class="col-md-12 d-flex justify-content-end">
+          <Button
+            label="Ajouter une dépense"
+            icon="pi pi-plus-circle"
+            @click="addExpense"
+            severity="success"
+          />
+        </div>
+      </div>
+
+      <div
+        v-for="(expense, index) in form.expenses"
+        :key="index"
+        class="row mb-3 align-items-center"
+      >
+        <div class="col-md-5">
+          <InputText
+            type="text"
+            placeholder="Titre de la dépense"
+            v-model="expense.title"
+            @input="updateExpenseData(index, 'title', expense.title)"
+            class="w-full"
+            :readonly="expense.readonly? true: false"
+          />
+        </div>
+        <div class="col-md-5">
+          <InputNumber
+            v-model="expense.amount"
+            mode="currency"
+            currency="USD"
+            locale="fr-FR"
+            placeholder="Montant"
+            @input="updateExpenseData(index, 'amount', expense.amount)"
+            class="w-full"
+            :readonly="expense.readonly? true: false"
+          >
+            <template #incrementbuttonicon></template>
+          </InputNumber>
+        </div>
+        <div class="col-md-2 d-flex justify-content-center">
+          <Button v-if="!expense.readonly"
+            icon="pi pi-trash"
+            severity="danger"
+            @click="removeExpense(index)"
+          />
+        </div>
+      </div>
+
+      <div class="row mt-4" v-if="form.expenses.length > 0">
+        <div class="col-md-12">
+          <div class="d-flex justify-content-between align-items-center">
+            <h4 class="fw-bold">Total des dépenses:</h4>
+            <span class="fs-4 text-success fw-bold">{{
+                form.expenses.reduce(
+              (total, expense) => total + (expense.amount || 0),
+              0
+          )
+            }} USD</span>
+          </div>
+        </div>
+      </div>
+    </template>
+  </Card>
       <Card class="bg-secondary mt-2">
         <template #content>
           <div class="fv-row mb-7 fv-plugins-icon-container">
@@ -727,23 +818,27 @@
         <div class="row">
           <div class="col-md-8">
             <div class="fv-row">
-              <InputText
-                type="text"
-                class="form-control mb-3 mb-lg-0"
-                placeholder="0"
-                              />
+                <InputGroup class="md:w-80">
+                    <InputGroupAddon>
+                        <i class="pi pi-users"></i>
+                    </InputGroupAddon>
+                    <IftaLabel>
+                        <InputNumber v-model="form.price_tacherons" inputId="Price" mode="currency" currency="USD" locale="fr-FR" />
+                        <label for="price">Prix par heure</label>
+                    </IftaLabel>
+                </InputGroup>
             </div>
           </div>
           <div class="col-md-4">
             <div class="fv-row">
-              <InputText
+                <InputGroup>
 
-                type="text"
-
-                class="form-control mb-3 mb-lg-0"
-                placeholder="0"
-                readOnly
-              />
+                <IftaLabel >
+                    <InputText class="w-100" readOnly id="username" :value="form.nbre_tacherons* form.price_tacherons" variant="filled" />
+                    <label for="username">Total</label>
+                </IftaLabel>
+                <InputGroupAddon>USD</InputGroupAddon>
+                </InputGroup>
             </div>
           </div>
         </div>
@@ -762,18 +857,156 @@
           icon="pi pi-check"
           severity="warn"
           class="p-button-primary"
+          @click="tVisible=false"
           raised
         />
       </template>
     </Dialog>
+    <Dialog
+            :header="isEditMode ? 'Modifier un équipement' : 'Créer un équipement'"
+            v-model:visible="eVisible"
+            :style="{ width: '700px' }"
+            position="center"
+            :modal="true"
+            :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+            @hide="closeModal"
+            :closable="true"
+        >
+            <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
+                data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
+                data-kt-scroll-dependencies="#kt_modal_add_user_header"
+                data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="required fw-semibold fs-6 mb-2">Nom</label>
+                        <InputText type="text" name="name" class="form-control  mb-3 mb-lg-0"
+                            placeholder="Nom de l'équipement" v-model="eform.name" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">N° Série</label>
+                        <InputText type="text" name="serial_number"
+                            class="form-control  mb-3 mb-lg-0"
+                            placeholder="Numéro de série" v-model="eform.serial_number" />
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="required fw-semibold fs-6 mb-2">Status</label>
+                        <Dropdown  aria-label="Status" class="w-full md:w-14rem"
+                            v-model="eform.status" :options="statusOptions" optionLabel="label" optionValue="value" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Description</label>
+                        <InputText type="text" name="description"
+                            class="form-control  mb-3 mb-lg-0"
+                            placeholder="Description" v-model="eform.description" />
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Projet</label>
+                        <Dropdown class="w-full md:w-14rem" aria-label="project"
+                            v-model="eform.project_id" :options="projects" optionLabel="name" optionValue="id"
+                            placeholder="Sélectionner un projet" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Utilisateur</label>
+                        <Dropdown class="w-full md:w-14rem" aria-label="user"
+                            v-model="eform.user_id" :options="users" optionLabel="name" optionValue="id"
+                            placeholder="Sélectionner un utilisateur" />
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-md-3">
+                        <label class="fw-semibold fs-6 mb-2">Date d'achat</label>
+                        <Calendar type="date" name="purchase_date"
+                            class="form-control  mb-3 mb-lg-0"
+                            v-model="eform.purchase_date" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-semibold fs-6 mb-2">Garantie</label>
+                        <Calendar view="year" dateFormat="yy"
+                            class="form-control  mb-3 mb-lg-0"
+                            v-model="eform.warranty_end_date" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Prix d'achat</label>
+                            <InputGroup class="md:w-80">
+
+                    <IftaLabel>
+                        <InputNumber v-model="eform.purchase_price" inputId="Price" mode="currency" currency="USD" locale="fr-FR" />
+                        <label for="price">Prix d'achat</label>
+                    </IftaLabel>
+                    <InputGroupAddon>
+                        <i class="pi pi-shopping-cart"></i>
+                    </InputGroupAddon>
+                </InputGroup>
+                    </div>
+                </div>
+
+            </div>
+            <template #footer>
+                <Button label="Annuler" icon="pi pi-times" class="p-button-text" @click="eVisible=false" />
+                <Button label="Enregistrer" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
+            </template>
+        </Dialog>
+        <Dialog
+    :header="isEditMode ? 'Modifier une catégorie' : 'Ajouter une catégorie'"
+    v-model:visible="mVisible"
+    :style="{ width: '700px' }"
+    position="center"
+    :modal="true"
+    :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    @hide="closeModal"
+    :closable="true"
+  >
+    <div class="p-fluid">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="field">
+            <label class="required fw-semibold fs-6 mb-2" for="designation">Designation</label>
+            <InputText id="designation" type="text" placeholder="Designation de la catégorie" v-model="mform.designation" class="w-full" required />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field">
+            <label class="fw-semibold fs-6 mb-2" for="caracteristique">Caractéristiques</label>
+            <InputText id="caracteristique" type="text" placeholder="Caracteristique de la catégorie" v-model="mform.caracteristique" class="w-full" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field">
+            <label class="fw-semibold fs-6 mb-2" for="unity">Unité</label>
+            <Dropdown id="unity" v-model="mform.unity_id" :options="unities" optionLabel="designation" optionValue="id" placeholder="Selectionner une unité..." class="w-full" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field">
+            <label class="fw-semibold fs-6 mb-2" for="type">Type d'équipement</label>
+            <Dropdown id="type" v-model="mform.type" :options="typeOptions" optionLabel="label" optionValue="value" placeholder="Selectionner un type..." class="w-full" />
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="field-checkbox">
+            <Checkbox id="is_remise" v-model="mform.is_remise" :binary="true" />
+            <label for="is_remise" class="ml-2">A remettre?</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <template #footer>
+      <Button label="Annuler" icon="pi pi-times"  @click="mVisible=false" />
+      <Button label="Enregistrer" icon="pi pi-check" severity="warn" @click="submitCategory" />
+    </template>
+  </Dialog>
   </div>
 </template>
 
   <script>
-import { useCookie } from "@vue-composable/cookie";
+  import { useCookie } from "@vue-composable/cookie";
 // import Tagify from '@yaireo/tagify';
 import { DatePicker } from "primevue";
-import { computed, onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import modalComponent from "../../components/modals/modalComponent.vue";
 import useCategories from "../../services/categoryServices.js";
 import useEquipments from "../../services/equipmentService.js";
@@ -795,7 +1028,7 @@ export default {
       isLoading,
     } = useMaintenances();
     const { getUsers, users } = useUsers();
-    const { getEquipments, equipments } = useEquipments();
+    const { getEquipments, equipments, storeEquipment, updateEquipment } = useEquipments();
     const { getCategories, categories, storeCategory } = useCategories();
     const {storeInstruction,deleteInstruction,getInstructions}=useInstructions ();
     const isEditMode = ref(false);
@@ -811,6 +1044,7 @@ export default {
       user_id: null,
       start_date: null,
       nbre_tacherons: 0,
+      man_hours: 8,
       materiels: "",
       techniciens: [],
       start_date: null,
@@ -818,7 +1052,9 @@ export default {
       man_hours: null,
       delay: null,
       maintenance_cost: null,
-      instructions:[]
+      instructions:[],
+      expenses:[],
+      totalExpenses:0,
     });
 
     // Set default time to 00:00 for new dates
@@ -841,10 +1077,13 @@ export default {
         userList.push({ value: e.name, id: e.id });
       });
       await getCategories();
+    //   expenses.expenses=maintenances.value.expenses;
+      console.log(maintenances);
       filteredSuggestions.value = categories.value;
     });
 
     const submitMaintenance = async () => {
+        // form.expenses= expenses.expenses;
       console.log({ ...form });
       console.log("form.value");
       let success = false;
@@ -852,10 +1091,11 @@ export default {
         success = await updateMaintenance(form.id, { ...form });
       } else {
         success = await storeMaintenance({ ...form });
+
       }
       if (success) {
         await getMaintenances();
-        $("#maintenance-modal").modal("hide");
+        visible.value=false;
         resetForm();
       }
     };
@@ -876,6 +1116,8 @@ export default {
       form.assigned_user_id = maintenance.assigned_user_id;
             form.assigned_team_id = maintenance.assigned_team_id;
       calculateDelay();
+      console.log({...form});
+      console.log({...maintenance});
       Object.assign(form, maintenance);
     };
 
@@ -894,7 +1136,7 @@ export default {
       form.user_id = null;
       form.start_date = setDefaultTime(new Date().toISOString());
       form.end_date = setDefaultTime(new Date().toISOString());
-      form.man_hours = null;
+      form.man_hours = 8;
       form.delay = null;
       form.assignToType = 'user';
       form.assigned_user_id = null;
@@ -904,6 +1146,9 @@ export default {
       form.materiels = "";
       form.techniciens = [];
       form.instructions = [];
+      form.expenses = [];
+      form.totalExpenses=0;
+
     };
 
     const filteredMaintenances = computed(() => {
@@ -1156,7 +1401,129 @@ export default {
     const addTModal=()=>{
         tVisible.value = true;
     }
+    const eVisible=ref(false);
+    const addEquipment = () => {
+            eVisible.value = true;
+        };
+        const submitEquipment = async () => {
+            let success = false;
+            eVisible.value=false;
+            if (isEditMode.value) {
+                success = await updateEquipment(eform.id, { ...eform });
+            } else {
+                success = await storeEquipment({ ...eform });
+            }
+            if (success) {
+                await getEquipments();
+                eVisible.value = false;
+                eresetForm();
+            }
+        };
+        const eform = reactive({
+            id: null,
+            name: "",
+            serial_number: "",
+            status: "available",
+            description: "",
+            project_id: null,
+            user_id: null,
+            purchase_date: null,
+            purchase_price: null,
+            warranty_end_date: null,
+        });
+        const eresetForm = () => {
+            form.id = null;
+            form.name = "";
+            form.serial_number = "";
+            form.status = "available";
+            form.description = "";
+            form.project_id = null;
+            form.user_id = null;
+            form.purchase_date = null;
+            form.purchase_price = null;
+            form.warranty_end_date = null;
+        };
+        const mVisible=ref(false);
+        const addMateriels=()=>{
+            mVisible.value=true;
+        }
+        const mform=reactive({
+            id:null,
+            designation:"",
+            caracteristique:"",
+            unity_id:null,
+            type:"",
+            is_remise:false,
+        });
+        const typeOptions = ref([
+      { label: "Outils de travail", value: "Outils de travail" },
+      { label: "Equipement", value: "Equipement" },
+      { label: "Autres", value: "Autres" },
+    ]);
+    const submitCategory=async ()=>{
+        mVisible.value=false;
+
+        storeCategory({...mform});
+        await getCategories();
+
+    }
+    const expenses = reactive({
+  });
+
+  const addExpense = () => {
+      form.expenses.push({ title: "", amount: 0, is_default:true });
+      console.log("12334");
+  };
+
+  const removeExpense = (index) => {
+      form.expenses.splice(index, 1);
+
+  };
+
+  const updateExpenseData = (index, field, value) => {
+
+      console.log(index);
+      console.log(field);
+      form.expenses[index][field] = value;
+  };
+  const updateTacheronsExpense=()=>{
+    const existingTacheronsExpenseIndex=form.expenses.findIndex((expense)=>expense.title==='Cout de Tacherons');
+    const tacheronsAmount=form.nbre_tacherons * form.price_tacherons;
+
+    if(existingTacheronsExpenseIndex !== -1){
+        form.expenses[existingTacheronsExpenseIndex].amount = tacheronsAmount;
+    }else{
+        form.expenses= form.expenses.filter((e)=> e.readonly!=true);
+        form.expenses.push({title:`Cout total de ${form.nbre_tacherons} Tacherons `,amount:tacheronsAmount, readonly: true});
+    }
+
+  }
+  watch (
+      () => [form.nbre_tacherons, form.price_tacherons],
+      ([newNbreTacherons, newPriceTacherons]) => {
+          // Only update if both values are valid numbers
+          if (!isNaN(newNbreTacherons) && !isNaN(newPriceTacherons) && newNbreTacherons >= 0 && newPriceTacherons >= 0) {
+            updateTacheronsExpense();
+          }
+      },
+      { immediate: true } // Add this to trigger the watcher on component mount
+  );
+//   ;
     return {
+        expenses,
+        addExpense,
+    removeExpense,
+    updateExpenseData,
+    totalExpenses: expenses.totalExpenses,
+        submitCategory,
+        typeOptions,
+        mform,
+        mVisible,
+        addMateriels,
+        submitEquipment,
+        eform,
+        addEquipment,
+        eVisible,
         tVisible,
         addTModal,
         addInstruction,

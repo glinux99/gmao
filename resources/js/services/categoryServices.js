@@ -1,5 +1,5 @@
-import axios from 'axios';
 import { ref } from 'vue';
+import instance from '../api/index';
 
 export default function useCategories() {
     const categories = ref([]);
@@ -10,7 +10,7 @@ export default function useCategories() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.get('/api/categories');
+            const response = await instance.get('/api/categories');
              //   console.log(response.data);
             categories.value = response.data.data;
         } catch (e) {
@@ -23,8 +23,9 @@ export default function useCategories() {
         errors.value = {};
         isLoading.value = true;
         try {
-             //console.log("store");
-            const response = await axios.post('/api/categories', data);
+             console.log("store");
+             console.log(data);
+            const response = await instance.post('/api/categories', data);
             categories.value.push(response.data.data);
              return true;
         } catch (e) {
@@ -38,7 +39,7 @@ export default function useCategories() {
         errors.value = {};
         isLoading.value = true;
         try {
-            const response = await axios.put(`/api/categories/${id}`, data);
+            const response = await instance.put(`/api/categories/${id}`, data);
             const index = categories.value.findIndex((t) => t.id === id);
             if (index !== -1) {
                 categories.value[index] = response.data.data;
@@ -55,7 +56,7 @@ export default function useCategories() {
         errors.value = {};
         isLoading.value = true;
         try {
-            await axios.delete(`/api/categories/${id}`);
+            await instance.delete(`/api/categories/${id}`);
             categories.value = categories.value.filter((task) => task.id !== id);
         } catch (e) {
             errors.value = e.response.data.errors;

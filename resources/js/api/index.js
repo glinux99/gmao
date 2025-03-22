@@ -1,43 +1,76 @@
-import axios from "axios";
-// import store from "../store/index";
 import { useCookie } from "@vue-composable/cookie";
-// import useUsers from "../services/userservices";
+import axios from "axios";
 
 const instance = axios.create({
-    baseURL: process.env.BASE_URL,
+    baseURL: import.meta.env.APP_URL,
     withCredentials: true,
 });
 
-let acceder = useCookie("userAuth").cookie.value
-    ? JSON.parse(useCookie("userAuth").cookie.value)
-    : {
-          token: "",
-      };
+//Get the cookie value for userAuth
+let userAuthCookie = useCookie("userAuth");
 
+// Get the initial token from the cookie (if it exists)
+let userToken = userAuthCookie.cookie.value
+    ? JSON.parse(userAuthCookie.cookie.value).token
+    : null;
+
+// Interceptor to add the token to each request
 instance.interceptors.request.use(
     async (config) => {
-        if (true) {
-            if (acceder.token) {
-                config.headers.Authorization = `Bearer ${acceder.token}`;
-            }
+        // Check if a user token exists
+        if (userToken) {
+            config.headers.Authorization = `Bearer ${userToken}`;
         }
-
+        console.log('xxxxxxxxxxxxxxxxxxxxxxxxx');
+        console.log(userToken);
+            // Check if the request is for login or logout to adjust token handling
         if (
-            !config.headers.hasOwnProperty("Authorization") &&
-            location.href != "register" &&
-            location.href != "login"
+            config.url != "/api/login" && config.url != "/api/logout" &&
+            config.headers.hasOwnProperty("Authorization") && config.headers.Authorization == null
         ) {
             try {
-                const element = document.getElementById("logOut");
-                element.click();
-            } catch (error) {}
+                // Redirect to login if there's an attempt to access a protected resource without a token
+              // window.location.href = "/login";
+                console.error("Error: No token provided for protected request. Redirecting to login.");
+
+            } catch (error) {
+                 console.error("Error redirecting to login:", error);
+            }
         }
-        console.log(config.headers["Authorization"]);
 
         return config;
     },
     (error) => {
-        Promise.reject(error);
+        return Promise.reject(error);
+    }
+);
+
+// Interceptor to handle responses
+instance.interceptors.response.use(
+    (response) => {
+        // If the response is from the login request, update the token and save it in cookie.
+        if (response.config.url === "/api/login") {
+            userToken = response.data.token;
+            userAuthCookie.setCookie(
+                JSON.stringify({ token: userToken })
+            );
+             console.log("token set : ",userToken);
+        }
+        return response;
+    },
+    (error) => {
+        // Handle 401 errors (unauthorized) which might mean token is invalid or expired
+        if (error.response && error.response.status === 401) {
+          console.error("Unauthorized request. Clearing token and redirecting to login.");
+            //logout user and remove cookie
+          userToken = null;
+          userAuthCookie.removeCookie();
+           if(window.location.href != import.meta.env.APP_URL+'login'){
+            window.location.href = "/login";
+          }
+        }
+
+        return Promise.reject(error);
     }
 );
 

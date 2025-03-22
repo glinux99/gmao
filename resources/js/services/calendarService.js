@@ -1,7 +1,7 @@
 // resources/js/services/calendarService.js
 
-import axios from "axios";
 import { ref } from "vue";
+import instance from "../api/index";
 
 export default function useCalendar() {
     const tasks = ref([]);
@@ -13,7 +13,7 @@ export default function useCalendar() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get("/api/tasks"); // Eager load the 'project' relation
+            const response = await instance.get("/api/tasks"); // Eager load the 'project' relation
             tasks.value = response.data.data;
             events.value = formatEvents(tasks.value) // add this line
         } catch (error) {

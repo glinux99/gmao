@@ -44,6 +44,7 @@ import PrimeVue from 'primevue/config';
 import taskChart from "./components/charts/taskChart.vue";
 import testChart from "./components/charts/testChart.vue";
 import modalComponent from "./components/modals/modalComponent.vue";
+import loginUser from './pages/auth/loginUser.vue';
 import calendarList from "./pages/calendar/calendarList.vue";
 import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
@@ -53,6 +54,9 @@ import roleList from "./pages/roles/roleList.vue";
 import taskList from "./pages/task/taskList.vue";
 import taskShow from "./pages/task/taskShow.vue";
 import teamList from "./teams/teamList.vue";
+
+
+
 const app = createApp({
     components: {
         // dashBoard,
@@ -69,6 +73,7 @@ const app = createApp({
         priorityList,
         modalComponent,
         taskShow,
+        loginUser
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
@@ -82,11 +87,19 @@ import Checkbox from 'primevue/checkbox';
 import Chips from 'primevue/chips';
 import Dialog from 'primevue/dialog';
 import Dropdown from 'primevue/dropdown';
+import IftaLabel from 'primevue/iftalabel';
+import InputGroup from 'primevue/inputgroup';
+import InputGroupAddon from 'primevue/inputgroupaddon';
+import InputNumber from 'primevue/inputnumber';
 import InputText from 'primevue/inputtext';
+import Menu from 'primevue/menu';
 import MultiSelect from 'primevue/multiselect';
 import RadioButton from 'primevue/radiobutton';
+import SplitButton from 'primevue/splitbutton';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
+
+
 
 app.component('Dropdown', Dropdown);
 app.component("Calendar", Calendar);
@@ -100,6 +113,12 @@ app.component('Chips', Chips);
 app.component('AutoComplete', AutoComplete);
 app.component('Checkbox', Checkbox);
 app.component('Toast', Toast);
+app.component('InputGroup', InputGroup);
+app.component('InputGroupAddon', InputGroupAddon);
+app.component('InputNumber', InputNumber);
+app.component('IftaLabel', IftaLabel);
+app.component('SplitButton', SplitButton);
+app.component('Menu', Menu);
 app.use(ToastService);
 
 

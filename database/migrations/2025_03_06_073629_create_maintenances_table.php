@@ -21,6 +21,7 @@ return new class extends Migration
             $table->foreign('assigned_team_id')->references('id')->on('teams')->onDelete('set null');
             $table->string('work_order')->nullable();
             $table->double('nbre_tacherons')->nullable()->default(0);
+            $table->double('price_tacherons')->nullable()->default(0);
             $table->string('materiels')->nullable();
             $table->string('frequency')->nullable();
 

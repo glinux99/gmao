@@ -3,7 +3,6 @@
 @section('content')
 <!--begin::Row-->
 <div class=" container-xxl " id="kt_content_container" data-select2-id="select2-data-kt_content_container">
-
 <div class="row g-5 g-xl-8">
     <div class="col-xl-4">
         <!--begin::Statistics Widget 5-->

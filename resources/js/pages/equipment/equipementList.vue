@@ -38,7 +38,7 @@
                                         <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span
                                                 class="path1"></span><span class="path2"></span></i>
                                         <input type="text" data-kt-permissions-table-filter="search"
-                                            class="form-control form-control-solid w-250px ps-13"
+                                            class="form-control  w-250px ps-13"
                                             placeholder="Rechercher un équipement" v-model="searchQuery" />
                                     </div>
                                 </div>
@@ -85,8 +85,7 @@
 
                                                 <button @click="editEquipment(equipment)"
                                                     class="btn btn-icon btn-active-light-primary w-30px h-30px"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#kt_modal_update_equipment">
+                                                    >
                                                     <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span
                                                             class="path2"></span><span class="path3"></span><span
                                                             class="path4"></span><span class="path5"></span></i>
@@ -152,7 +151,7 @@
 
                                             <button @click="editEquipment(equipment)"
                                                 class="card btn btn-light btn-active-light-primary my-1"
-                                                data-bs-toggle="modal" data-bs-target="#kt_modal_update_equipment">
+                                                >
                                                 Editer
                                                 <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span
                                                         class="path2"></span><span class="path3"></span><span
@@ -183,106 +182,118 @@
                 </div>
             </div>
         </div>
-        <!-- ... -->
-        <modal-component :id="'equipment-modal'" positionModal="center mw-700px" :form="form"
-            @instance-modal="submitEquipment">
-            <template #title>{{ isEditMode ? 'Modifier' : 'Créer' }} un équipement</template>
-            <template #body>
-                <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
-                    data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
-                    data-kt-scroll-dependencies="#kt_modal_add_user_header"
-                    data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
-                    <div class="row mb-6">
-                        <div class="col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Nom</label>
-                            <input type="text" name="name" class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Nom de l'équipement" v-model="form.name" required>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold fs-6 mb-2">N° Série</label>
-                            <input type="text" name="serial_number"
-                                class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Numéro de série" v-model="form.serial_number">
-                        </div>
+        <!-- Dialog for adding/editing equipment -->
+        <Dialog
+            :header="isEditMode ? 'Modifier un équipement' : 'Créer un équipement'"
+            v-model:visible="visible"
+            :style="{ width: '700px' }"
+            position="center"
+            :modal="true"
+            :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+            @hide="closeModal"
+            :closable="true"
+        >
+            <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
+                data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
+                data-kt-scroll-dependencies="#kt_modal_add_user_header"
+                data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="required fw-semibold fs-6 mb-2">Nom</label>
+                        <InputText type="text" name="name" class="form-control  mb-3 mb-lg-0"
+                            placeholder="Nom de l'équipement" v-model="form.name" required />
                     </div>
-                    <div class="row mb-6">
-                        <div class="col-md-6">
-                            <label class="required fw-semibold fs-6 mb-2">Status</label>
-                            <select class="form-select form-select-solid mb-3 mb-lg-0" aria-label="Status"
-                                v-model="form.status">
-                                <option value="available">Disponible</option>
-                                <option value="in_use">En cours d'utilisation</option>
-                                <option value="under_maintenance">En maintenance</option>
-                                <option value="broken">Cassé</option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold fs-6 mb-2">Description</label>
-                            <input type="text" name="description"
-                                class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Description" v-model="form.description">
-                        </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">N° Série</label>
+                        <InputText type="text" name="serial_number"
+                            class="form-control  mb-3 mb-lg-0"
+                            placeholder="Numéro de série" v-model="form.serial_number" />
                     </div>
-                    <div class="row mb-6">
-                        <div class="col-md-6">
-                             <label class="fw-semibold fs-6 mb-2">Projet</label>
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" aria-label="project" v-model="form.project_id">
-                                <option value="">Aucun</option>
-                                <option v-for="project in projects" :value="project.id" :key="project.id">
-                                    {{ project.name }}
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold fs-6 mb-2">Utilisateur</label>
-                                <select class="form-select form-select-solid mb-3 mb-lg-0" aria-label="user" v-model="form.user_id">
-                                <option value="">Aucun</option>
-                                <option v-for="user in users" :value="user.id" :key="user.id">
-                                    {{ user.name }}
-                                </option>
-                            </select>
-                        </div>
-                    </div>
-                     <div class="row mb-6">
-                        <div class="col-md-6">
-                            <label class="fw-semibold fs-6 mb-2">Date d'achat</label>
-                            <input type="date" name="purchase_date"
-                                class="form-control form-control-solid mb-3 mb-lg-0"
-                                 v-model="form.purchase_date">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="fw-semibold fs-6 mb-2">Prix d'achat</label>
-                            <input type="number" name="purchase_price"
-                                class="form-control form-control-solid mb-3 mb-lg-0"
-                                placeholder="Prix" v-model="form.purchase_price">
-                        </div>
-                    </div>
-                    <div class="row mb-6">
-                        <div class="col-md-6">
-                           <label class="fw-semibold fs-6 mb-2">Date de fin de garantie</label>
-                            <input type="month" name="warranty_end_date"
-                                class="form-control form-control-solid mb-3 mb-lg-0"
-                                 v-model="form.warranty_end_date">
-                        </div>
-                    </div>
-
                 </div>
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="required fw-semibold fs-6 mb-2">Status</label>
+                        <Dropdown  aria-label="Status" class="w-full md:w-14rem"
+                            v-model="form.status" :options="statusOptions" optionLabel="label" optionValue="value" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Description</label>
+                        <InputText type="text" name="description"
+                            class="form-control  mb-3 mb-lg-0"
+                            placeholder="Description" v-model="form.description" />
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Projet</label>
+                        <Dropdown class="w-full md:w-14rem" aria-label="project"
+                            v-model="form.project_id" :options="projects" optionLabel="name" optionValue="id"
+                            placeholder="Sélectionner un projet" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Utilisateur</label>
+                        <Dropdown class="w-full md:w-14rem" aria-label="user"
+                            v-model="form.user_id" :options="users" optionLabel="name" optionValue="id"
+                            placeholder="Sélectionner un utilisateur" />
+                    </div>
+                </div>
+                <div class="row mb-6">
+                    <div class="col-md-3">
+                        <label class="fw-semibold fs-6 mb-2">Date d'achat</label>
+                        <Calendar type="date" name="purchase_date"
+                            class="form-control  mb-3 mb-lg-0"
+                            v-model="form.purchase_date" />
+                    </div>
+                    <div class="col-md-3">
+                        <label class="fw-semibold fs-6 mb-2">Garantie</label>
+                        <Calendar view="year" dateFormat="yy"
+                            class="form-control  mb-3 mb-lg-0"
+                            v-model="form.warranty_end_date" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-semibold fs-6 mb-2">Prix d'achat</label>
+                            <InputGroup class="md:w-80">
+
+                    <IftaLabel>
+                        <InputNumber v-model="form.purchase_price" inputId="Price" mode="currency" currency="USD" locale="fr-FR" />
+                        <label for="price">Prix d'achat</label>
+                    </IftaLabel>
+                    <InputGroupAddon>
+                        <i class="pi pi-shopping-cart"></i>
+                    </InputGroupAddon>
+                </InputGroup>
+                    </div>
+                </div>
+
+            </div>
+            <template #footer>
+                <Button label="Annuler" icon="pi pi-times" class="p-button-text" @click="closeModal" />
+                <Button label="Enregistrer" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
             </template>
-        </modal-component>
+        </Dialog>
     </div>
 </template>
 
-
 <script>
+import Button from 'primevue/button';
+import Calendar from 'primevue/calendar';
+import Dialog from 'primevue/dialog';
+import Dropdown from 'primevue/dropdown';
+import InputNumber from 'primevue/inputnumber';
+import InputText from 'primevue/inputtext';
 import { computed, onMounted, reactive, ref } from "vue";
-import modalComponent from "../../components/modals/modalComponent.vue";
 import useEquipments from '../../services/equipmentService.js';
 import useProjects from "../../services/projectServices.js";
 import useUsers from "../../services/userservices.js";
 
 export default {
     components: {
-        modalComponent,
+        Dialog,
+        InputText,
+        Dropdown,
+        Button,
+        Calendar,
+        InputNumber
     },
     setup() {
         const { equipments, getEquipments, storeEquipment, updateEquipment, destroyEquipment, errors, isLoading } =
@@ -294,6 +305,7 @@ export default {
         const isEditMode = ref(false);
         const searchQuery = ref('');
         const showTableView = ref(true);
+        const visible = ref(false);
 
         const form = reactive({
             id: null,
@@ -307,6 +319,12 @@ export default {
             purchase_price: null,
             warranty_end_date: null,
         });
+        const statusOptions = ref([
+            { label: 'Disponible', value: 'available' },
+            { label: 'En cours d\'utilisation', value: 'in_use' },
+            { label: 'En maintenance', value: 'under_maintenance' },
+            { label: 'Cassé', value: 'broken' },
+        ]);
 
         onMounted(async () => {
             await getEquipments();
@@ -315,49 +333,54 @@ export default {
         });
 
         const filteredEquipments = computed(() => {
-            return equipments.value.filter((equipment) => {
+            return equipments.value.filter(equipment => {
                 return equipment.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                 (equipment.serial_number !== null && equipment.serial_number.toLowerCase().includes(searchQuery.value.toLowerCase()))||
-                  (equipment.project !== null && equipment.project.name.toLowerCase().includes(searchQuery.value.toLowerCase()))||
-                  (equipment.user !== null && equipment.user.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+                    equipment.serial_number.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                    (equipment.project && equipment.project.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                    (equipment.user && equipment.user.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                    equipment.status.toLowerCase().includes(searchQuery.value.toLowerCase());
             });
         });
 
+        const toggleView = () => {
+            showTableView.value = !showTableView.value;
+        };
+
         const addEquipment = () => {
             isEditMode.value = false;
+            visible.value = true;
             resetForm();
-            // Show the modal
-            const modal = new bootstrap.Modal(document.getElementById('equipment-modal'));
-            modal.show();
         };
 
         const editEquipment = (equipment) => {
             isEditMode.value = true;
+            visible.value = true;
             Object.assign(form, equipment);
-           // Show the modal
-           const modal = new bootstrap.Modal(document.getElementById('equipment-modal'));
-            modal.show();
         };
 
-        const viewEquipment = (equipmentId) => {
-          // TODO : add the route to the view page
-          console.log("view:", equipmentId)
+        const viewEquipment = (id) => {
+            // Implement your view logic here, e.g., navigate to a detail page
+            console.log('View equipment with ID:', id);
         };
 
         const submitEquipment = async () => {
+            let success = false;
+            visible.value=false;
             if (isEditMode.value) {
-                await updateEquipment(form.id, form);
+                success = await updateEquipment(form.id, { ...form });
             } else {
-                await storeEquipment(form);
-                console.log(form);
+                success = await storeEquipment({ ...form });
             }
-             // Close the modal
-             const modal = bootstrap.Modal.getInstance(document.getElementById('equipment-modal'));
-            modal.hide();
-            resetForm();
+            if (success) {
+                await getEquipments();
+                visible.value = false;
+                resetForm();
+            }
         };
-        const toggleView = () => {
-            showTableView.value = !showTableView.value;
+
+        const closeModal = () => {
+            visible.value = false;
+            resetForm();
         };
 
         const resetForm = () => {
@@ -376,21 +399,23 @@ export default {
         return {
             equipments,
             filteredEquipments,
-            getEquipments,
-            addEquipment,
-            editEquipment,
-            viewEquipment,
-            submitEquipment,
-            form,
-            isEditMode,
-            errors,
             isLoading,
             searchQuery,
             showTableView,
             toggleView,
+            addEquipment,
+            editEquipment,
+            viewEquipment,
+            submitEquipment,
+            closeModal,
+            visible,
+            isEditMode,
+            form,
+            statusOptions,
             projects,
             users,
+            errors
         };
-    },
+    }
 };
 </script>

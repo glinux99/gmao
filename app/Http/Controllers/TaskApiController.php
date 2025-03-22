@@ -16,22 +16,28 @@ class TaskApiController extends Controller
     public function index()
     {
         $tasks=[];
-       if(User::find(Auth::user()->id)->hasExactRoles(['technicien'])){
-        $teams = TeamUser::where('user_id', Auth::user()->id)->get();
-        $teamId=[];
-        foreach($teams as $team){
-            $teamId[]=$team->team_id;
-        }
-        if($teamId){
-            $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->get();
-        }else
-            {
-                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->where('assigned_user_id', Auth::user()->id)->get();
+      try {
+        $userAuht=Auth::id();
+        if(User::find( $userAuht)->hasExactRoles(['technicien'])){
+            $teams = TeamUser::where('user_id',  $userAuht)->get();
+            $teamId=[];
+            foreach($teams as $team){
+                $teamId[]=$team->team_id;
             }
-       }else{
-        $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->get();
-       }
-        return response()->json(['data' => $tasks]);
+            if($teamId){
+                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->get();
+            }else
+                {
+                    $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->where('assigned_user_id', Auth::user()->id)->get();
+                }
+           }else{
+            $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->get();
+           }
+            return response()->json(['data' => $tasks]);
+      } catch (\Throwable $th) {
+        //throw $th;
+        return $th->getMessage();
+      }
     }
 
     public function show(Task $task)
@@ -55,7 +61,11 @@ class TaskApiController extends Controller
             }
 
             // Send notifications after creating the task
+           try {
             $this->sendTaskNotifications($task);
+           } catch (\Throwable $th) {
+            //throw $th;
+           }
 
             DB::commit();
             return response()->json(['data' => $task], 201);
@@ -84,7 +94,11 @@ class TaskApiController extends Controller
             }
 
             // Send notifications after updating the task
-            $this->sendTaskNotifications($task);
+            try {
+                $this->sendTaskNotifications($task);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
 
             DB::commit();
             return response()->json(['data' => $task]);

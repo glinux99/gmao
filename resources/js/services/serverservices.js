@@ -1,9 +1,6 @@
-import { ref } from "vue";
-import axios from "axios";
-import routes from "../router/index.js";
-import instance from "../api/index.js";
-import statics from "./statics.js";
 import { useCookie } from "@vue-composable/cookie";
+import { ref } from "vue";
+import instance from "../api/index.js";
 export default function useServer() {
     let enterpriseId = 1;
     try {
@@ -63,7 +60,7 @@ export default function useServer() {
 
         // await routes.push({ name: "admin.home" });0
         // try {
-        //     let resp = await axios.post('/api/entreprises', data);
+        //     let resp = await instance.post('/api/entreprises', data);
         //     // entreprises.value = resp.data.data;
 
         //     // routes.push({ name: "admin.home" });

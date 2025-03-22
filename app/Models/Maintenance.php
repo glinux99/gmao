@@ -24,6 +24,7 @@ class Maintenance extends Model
         'notified_at',
         'maintenance_cost',
         'nbre_tacherons',
+        'price_tacherons',
         'assigned_user_id',
         'assigned_team_id',
         'frequency',
@@ -51,5 +52,9 @@ class Maintenance extends Model
     public function instructions(): HasMany
     {
         return $this->hasMany(Instruction::class);
+    }
+    public function expenses(): HasMany
+    {
+        return $this->hasMany(Depense::class);
     }
 }

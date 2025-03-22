@@ -7,6 +7,7 @@ use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\InventoryController;
+use App\Http\Controllers\LoginApiController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PriorityController;
@@ -37,8 +38,10 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+
 // New route to execute Artisan commands
 Route::get('/artisan/{command}', function ($command) {
+
     // List of allowed commands
     // $allowedCommands = [
     //     'repport:send',
@@ -60,6 +63,8 @@ Route::get('/artisan/{command}', function ($command) {
 
 
 Route::group(['middleware' =>[ 'auth']], function(){
+    Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::get('/homeVue', [LoginApiController::class, 'userApi']);
     Route::resources([
         'sorties'=>StockHistoryController::class,
         'entries'=>EntryController::class,
@@ -91,17 +96,9 @@ Route::group(['middleware' =>[ 'auth']], function(){
     // Route::get('/export', [StockHistoryController::class, 'export_stock'])->name('settings');
     Route::get('/user/{id}', [UserController ::class, 'show'])->name(name: 'user.show');
 });
-// Route::get(uri: '/export', [StockHistoryController::class, 'export_stock']);
-Route::get('/email', function(){
-    $user = User::find(2);
-$user->notify(new NewRegister ([
-    "title"=>"A new user has visited on your application.",
-    "greeting"=>"Bonjour"
-]));
-});
+
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 // Schedule the repport:send command
 // Artisan::command('schedule:repport-send', function () {

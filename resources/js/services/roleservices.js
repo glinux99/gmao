@@ -1,7 +1,7 @@
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 // import instance from "../api/index.js";
-import axios from "axios";
 import { useCookie } from "@vue-composable/cookie";
+import instance from "../api/index";
 export default function useRoles() {
     let enterpriseId = 1;
     try {
@@ -15,28 +15,28 @@ export default function useRoles() {
     const permissions = ref([]);
     const url = "/api/roles";
     const getRoles = async () => {
-        let resp = await axios.get("/api/roles");
+        let resp = await instance.get("/api/roles");
         roles.value = resp.data.data;
     };
     const getRole = async () => {
         let id = useCookie("role").cookie.value;
 
-        let resp = await axios.get(`/api/roles/${id}`);
+        let resp = await instance.get(`/api/roles/${id}`);
 
         role.value = resp.data.data;
     };
     const getRolesPermissions = async () => {
-        let resp = await axios.get("/api/rolesPermissions");
+        let resp = await instance.get("/api/rolesPermissions");
         roles.value = resp.data.data;
     };
     // to get Permissions
     const getPermissions = async () => {
-        let resp = await axios.get("/api/permissions");
+        let resp = await instance.get("/api/permissions");
         permissions.value = resp.data.data;
     };
     const storeRoles = async (data) => {
         if (data.id == null || typeof data.id != "number") {
-            let resp = await axios
+            let resp = await instance
                 .post(url, data)
                 .then((resp) => {
                     useCookie("dataCreate").setCookie(
@@ -49,7 +49,7 @@ export default function useRoles() {
                 })
                 .catch((error) => {});
         } else {
-            let resp = await axios
+            let resp = await instance
                 .patch(url + "/" + data.id, data)
                 .then((resp) => {
                     new useCookie("dataCreate").setCookie(

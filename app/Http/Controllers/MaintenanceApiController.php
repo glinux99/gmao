@@ -6,6 +6,7 @@ use App\Models\Maintenance;
 use App\Models\Task;
 use App\Models\Material;
 use App\Models\Category;
+use App\Models\Depense;
 use App\Models\Instruction;
 use App\Models\MaintenanceMaterial;
 use App\Models\Team;
@@ -26,7 +27,7 @@ class MaintenanceApiController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Maintenance::with(['equipment', 'user', 'materials' => function ($query) {
+            $query = Maintenance::with(['equipment', 'user','expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');
             }, 'instructions']);
 
@@ -86,6 +87,11 @@ class MaintenanceApiController extends Controller
             DB::beginTransaction();
             // Create the maintenance record
             $maintenance = Maintenance::create($request->except(['daysOfWeek','techniciens', 'materials', 'instructions']));
+            // return $maintenance->id;
+            foreach($request->expenses  as $expense){
+                $expense['maintenance_id']=$maintenance->id;
+                Depense::create($expense);
+            }
             $maintenance->load('equipment');
 
             // Assign technicians if provided
@@ -377,6 +383,21 @@ class MaintenanceApiController extends Controller
             DB::beginTransaction();
 
             $maintenance->update($request->all());
+            $depIds=[];
+            foreach($request->expenses  as $expense){
+                $expId=0;
+                if(isset($expense['id'])){
+                    Depense::find( $expense['id'])->update($expense);
+                }
+                // return ;
+                if($expense['readonly']==1){
+                    Depense::where('maintenance_id', $maintenance->id)->where('readonly', 1)->first()->delete();
+                    $expense['maintenance_id']= $maintenance->id;
+                    Depense::create($expense);
+                }
+
+            }
+
             // Sync technicians
             if ($request->has('techniciens')) {
                 $maintenance->technicians()->sync($request->techniciens);
@@ -403,7 +424,7 @@ class MaintenanceApiController extends Controller
             $this->scheduleNextTasks($maintenance);
 
             DB::commit();
-            return response()->json(['data' => $maintenance->load(['technicians', 'materials' => function ($query) {
+            return response()->json(['data' => $maintenance->load(['technicians','expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');
             }, 'instructions'])]);
         } catch (\Illuminate\Validation\ValidationException $e) {

@@ -1,6 +1,6 @@
 // resources/js/services/maintenanceService.js
 import { ref } from "vue";
-import axios from "axios";
+import instance from "../api/index";
 
 export default function useMaintenances() {
     const maintenances = ref([]);
@@ -12,7 +12,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get("/api/maintenances");
+            const response = await instance.get("/api/maintenances");
             maintenances.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -25,7 +25,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get(`/api/maintenances/${id}`);
+            const response = await instance.get(`/api/maintenances/${id}`);
             maintenance.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -38,7 +38,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.post("/api/maintenances", data);
+            const response = await instance.post("/api/maintenances", data);
             maintenance.value = response.data.data;
             console.log("maintenance.value");
             console.log(maintenance.value);
@@ -55,7 +55,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.put(`/api/maintenances/${id}`, data);
+            const response = await instance.put(`/api/maintenances/${id}`, data);
             maintenance.value = response.data.data;
             return true; // Success
         } catch (error) {
@@ -70,7 +70,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            await axios.delete(`/api/maintenances/${id}`);
+            await instance.delete(`/api/maintenances/${id}`);
             return true; // Success
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -88,7 +88,7 @@ export default function useMaintenances() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get(`/api/maintenances?search=${searchQuery}`);
+            const response = await instance.get(`/api/maintenances?search=${searchQuery}`);
             maintenances.value = response.data.data;
         } catch (error) {
             errors.value = error.response.data.errors;

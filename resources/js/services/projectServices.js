@@ -1,6 +1,6 @@
 // resources/js/services/projectServices.js
 import { ref } from "vue";
-import axios from "axios";
+import instance from "../api/index";
 
 export default function useProjects() {
     const projects = ref([]);
@@ -12,7 +12,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get("/api/projects");
+            const response = await instance.get("/api/projects");
             projects.value = response.data.data;
             console.log(projects.value);
         } catch (e) {
@@ -26,7 +26,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get(`/api/projects/${id}`);
+            const response = await instance.get(`/api/projects/${id}`);
             project.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -39,7 +39,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.post("/api/projects", data);
+            const response = await instance.post("/api/projects", data);
             project.value = response.data.data;
             return true; // Success
         } catch (error) {
@@ -54,7 +54,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.put(`/api/projects/${id}`, data);
+            const response = await instance.put(`/api/projects/${id}`, data);
             project.value = response.data.data;
             return true; // Success
         } catch (error) {
@@ -69,7 +69,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            await axios.delete(`/api/projects/${id}`);
+            await instance.delete(`/api/projects/${id}`);
             return true; // Success
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -84,7 +84,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get("/api/projects");
+            const response = await instance.get("/api/projects");
             return response.data.data;
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -98,7 +98,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await axios.get("/api/users");
+            const response = await instance.get("/api/users");
             return response.data.data;
         } catch (error) {
             errors.value = error.response.data.errors;

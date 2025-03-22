@@ -1,7 +1,7 @@
 // resources/js/services/priorityServices.js
 
-import axios from 'axios';
 import { ref } from 'vue';
+import instance from '../api/index';
 
 export default function usePriorities() {
     const priorities = ref([]);
@@ -12,7 +12,7 @@ export default function usePriorities() {
         isLoading.value = true;
         errors.value = null;
         try {
-            const response = await axios.get('/api/priority');
+            const response = await instance.get('/api/priority');
             priorities.value = response.data.data;
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -25,7 +25,7 @@ export default function usePriorities() {
         isLoading.value = true;
         errors.value = null;
         try {
-            const response = await axios.post('/api/priority', priority);
+            const response = await instance.post('/api/priority', priority);
             return true;
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -39,7 +39,7 @@ export default function usePriorities() {
         isLoading.value = true;
         errors.value = null;
         try {
-            const response = await axios.put(`/api/priority/${id}`, priority);
+            const response = await instance.put(`/api/priority/${id}`, priority);
             return true;
         } catch (error) {
             errors.value = error.response.data.errors;
@@ -53,7 +53,7 @@ export default function usePriorities() {
         isLoading.value = true;
         errors.value = null;
         try {
-            await axios.delete(`/api/priority/${id}`);
+            await instance.delete(`/api/priority/${id}`);
         } catch (error) {
             errors.value = error.response.data.errors;
         } finally {

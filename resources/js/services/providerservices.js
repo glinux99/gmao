@@ -1,8 +1,7 @@
 import { reactive, ref } from "vue";
-import axios from "axios";
-import routes from "../router/index.js";
-import instance from "../api/index.js";
+
 import { useCookie } from "@vue-composable/cookie";
+import instance from "../api/index.js";
 export default function useProviders() {
     let enterpriseId = 1;
     try {

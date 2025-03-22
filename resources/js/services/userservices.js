@@ -1,7 +1,6 @@
-import { useCookie } from "@vue-composable/cookie";
-import { reactive, ref } from "vue";
-// import axios from "../api/index.js";
-import axios from "axios";
+import { ref } from "vue";
+// import instance from "../api/index.js";
+import instance from "../api/index";
 export default function useUsers() {
     // let { cookie, setCookie, removeCookie } = useCookie("userAuth");
     let enterpriseId = 1;
@@ -26,23 +25,23 @@ export default function useUsers() {
     // const accounts = ref([]);
     // const localizationUser = ref([]);
     // const getLocalizationUser = async () => {
-    //     axios.get("/api/user/localization").then((resp) => {
+    //     instance.get("/api/user/localization").then((resp) => {
     //         localizationUser.value = resp.data.data;
     //     });
     // };
     const getUsers = async () => {
-        let resp = await axios.get(`${url}`);
+        let resp = await instance.get(`${url}`);
         users.value = resp.data;
     };
     // const getUser = async () => {
     //     let id = useCookie("user").cookie.value;
 
-    //     let resp = await axios.get(`${url}${id}`);
+    //     let resp = await instance.get(`${url}${id}`);
 
     //     user.value = resp.data.data;
     // };
     // const getAuthUser = async () => {
-    //     await axios.get("/api/auth/user").then((resp) => {
+    //     await instance.get("/api/auth/user").then((resp) => {
     //         console.log(resp.data);
     //     });
     // };
@@ -51,7 +50,7 @@ export default function useUsers() {
 
     //     data.enterprise_id = enterpriseId;
     //     if (id == null || typeof id != "number" || id == 0) {
-    //         resp = await axios.post(url, data).then((resp) => {
+    //         resp = await instance.post(url, data).then((resp) => {
     //             new useCookie("dataCreate").setCookie(
     //                 JSON.stringify({
     //                     service: "L'utilisateur",
@@ -63,7 +62,7 @@ export default function useUsers() {
     //     } else {
     //         console.log("modif");
     //         console.log(data);
-    //         resp = await axios
+    //         resp = await instance
     //             .patch(url + id, data)
     //             .then(function (response) {
     //                 if (response.data.status == false) {
@@ -97,7 +96,7 @@ export default function useUsers() {
     //     }
     // };
     // const logOutUserAll = async () => {
-    //     await axios.get("/api/user/logout-all").then((resp) => {
+    //     await instance.get("/api/user/logout-all").then((resp) => {
     //         location.href = "/";
     //     });
     // };

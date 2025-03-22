@@ -1,6 +1,4 @@
 import { ref } from "vue";
-import axios from "axios";
-import routes from "../router/index.js";
 import instance from "../api/index.js";
 export default function usePriceCategorie() {
     const url = "/api/price/categorie";
@@ -16,7 +14,7 @@ export default function usePriceCategorie() {
 
         // await routes.push({ name: "admin.home" });0
         // try {
-        //     let resp = await axios.post('/api/entreprises', data);
+        //     let resp = await instance.post('/api/entreprises', data);
         //     // entreprises.value = resp.data.data;
 
         //     // routes.push({ name: "admin.home" });

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('maintenance_material', function (Blueprint $table) {
+        Schema::create('depenses', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->double('amount');
+            $table->boolean('readonly')->default(false)->nullable();
             $table->foreignId('maintenance_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
-            $table->integer('quantity')->default(1);
-            $table->integer('quantity_remise')->default(0)->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('maintenance_material');
+        Schema::dropIfExists('depenses');
     }
 };
