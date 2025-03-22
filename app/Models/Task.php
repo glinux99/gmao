@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,11 @@ class Task extends Model
         "tools",
         'assigned_user_id', // This is the user assigned to the task
         'assigned_team_id', // This is the team assigned to the task
+        'maintenance_id'
+    ];
+    protected $casts=[
+        'due_date'=>'datetime:Y-m-d\TH:i:s.z\Z',
+        'start_date'=>'datetime:Y-m-d\TH:i:s.z\Z',
     ];
 
     /**
@@ -88,9 +94,10 @@ class Task extends Model
      *
      * @return HasMany
      */
-    public function instructions(): HasMany
+    public function instructions()
     {
         return $this->hasMany(Instruction::class);
+
     }
 
     /**

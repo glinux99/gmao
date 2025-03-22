@@ -492,7 +492,7 @@
               <Calendar
                 v-model="form.end_date"
                 dateFormat="yy-mm-dd"
-                showTime
+            showTime
                 hourFormat="24"
                 class="w-full md:w-14rem"
                 placeholder="Date de fin"
@@ -502,7 +502,7 @@
             <div class="col-md-6" v-if="form.frequency != 'daily'">
               <label class="fw-bold fs-6 col-form-label">Nombre d'heure journaliere</label>
               <InputText
-                            type="text"
+                            type="number"
                             class="w-full md:w-14rem"
                             placeholder="0"
                             v-model="form.man_hours"
@@ -1045,7 +1045,7 @@ export default {
       start_date: null,
       nbre_tacherons: 0,
       man_hours: 8,
-      materiels: "",
+      materials:[],
       techniciens: [],
       start_date: null,
       end_date: null,
@@ -1143,7 +1143,7 @@ export default {
       form.assigned_team_id = null;
       form.maintenance_cost = null;
       form.nbre_tacherons = 0;
-      form.materiels = "";
+      form.materials = [];
       form.techniciens = [];
       form.instructions = [];
       form.expenses = [];

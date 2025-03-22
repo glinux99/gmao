@@ -77,6 +77,7 @@ class TaskApiController extends Controller
 
     public function update(Request $request, Task $task)
     {
+
         DB::beginTransaction();
         try {
             $taskData = $request->except('instructions');

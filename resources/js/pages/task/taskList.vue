@@ -89,7 +89,7 @@
                                                 <div class="fw-bold text-gray-600 ">
                         Debut : {{ task.start_date }} <br />
                         Duree :
-                        <span class="fs-8 text-center">
+                        <span class=" fs-8 text-center">
                           <span class="badge badge-light-success">
                             {{
                               formatDeadline(
@@ -168,7 +168,7 @@
                                             </div>
                                             <div class="fw-bold text-gray-600 ">
                         Debut : {{ task.start_date }} <br />
-                        Duree : {{ task.start_date }}{{ task.start_date }}{{ task.start_date }}{{ task.start_date }}{{ task.start_date }}
+                        Duree :
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
                             {{
@@ -405,7 +405,7 @@
             v-model="form.start_date"
             dateFormat="yy-mm-dd"
             showTime
-            hourFormat="24"
+                hourFormat="24"
             class="form-control form-control-solid mb-3 mb-lg-0"
             placeholder="Date de debut"
             required
@@ -420,7 +420,7 @@
             v-model="form.due_date"
             dateFormat="yy-mm-dd"
             showTime
-            hourFormat="24"
+                hourFormat="24"
             class="form-control form-control-solid mb-3 mb-lg-0"
             placeholder="Date de fin"
             required
@@ -641,8 +641,6 @@ export default {
             isEditMode.value = true;
             visible.value=true;
             Object.assign(form, task);
-            form.start_date = setDefaultTime(form.start_date);
-            form.due_date = setDefaultTime(form.due_date);
             form.assignToType = task.assigned_user_id ? 'user' : 'team';
             form.assigned_user_id = task.assigned_user_id;
             form.assigned_team_id = task.assigned_team_id;

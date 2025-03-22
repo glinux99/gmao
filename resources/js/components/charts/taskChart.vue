@@ -13,8 +13,8 @@
 
   <script>
   import Chart from "chart.js/auto";
-  import { onMounted, ref, watch } from "vue";
-  import useTasks from '../../services/taskServices.js';
+import { onMounted, ref } from "vue";
+import useTasks from '../../services/taskServices.js';
   export default {
     name: 'TasksChart',
     props: {
@@ -70,7 +70,7 @@
               {
                 label: "Nombre de tâches",
                 data: categoryData.data,
-                backgroundColor: generateRandomColors(categoryData.data.length),
+                backgroundColor: colors.value,
               },
             ],
           },
@@ -109,7 +109,7 @@
               {
                 label: "Nombre de tâches",
                 data: statusData.data,
-                backgroundColor: generateRandomColors(statusData.data.length),
+                backgroundColor: colorsSatus.value,
               },
             ],
           },
@@ -117,33 +117,56 @@
       };
 
       // Helper function to process data for category-based chart
+      const  colors =ref([]);
       const processCategoryData = (data) => {
         const statusCounts = {};
+
             data.forEach((item) => {
-                const status = item.category;
+                const status = item.priority.title;
                 if(status){
                    statusCounts[status] = (statusCounts[status] || 0) + 1;
+                   if(statusCounts[status]==1){
+                    colors.value.push(item.priority.color);
+                   }
                 }
 
             });
             return {
                 labels: Object.keys(statusCounts),
                 data: Object.values(statusCounts),
+                colors: colors.value
             };
       };
-
+      const colorsSatus=ref([]);
       const processStatusData = (data) => {
             const statusCounts = {};
             data.forEach((item) => {
                 const status = item.status;
                 if(status){
                    statusCounts[status] = (statusCounts[status] || 0) + 1;
+                   if( statusCounts[status]==1){
+                        switch(status){
+                            case "pending":
+                                colorsSatus.value.push('#F79306FF');
+                                break;
+                            case "in_progress":
+                                colorsSatus.value.push('#292b2c');
+                                break;
+                            case "completed":
+                                colorsSatus.value.push('#03C503FF');
+                                break;
+                            case "canceled":
+                                colorsSatus.value.push('#000000FF');
+                                break;
+                        }
+                   }
                 }
 
             });
             return {
                 labels: Object.keys(statusCounts),
                 data: Object.values(statusCounts),
+                color: colorsSatus.value
             };
         };
 
