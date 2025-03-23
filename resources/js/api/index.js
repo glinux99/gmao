@@ -66,7 +66,12 @@ instance.interceptors.response.use(
           userToken = null;
           userAuthCookie.removeCookie();
            if(window.location.href != import.meta.env.APP_URL+'login'){
-            window.location.href = "/login";
+            axios.post('/logout').then((e)=>{
+                window.location.href = "/login";
+            }).catch((e)=>{
+
+            })
+
           }
         }
 

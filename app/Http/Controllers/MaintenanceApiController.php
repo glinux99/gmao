@@ -27,7 +27,7 @@ class MaintenanceApiController extends Controller
     public function index(Request $request)
     {
         try {
-            $query = Maintenance::with(['equipment', 'user','expenses', 'materials' => function ($query) {
+            $query = Maintenance::with(['equipment','tasks', 'user','expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');
             }, 'instructions']);
 
@@ -90,7 +90,13 @@ class MaintenanceApiController extends Controller
             // return $maintenance->id;
             foreach($request->expenses  as $expense){
                 $expense['maintenance_id']=$maintenance->id;
-                Depense::create($expense);
+              if($expense->readonly){
+                $readOnly = Depense::where('maintenance_id', $maintenance->id)->get();
+                foreach($readOnly as $read){
+                 $read->delete();
+                }
+              }
+               Depense::create($expense);
             }
             $maintenance->load('equipment');
 
@@ -418,7 +424,13 @@ class MaintenanceApiController extends Controller
             $depIds=[];
             foreach($request->expenses  as $expense){
                 $expense['maintenance_id']=$maintenance->id;
-                Depense::create($expense);
+              if($expense->readonly){
+                $readOnly = Depense::where('maintenance_id', $maintenance->id)->get();
+                foreach($readOnly as $read){
+                 $read->delete();
+                }
+              }
+               Depense::create($expense);
             }
 
             // Sync technicians

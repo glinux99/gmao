@@ -79,10 +79,9 @@
                       <th class="">Description</th>
                       <th class="">Equipment</th>
                       <th class="">Status</th>
-                      <th class="">Work Order</th>
-                      <th class="">Date de debut</th>
+                      <th class="">Taches</th>
+                      <th class="">Budgets</th>
                       <th class="">DeadLine</th>
-                      <th class="">Technicien</th>
                       <th class="text-end">Actions</th>
                     </tr>
                   </thead>
@@ -124,11 +123,18 @@
                           >Inconnu</span
                         >
                       </td>
-                      <td>{{ maintenance.work_order }}</td>
-                      <td>{{ maintenance.start_date }}</td>
+                      <td>
+                            {{  maintenance.tasks.length  }}
+                      </td>
+                      <td>
+                        <span class="fs-8 badge badge-secondary">{{ maintenance.expenses.reduce(
+              (total, expense) => total + (expense.amount || 0),
+              0
+          )* maintenance.tasks.length }} USD</span>
+                      </td>
                       <td>
                         <span class="fs-8">
-                          Debut : {{ maintenance.start_date }} <br />
+                          Debut : {{ formatDate(maintenance.start_date) }} <br />
                         </span>
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
@@ -141,9 +147,6 @@
                             }}</span
                           >
                         </span>
-                      </td>
-                      <td>
-                        {{ maintenance.user ? maintenance.user.name : "N/A" }}
                       </td>
                       <td class="text-end">
                         <!-- <button @click="viewMaintenance(maintenance.id)"
@@ -228,14 +231,17 @@
                       </div>
 
                       <div class="fw-bold text-gray-600 mb-5">
-                        Work Order: {{ maintenance.work_order }}
+                        Buget:  <span class="fs-8 badge badge-secondary">{{ maintenance.expenses.reduce(
+              (total, expense) => total + (expense.amount || 0),
+              0
+          )* maintenance.tasks.length }} USD</span>
                       </div>
                       <div class="fw-bold text-gray-600 mb-5">
                         Technicien:
                         {{ maintenance.user ? maintenance.user.name : "N/A" }}
                       </div>
                       <div class="fw-bold text-gray-600 mb-5">
-                        Debut : {{ maintenance.start_date }} <br />
+                        Debut : {{ formatDate(maintenance.start_date) }} <br />
                         Duree :
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
@@ -1509,7 +1515,18 @@ export default {
       { immediate: true } // Add this to trigger the watcher on component mount
   );
 //   ;
+const formatDate=(dateLocal)=>{
+    const date = new Date(dateLocal);
+    return new Intl.DateTimeFormat('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    }).format(date);
+}
     return {
+        formatDate,
         expenses,
         addExpense,
     removeExpense,

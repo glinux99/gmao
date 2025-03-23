@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Depense;
 use App\Models\StockHistory;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\DatabaseNotification;
@@ -50,6 +52,22 @@ class HomeController extends Controller
         ->get();
         // dd(DatabaseNotification::get());
         // Artisan::call('schedule:work');
-        return view('home', ['categories'=>$categories, 'months'=>$months, 'days'=>$days, 'weeks'=>$weeks]);
+        $depenses = Depense::all();
+        $total =0;
+        foreach($depenses as $depense){
+            $t= Task ::where('maintenance_id', $depense->maintenance_id)->count();
+            $total += $t* $depense->amount;
+        }
+        $totalRealised =0;
+        foreach($depenses as $depense){
+            $t= Task ::where('maintenance_id', $depense->maintenance_id)->where('status', 'completed')->count();
+            $totalRealised += $t* $depense->amount;
+        }
+        $maintenanceCancel =0;
+        foreach($depenses as $depense){
+            $t= Task ::where('maintenance_id', $depense->maintenance_id)->where('status', 'canceled')->count();
+            $maintenanceCancel += $t* $depense->amount;
+        }
+        return view('home', ['maintenanceCancel'=>$maintenanceCancel,'maintenanceRealise'=>$totalRealised,'maintenanceBuget'=>$total, 'categories'=>$categories, 'months'=>$months, 'days'=>$days, 'weeks'=>$weeks]);
     }
 }
