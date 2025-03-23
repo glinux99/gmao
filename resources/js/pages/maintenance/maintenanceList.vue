@@ -130,7 +130,7 @@
                         <span class="fs-8 badge badge-secondary">{{ maintenance.expenses.reduce(
               (total, expense) => total + (expense.amount || 0),
               0
-          )* maintenance.tasks.length }} USD</span>
+          )* (maintenance.tasks.length>0 ? maintenance.tasks.length: 1) }} USD</span>
                       </td>
                       <td>
                         <span class="fs-8">
@@ -512,6 +512,7 @@
                             class="w-full md:w-14rem"
                             placeholder="0"
                             v-model="form.man_hours"
+                            @input="updateTacheronsExpense"
                         />
             </div>
           </div>
@@ -1165,11 +1166,7 @@ export default {
             .includes(searchQuery.value.toLowerCase()) ||
           (maintenance.equipment &&
             maintenance.equipment.name
-              .toLowerCase()
-              .includes(searchQuery.value.toLowerCase())) ||
-          maintenance.work_order
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase()) ||
+              .includes(searchQuery.value.toLowerCase()))  ||
           maintenance.status
             .toLowerCase()
             .includes(searchQuery.value.toLowerCase()) ||
@@ -1494,7 +1491,7 @@ export default {
   };
   const updateTacheronsExpense=()=>{
     const existingTacheronsExpenseIndex=form.expenses.findIndex((expense)=>expense.title==='Cout de Tacherons');
-    const tacheronsAmount=form.nbre_tacherons * form.price_tacherons;
+    const tacheronsAmount=form.nbre_tacherons * form.price_tacherons * (form.man_hours>0 ? form.man_hours : 1);
 
     if(existingTacheronsExpenseIndex !== -1){
         form.expenses[existingTacheronsExpenseIndex].amount = tacheronsAmount;
@@ -1505,8 +1502,8 @@ export default {
 
   }
   watch (
-      () => [form.nbre_tacherons, form.price_tacherons],
-      ([newNbreTacherons, newPriceTacherons]) => {
+      () => [form.nbre_tacherons, form.price_tacherons, form.man_hours],
+      ([newNbreTacherons, newPriceTacherons, newMan_hours]) => {
           // Only update if both values are valid numbers
           if (!isNaN(newNbreTacherons) && !isNaN(newPriceTacherons) && newNbreTacherons >= 0 && newPriceTacherons >= 0) {
             updateTacheronsExpense();
@@ -1525,7 +1522,14 @@ const formatDate=(dateLocal)=>{
         minute: 'numeric'
     }).format(date);
 }
+;   const statusOptions = ref([
+            { label: 'Disponible', value: 'available' },
+            { label: 'En cours d\'utilisation', value: 'in_use' },
+            { label: 'En maintenance', value: 'under_maintenance' },
+            { label: 'Endommagé', value: 'broken' },
+        ]);
     return {
+        statusOptions,
         formatDate,
         expenses,
         addExpense,

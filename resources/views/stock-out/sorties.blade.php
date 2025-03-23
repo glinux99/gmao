@@ -271,7 +271,7 @@
                                         <!--end::Title-->
                                         <!--begin::Info-->
                                         <div class="text-end py-lg-0 py-2">
-                                            <span class="text-gray-800 fw-boldest fs-3"> {{ $sortie->quantity }} {{ $sortie->category->unity->abbreviation }}</span>
+                                            <span class="text-gray-800 fw-boldest fs-3"> {{ $sortie->quantity }} {{ $sortie->category->unity->abbreviation ?? '' }}</span>
                                             <span class="text-gray-400 fs-7 fw-bold d-block d-none">
 
                                             </span>

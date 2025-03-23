@@ -323,7 +323,7 @@ export default {
             { label: 'Disponible', value: 'available' },
             { label: 'En cours d\'utilisation', value: 'in_use' },
             { label: 'En maintenance', value: 'under_maintenance' },
-            { label: 'Cassé', value: 'broken' },
+            { label: 'Endommagé', value: 'broken' },
         ]);
 
         onMounted(async () => {

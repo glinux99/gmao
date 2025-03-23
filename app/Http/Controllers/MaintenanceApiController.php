@@ -88,15 +88,20 @@ class MaintenanceApiController extends Controller
             // Create the maintenance record
             $maintenance = Maintenance::create($request->except(['daysOfWeek','techniciens', 'materials', 'instructions']));
             // return $maintenance->id;
+            $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
+            foreach($allDep as $dep){
+                $dep->delete();
+            }
             foreach($request->expenses  as $expense){
                 $expense['maintenance_id']=$maintenance->id;
-              if($expense->readonly){
-                $readOnly = Depense::where('maintenance_id', $maintenance->id)->get();
-                foreach($readOnly as $read){
-                 $read->delete();
-                }
-              }
-               Depense::create($expense);
+                if(isset($expense['readonly'])){
+                    $readOnly = Depense::where('maintenance_id', $maintenance->id)
+                    ->where('readonly', 1)
+                    ->first()->firstOrCreate($expense);
+                  }
+                  else{
+                    Depense::updateOrCreate($expense);
+                  }
             }
             $maintenance->load('equipment');
 
@@ -422,15 +427,22 @@ class MaintenanceApiController extends Controller
 
             $maintenance->update($request->all());
             $depIds=[];
+            $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
+            foreach($allDep as $dep){
+                $dep->delete();
+            }
             foreach($request->expenses  as $expense){
                 $expense['maintenance_id']=$maintenance->id;
-              if($expense->readonly){
-                $readOnly = Depense::where('maintenance_id', $maintenance->id)->get();
-                foreach($readOnly as $read){
-                 $read->delete();
-                }
+                // return $expense;
+              if(isset($expense['readonly'])){
+                $readOnly = Depense::where('maintenance_id', $maintenance->id)
+                ->where('readonly', true)
+                ->firstOrCreate($expense);
               }
-               Depense::create($expense);
+              else{
+                Depense::updateOrCreate($expense);
+              }
+
             }
 
             // Sync technicians
@@ -456,12 +468,27 @@ class MaintenanceApiController extends Controller
                 }
             }
             //schedule the next task
-            $tasks = Task::where('maintenance_id', $maintenance->id)->get();
+            $tasks = Task::where('maintenance_id', $maintenance->id)
+            ->where('status', '!=', 'completed')
+            ->where('status', '!=', 'canceled')
+            ->get();
             foreach($tasks as $task){
                 $task->delete();
             }
             $this->scheduleNextTasks($maintenance);
-
+            $duplicateTasks= Task::where('maintenance_id', $maintenance->id)
+            ->select('start_date', 'due_date', DB::raw('count(*) as count'))
+            ->groupBy('start_date', 'due_date')
+            ->having('count', '>',1)->get();
+            foreach($duplicateTasks as $duplicateTask){
+                $taskIds = Task::where('maintenance_id', $maintenance->id)
+                ->where('start_date', $duplicateTask->start_date)
+                ->where('due_date', $duplicateTask->due_date)
+                ->pluck('id')
+                ->toArray();
+                array_shift($taskIds);
+                Task::whereIn('id',$taskIds)->delete();
+            }
             DB::commit();
             return response()->json(['data' => $maintenance->load(['technicians','expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');

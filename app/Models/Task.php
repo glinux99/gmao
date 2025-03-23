@@ -23,7 +23,9 @@ class Task extends Model
         'task_id', // This is the parent task ID (for subtasks)
         'assigned_date',
         'start_date',
+        'start_date_user',
         'due_date',
+        'due_date_user',
         'delay',
         'description',
         'project_id',

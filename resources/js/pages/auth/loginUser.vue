@@ -60,9 +60,13 @@
         </div>
         <div class="text-center">
             <button type="submit" class="btn btn-lg w-100 mb-5" style="background: #e15f14">
-                <span class="indicator-label text-white">
-                    Continuer
-                </span>
+                <span class="indicator-label text-white" v-if="!isLoading">Se connecter </span>
+                    <span v-else class="text-white">
+                        Svp patienter...
+                        <span
+                        class="spinner-border spinner-border-sm align-middle ms-2"
+                        ></span>
+                    </span>
             </button>
         </div>
     </form>
@@ -84,12 +88,14 @@ export default {
             email: '',
             password: '',
             remember: false,
-        })
+        });
+        const isLoading= ref(false);
         const   submitForm= async()=> {
 
             try {
+                isLoading.value= true;
                 const response = await LoginService.login({...form});
-                console.log(response)
+                console.log(response);
                 // const token = response.token;
                 // toast.add({severity:'success', summary: 'Success', detail:'Login successful!', life: 3000});
 
@@ -99,8 +105,11 @@ export default {
                 setTimeout(() => {
                   window.location.href = "/home";
                 }, 0);
+
+                isLoading.value= false;
             } catch (error) {
                 // Handle errors (e.g., show validation errors)
+                isLoading.value= false;
                 if (error.response && error.response.status === 422) {
                     errors = error.response.data.errors;
                     toast.add({severity:'error', summary: 'Error', detail:'Invalid credentials!', life: 3000});
@@ -118,6 +127,7 @@ export default {
             toast,
             removeCookie,
             form, submitForm, error, errors,
+            isLoading,
         }
     }
     }

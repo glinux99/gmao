@@ -37,8 +37,8 @@
                     <i class="ki-duotone ki-pause fs-2"></i> Mettre en Pause
                   </button>
                   <button v-else-if="task.status !== 'completed' && progressPercentage < 100" class="btn btn-info"
-                    @click="updateTaskInstructions">
-                    <i class="ki-duotone ki-refresh fs-2"></i> Mettre à Jour les instructions
+                    @click="updateTaskOnly">
+                    <i class="ki-duotone ki-refresh fs-2"></i> Mettre à Jour la tache
                   </button>
                 </div>
               </div>
@@ -84,18 +84,35 @@
                   <!--begin::Col-->
                   <div class="col-md-6">
                     <div class="d-flex flex-column gap-3">
-                      <div class="d-flex align-items-center gap-2">
+                      <div class="">
                         <span class="fw-bold">Date de début:</span>
-                        <span>{{ task.start_date }}</span>
+                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.start_date_user) }}</span>
+                        <Calendar v-else
+                            v-model="form.start_date_user"
+                            showTime
+                            hourFormat="24"
+                            class="w-full md:w-14rem"
+                            placeholder="Date de debut"
+                            required
+                        />
                       </div>
-                      <div class="d-flex align-items-center gap-2">
+                      <div class="">
                         <span class="fw-bold">Date de fin:</span>
-                        <span>{{ task.due_date }}</span>
+                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.due_date_user) }}</span>
+                        <Calendar v-else
+                            v-model="form.due_date_user"
+                            showTime
+                            hourFormat="24"
+                            class="w-full md:w-14rem"
+                            placeholder="Date de debut"
+                            required
+                        />
+
                       </div>
                       <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold">Durée:</span>
                         <span class="badge badge-light-success">
-                          {{ formatDeadline(task.due_date, task.start_date, task) }}
+                          {{ formatDeadline(form.due_date_user ?? task.due_date_user, form.start_date_user ?? task.start_date_user, task) }}
                         </span>
                       </div>
                       <div class="d-flex align-items-center gap-2">
@@ -202,7 +219,7 @@
   </template>
 
   <script>
-import { onMounted, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import useInstructions from "../../services/instructionServices";
 import useTasks from "../../services/taskServices";
 
@@ -212,10 +229,17 @@ import useTasks from "../../services/taskServices";
       const { updateInstruction, getInstruction } = useInstructions();
       const progressPercentage = ref(0);
       const taskId = ref(0);
-
+        const form=reactive({
+            start_date_user: null,
+            due_date_user: null,
+            status : '',
+        });
       onMounted(async () => {
         taskId.value = window.location.pathname.split("/")[2];
         await getTask(taskId.value);
+        Object.assign(form, task.value);
+        form.start_date_user = form.start_date_user? form.start_date_user: task.value.due_date;
+        form.due_date_user = form.due_date_user? form.due_date_user: task.value.due_date;
         calculateProgress();
 
       });
@@ -304,19 +328,29 @@ import useTasks from "../../services/taskServices";
       };
 
       // New functions to handle task completion/pause
+      const updateTaskOnly=async()=>{
+        await updateTask(taskId.value, form);
+        await getTask(taskId.value); // Refresh task data
+      }
       const completeTask = async () => {
         try {
-          await updateTask(taskId.value, { status: "completed" });
+            form.status = "completed";
+          await updateTask(taskId.value, form);
           await getTask(taskId.value); // Refresh task data
         } catch (error) {
           console.error("Error completing task:", error);
           // Handle error (e.g., show error message to user)
         }
+        form.start_date_user=null;
+        form.due_date_user=null;
+        form.status=null;
       };
 
       const pauseTask = async () => {
         try {
-          await updateTask(taskId.value, { status: "pending" });
+            form.status="pending";
+
+          await updateTask(taskId.value, form);
           await getTask(taskId.value); // Refresh task data
         } catch (error) {
           console.error("Error pausing task:", error);
@@ -348,7 +382,20 @@ import useTasks from "../../services/taskServices";
           calculateProgress();
         }
       };
+      const formatDate=(dateLocal)=>{
+    const date = new Date(dateLocal);
+    return new Intl .DateTimeFormat('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    }).format(date);
+}
       return {
+        updateTaskOnly,
+        form,
+        formatDate,
         task,
         isLoading,
         progressPercentage,

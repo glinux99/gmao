@@ -58,7 +58,11 @@
                                     </thead>
                                     <tbody class="fw-semibold text-gray-600">
                                         <tr v-for="task in filteredTasks" :key="task.id" >
-                                            <td>{{ task.description }}</td>
+                                            <td>
+                                                <span class="text-gray-600 fs-8">
+                                                    {{ task.description }}
+                                                </span>
+                                            </td>
                                             <td>
                                                 <span class="badge" :style="'background-color: '+task.priority.color">
                                                     <span class="text-muted mx-3">
@@ -87,7 +91,7 @@
                                             <td class="fs-9">
 
                                                 <div class="fw-bold text-gray-600 ">
-                        Debut : {{ task.start_date }} <br />
+                        Debut : {{ formatDate(task.start_date) }} <br />
                         Duree :
                         <span class=" fs-8 text-center">
                           <span class="badge badge-light-success">
@@ -167,7 +171,7 @@
                                                 Projet : {{ task.project ? task.project.name : 'N/A' }}
                                             </div>
                                             <div class="fw-bold text-gray-600 ">
-                        Debut : {{ task.start_date }} <br />
+                        Debut : {{ formatDate(task.start_date) }} <br />
                         Duree :
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
@@ -686,9 +690,13 @@ export default {
         const filteredTasks = computed(() => {
             return tasks.value.filter(task => {
                 return task.description.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                       task.priority.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
+                       task.priority.title.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
                        task.status.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-                       (task.category && task.category.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
+                       (task.category && task.category.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                       (task.project && task.project.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                       (task.start_date.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                       (task.due_date.toLowerCase().includes(searchQuery.value.toLowerCase()))
+                       ;
             });
         });
         const toggleView = () => {
@@ -757,7 +765,18 @@ export default {
       const closeModal=()=>{
         visible.value=false;
       }
+      const formatDate=(dateLocal)=>{
+    const date = new Date(dateLocal);
+    return new Intl.DateTimeFormat('fr-FR', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric'
+    }).format(date);
+}
         return {
+            formatDate,
             addInstruction,
             formatDeadline,
             showTimeFields,

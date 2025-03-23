@@ -242,7 +242,7 @@
                             <!--begin::Lable-->
                            <div class="d-flex flex-column align-items-center">
                             <span class="fw-bolder text-warning py-1">+
-                                {{ $entry->quantity }} {{ $entry->category->unity->abbreviation }}
+                                {{ $entry->quantity }} {{ $entry->category->unity->abbreviation ?? ""}}
                             </span>
                             <span class="fw-bolder text-success py-1">
                                 {{ $entry->etat }}

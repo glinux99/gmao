@@ -31,7 +31,7 @@
                             </div>
                             <div class="col-md-6 d-flex align-items-end justify-content-end">
                                 <span class="fw-bolder text-success py-1 fs-1">
-                                    {{ $entry->quantity }} {{ $entry->category->unity->abbreviation }}
+                                    {{ $entry->quantity }} {{ $entry->category->unity->abbreviation ?? "" }}
                                 </span>
                             </div>
                         </div>
@@ -98,7 +98,7 @@
                             class="form-control form-control-solid mb-3 mb-lg-0"
                             placeholder="0" value="{{ $entry->quantity }}">
                             <span class="mx-5 fs-3 fw-bolder">
-                                {{ $entry->category->unity->abbreviation }}
+                                {{ $entry->category->unity->abbreviation ?? "" }}
                             </span>
                         </div>
 

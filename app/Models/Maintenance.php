@@ -28,7 +28,6 @@ class Maintenance extends Model
         'assigned_user_id',
         'assigned_team_id',
         'frequency',
-        'daysOfWeek'
     ];
 
     public function equipment()

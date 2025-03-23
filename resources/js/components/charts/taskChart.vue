@@ -1,11 +1,11 @@
 <template>
     <div class="row">
         <div class="col-md-6">
-            <h2 class="text-muted mb-3">Taches par categorie</h2>
+            <h2 class="text-muted mb-3">Tâches par priorité</h2>
             <canvas :id="barChartId"></canvas>
         </div>
-        <div class="col-md-6 mh-200px">
-            <h2 class="text-muted mb-3">Taches par status</h2>
+        <div class="col-md-6 mh-200px" >
+            <h2 class="text-muted mb-3">Tâches par status</h2>
             <canvas :id="pieChartId"></canvas>
         </div>
     </div>

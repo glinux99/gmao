@@ -29,7 +29,7 @@
                             </div>
                             <div class="col-md-6 d-flex align-items-end justify-content-end">
                                 <span class="fw-bolder text-success py-1 fs-1">
-                                    {{ $entry->quantity }} {{ $entry->category->unity->abbreviation }}
+                                    {{ $entry->quantity }} {{ $entry->category->unity->abbreviation ?? "" }}
                                 </span>
                             </div>
                         </div>
@@ -106,7 +106,7 @@
                             class="form-control form-control-solid mb-3 mb-lg-0"
                             placeholder="0" value="{{ $entry->category->id }}"  hidden>
                             <span class="mx-5 fs-3 fw-bolder">
-                                {{ $entry->category->unity->abbreviation }}
+                                {{ $entry->category->unity->abbreviation ?? "" }}
                             </span>
                         </div>
 
@@ -142,6 +142,7 @@
 
                         <!--end::Col-->
                     </div>
+                    @if ($entry->category->is_remise)
                     <div class="row mb-6">
                         <!--begin::Label-->
                         <label class="col-lg-4 col-form-label fw-bold fs-6">
@@ -169,6 +170,7 @@
 
                         <!--end::Col-->
                     </div>
+                    @endif
                 </div>
                 <div class="d-flex justify-content-end">
                     <button type="submit" class="btn btn-primary"

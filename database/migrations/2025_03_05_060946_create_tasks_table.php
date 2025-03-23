@@ -32,7 +32,9 @@ return new class extends Migration
             $table->foreignId('task_id')->nullable()->constrained('tasks')->nullOnDelete();
             $table->date('assigned_date')->nullable();
             $table->date('start_date')->nullable();
+            $table->date('start_date_user')->nullable();
             $table->date('due_date')->nullable();
+            $table->date('due_date_user')->nullable();
             $table->timestamps();
         });
     }
