@@ -86,22 +86,15 @@ class MaintenanceApiController extends Controller
         try {
             DB::beginTransaction();
             // Create the maintenance record
-            $maintenance = Maintenance::create($request->except(['daysOfWeek','techniciens', 'materials', 'instructions']));
+            $maintenance = Maintenance::create($request->except(['daysOfWeek', 'techniciens', 'materials', 'instructions']));
             // return $maintenance->id;
             $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
-            foreach($allDep as $dep){
+            foreach ($allDep as $dep) {
                 $dep->delete();
             }
-            foreach($request->expenses  as $expense){
-                $expense['maintenance_id']=$maintenance->id;
-                if(isset($expense['readonly'])){
-                    $readOnly = Depense::where('maintenance_id', $maintenance->id)
-                    ->where('readonly', 1)
-                    ->first()->firstOrCreate($expense);
-                  }
-                  else{
-                    Depense::updateOrCreate($expense);
-                  }
+            foreach ($request->expenses as $expense) {
+                $expense['maintenance_id'] = $maintenance->id;
+                Depense::create($expense);
             }
             $maintenance->load('equipment');
 
@@ -120,19 +113,16 @@ class MaintenanceApiController extends Controller
                 }
             }
 
-            // Create initial task if start_date is today
-            // if (Carbon::parse($maintenance->start_date)->isToday()) {
-            //     $task = $this->createTaskFromMaintenance($maintenance);
-            //      // Handle instructions
+            // Handle instructions
 
-                 if ($request->instructions && Count($request->instructions) > 0) {
-                    foreach ($request->instructions as $instructionData) {
-                        $instructionData['maintenance_id']= $maintenance->id;//no necessary line
-                        $instruction = new Instruction($instructionData);
-                        $maintenance->instructions()->save($instruction);
-                    }
+            if ($request->instructions && Count($request->instructions) > 0) {
+                foreach ($request->instructions as $instructionData) {
+                    $instructionData['maintenance_id'] = $maintenance->id; //no necessary line
+                    $instruction = new Instruction($instructionData);
+                    $maintenance->instructions()->save($instruction);
                 }
-            // }
+            }
+
             // Schedule next tasks
             // return $maintenance;/
             $this->scheduleNextTasks($maintenance);
@@ -151,33 +141,34 @@ class MaintenanceApiController extends Controller
         }, 'instructions'])]);
     }
 
-    protected function createTaskFromMaintenance(Maintenance $maintenance)
+    protected function createTaskFromMaintenance(Maintenance $maintenance, $start_date, $due_date)
     {
-        $end_date = Carbon::parse($maintenance->start_date)->addHours((int) $maintenance->man_hours);
+        //dd($start_date);
+        $end_date = Carbon::parse($start_date)->addHours((int) $maintenance->man_hours);
         $taskData = [
-            'description' => 'Maintenance sur l\'équipement ' . ($maintenance->equipment->name ?? "N/A") . ' : ' . $maintenance->description ,
+            'description' => 'Maintenance sur l\'équipement ' . ($maintenance->equipment->name ?? "N/A") . ' : ' . $maintenance->description,
             'priority_id' => 2, // Default priority to Moyen
             'status' => 'pending',
             'user_id' => $maintenance->assigned_user_id,
             'assigned_user_id' => $maintenance->assigned_user_id,
             'assigned_team_id' => $maintenance->assigned_team_id,
             'equipment_id' => $maintenance->equipment_id,
-            'start_date' => $maintenance->start_date,
-            'due_date' => $end_date,
+            'start_date' => $start_date,
+            'due_date' => $end_date->format('Y-m-d H:i:s'), // Use $end_date here
             'type' => 'Maintenance',
-            'maintenance_id'=>$maintenance->id,
+            'maintenance_id' => $maintenance->id,
             'project_id' => $maintenance->equipment->project_id ?? null,
             'owner' => $maintenance->assigned_user_id,
         ];
         $task = Task::create($taskData);
         $instructions = Instruction::where('maintenance_id', $maintenance->id)->get();
-        foreach($instructions as $instruction){
-            $instruction['task_id']=$task->id;
+        foreach ($instructions as $instruction) {
+            $instruction['task_id'] = $task->id;
             Instruction::create([
-                'task_id'=>$task->id,
-                'description'=>$instruction->description,
-                'response_type'=>$instruction->response_type,
-                'value'=>$instruction->value
+                'task_id' => $task->id,
+                'description' => $instruction->description,
+                'response_type' => $instruction->response_type,
+                'value' => $instruction->value
             ]);
         }
         $this->sendTaskNotifications($task, $maintenance);
@@ -270,15 +261,21 @@ class MaintenanceApiController extends Controller
     protected function scheduleDailyTasks(Maintenance $maintenance, Carbon $start_date, Carbon $end_date)
     {
         $currentDate = $start_date->copy();
+
         $h = $start_date->hour;
         $m = $start_date->minute;
         $s = $start_date->second;
+        $t = $start_date->microsecond;
+
         while ($currentDate->lte($end_date)) {
-            $task = $this->createTaskFromMaintenance($maintenance);
-            $task->update([
-                'start_date' => $currentDate->setTime($h, $m, $s)->format('Y-m-d H:i:s'),
-                'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-            ]);
+            // Set the time components
+            $currentDateTime = $currentDate->copy()->setTime($h, $m, $s, $t);
+
+            $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+            $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+
+            $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate, $due_date);
+
             $currentDate->addDay();
         }
     }
@@ -297,11 +294,13 @@ class MaintenanceApiController extends Controller
                     $h = $start_date->hour;
                     $m = $start_date->minute;
                     $s = $start_date->second;
-                    $task = $this->createTaskFromMaintenance($maintenance);
-                    $task->update([
-                        'start_date' => $currentDate->setTime($h, $m, $s)->format('Y-m-d H:i:s'),
-                        'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-                    ]);
+                    $t = $start_date->microsecond;
+                     // Set the time components
+                    $currentDateTime = $currentDate->copy()->setTime($h, $m, $s, $t);
+
+                    $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+                    $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+                    $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate, $due_date);
                 }
                 // Move to the next day
                 $currentDate->addDay();
@@ -311,17 +310,18 @@ class MaintenanceApiController extends Controller
 
     protected function scheduleBiMonthlyTasks(Maintenance $maintenance, Carbon $start_date, Carbon $end_date)
     {
-        $currentDate = $start_date->copy();
         $h = $start_date->hour;
         $m = $start_date->minute;
         $s = $start_date->second;
-        $t=$start_date->microsecond;
+        $t= $start_date->microsecond;
+        $currentDate = $start_date->setTime($h, $m, $s, $t)->copy();
         while ($currentDate->lte($end_date)) {
-            $task = $this->createTaskFromMaintenance($maintenance);
-            $task->update([
-                'start_date' => $currentDate->setTime($h, $m, $s,$t)->format('Y-m-d H:i:s'),
-                'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-            ]);
+            $currentDateTime = $currentDate->copy();
+
+            $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+            $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+
+            $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate,$due_date);
             $currentDate->addMonth(2);
         }
     }
@@ -332,12 +332,15 @@ class MaintenanceApiController extends Controller
         $h = $start_date->hour;
         $m = $start_date->minute;
         $s = $start_date->second;
+        $t= $start_date->microsecond;
         while ($currentDate->lte($end_date)) {
-            $task = $this->createTaskFromMaintenance($maintenance);
-            $task->update([
-                'start_date' => $currentDate->setTime($h, $m, $s)->format('Y-m-d H:i:s'),
-                'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-            ]);
+              // Set the time components
+              $currentDateTime = $currentDate->copy()->setTime($h, $m, $s, $t);
+
+              $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+              $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+
+            $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate,$due_date);
             $currentDate->addQuarter();
         }
     }
@@ -348,12 +351,14 @@ class MaintenanceApiController extends Controller
         $h = $start_date->hour;
         $m = $start_date->minute;
         $s = $start_date->second;
+        $t= $start_date->microsecond;
         while ($currentDate->lte($end_date)) {
-            $task = $this->createTaskFromMaintenance($maintenance);
-            $task->update([
-                'start_date' => $currentDate->setTime($h, $m, $s)->format('Y-m-d H:i:s'),
-                'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-            ]);
+             // Set the time components
+             $currentDateTime = $currentDate->copy()->setTime($h, $m, $s, $t);
+
+             $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+             $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+            $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate,$due_date);
             $currentDate->addMonths(6);
         }
     }
@@ -364,12 +369,13 @@ class MaintenanceApiController extends Controller
         $h = $start_date->hour;
         $m = $start_date->minute;
         $s = $start_date->second;
+        $t= $start_date->microsecond;
         while ($currentDate->lte($end_date)) {
-            $task = $this->createTaskFromMaintenance($maintenance);
-            $task->update([
-                'start_date' => $currentDate->setTime($h, $m, $s)->format('Y-m-d H:i:s'),
-                'due_date' =>  $currentDate->addHour((int) $maintenance->man_hours)->format('Y-m-d H:i:s'),
-            ]);
+            $currentDateTime = $currentDate->copy()->setTime($h, $m, $s, $t);
+
+            $taskStartDate = $currentDateTime->format('Y-m-d H:i:s');
+            $due_date = $currentDateTime->copy(); // Create a copy for due date calculation
+            $task = $this->createTaskFromMaintenance($maintenance, $taskStartDate,$due_date);
             $currentDate->addYear();
         }
     }
@@ -480,6 +486,7 @@ class MaintenanceApiController extends Controller
             ->select('start_date', 'due_date', DB::raw('count(*) as count'))
             ->groupBy('start_date', 'due_date')
             ->having('count', '>',1)->get();
+            // return $duplicateTasks;
             foreach($duplicateTasks as $duplicateTask){
                 $taskIds = Task::where('maintenance_id', $maintenance->id)
                 ->where('start_date', $duplicateTask->start_date)

@@ -768,6 +768,7 @@ export default {
       const formatDate=(dateLocal)=>{
     const date = new Date(dateLocal);
     return new Intl.DateTimeFormat('fr-FR', {
+        timeZone: 'Africa/Kigali',
         year: 'numeric',
         month: 'long',
         day: 'numeric',
