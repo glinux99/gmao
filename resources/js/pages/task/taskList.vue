@@ -47,13 +47,14 @@
                                     id="kt_permissions_table">
                                     <thead>
                                         <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-125px">Titre</th>
-                                            <th class="min-w-125px">Priorité</th>
-                                            <th class="min-w-125px">Status</th>
-                                            <th class="min-w-125px">Projet</th>
-                                            <th class="min-w-125px">Responsable</th>
-                                            <th class="min-w-125px">Duree</th>
-                                            <th class="text-end min-w-100px">Actions</th>
+                                            <th class="">Titre</th>
+                                            <th class="">Priorité</th>
+                                            <th class="">Status</th>
+                                            <th class="">Projet</th>
+                                            <th class="">Responsable</th>
+                                            <th class="">Technicien</th>
+                                            <th class="">Duree</th>
+                                            <th class="">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody class="fw-semibold text-gray-600">
@@ -86,8 +87,16 @@
                                             </td>
                                             <td>{{ task.project ? task.project.name  : 'N/A' }}</td>
                                             <td><span class="badge badge-light-primary">
+                                                {{ task.owner_user? task.owner_user.name : 'N/A'  }}
+                                            </span>
+                                            <br>
+
+                                            </td>
+                                            <td>
+                                                <span class="badge badge-light-primary">
                                                 {{ task.assigned_user? task.assigned_user.name : 'N/A'  }}
-                                            </span></td>
+                                            </span>
+                                            </td>
                                             <td class="fs-9">
 
                                                 <div class="fw-bold text-gray-600 ">
@@ -694,6 +703,8 @@ export default {
                        task.status.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
                        (task.category && task.category.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
                        (task.project && task.project.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                       (task.owner_user  && task.owner_user.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+                       (task.assigned_user && task.assigned_user.name.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
                        (task.start_date.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
                        (task.due_date.toLowerCase().includes(searchQuery.value.toLowerCase()))
                        ;

@@ -369,7 +369,7 @@
 
                                                             </td>
                                                             <td>
-                                                                {{ $category->unity? $category->unity->designation ?? "-"}}
+                                                                {{ $category->unity? $category->unity->name : "-"}}
                                                             </td>
                                                             <td data-order="2023-10-07T02:43:51+02:00" class="text-center">
                                                                 {{ $category->caracteristique}}

@@ -86,7 +86,7 @@
                     <div class="d-flex flex-column gap-3">
                       <div class="">
                         <span class="fw-bold">Date de début:</span>
-                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.start_date_user) }}</span>
+                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.start_date_user ?? task.start_date) }}</span>
                         <Calendar v-else
                             v-model="form.start_date_user"
                             showTime
@@ -98,7 +98,7 @@
                       </div>
                       <div class="">
                         <span class="fw-bold">Date de fin:</span>
-                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.due_date_user) }}</span>
+                        <span v-if="task.status=='completed'"> &nbsp;{{ formatDate(task.due_date_user ?? task.due_date) }}</span>
                         <Calendar v-else
                             v-model="form.due_date_user"
                             showTime
@@ -112,7 +112,8 @@
                       <div class="d-flex align-items-center gap-2">
                         <span class="fw-bold">Durée:</span>
                         <span class="badge badge-light-success">
-                          {{ formatDeadline(form.due_date_user ?? task.due_date_user, form.start_date_user ?? task.start_date_user, task) }}
+                          {{ formatDeadline(form.due_date_user ? form.due_date_user: task.due_date_user ?  task.due_date_user: task.due_date, form.start_date_user ? form.start_date_user : task.start_date_user ?task.start_date_user: task.start_date, task) }}
+
                         </span>
                       </div>
                       <div class="d-flex align-items-center gap-2">
@@ -238,8 +239,6 @@ import useTasks from "../../services/taskServices";
         taskId.value = window.location.pathname.split("/")[2];
         await getTask(taskId.value);
         Object.assign(form, task.value);
-        form.start_date_user = form.start_date_user? form.start_date_user: task.value.due_date;
-        form.due_date_user = form.due_date_user? form.due_date_user: task.value.due_date;
         calculateProgress();
 
       });
