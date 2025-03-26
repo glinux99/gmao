@@ -40,7 +40,7 @@
 </style>
                 <!-- Google tag (gtag.js) -->
                  {{-- @vite(['resources/js/app.js']) --}}
-    @vite(['resources/js/app.js', 'resources/css/app.css'])
+    @vite(['resources/js/app.js'])
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-52YZ3XGZJ6"></script>
 <script>
 window.dataLayer = window.dataLayer || [];

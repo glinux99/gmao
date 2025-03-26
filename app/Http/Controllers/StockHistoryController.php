@@ -23,7 +23,7 @@ class StockHistoryController extends Controller
         // \Illuminate\Support\Facades\Config::set('mail.mailers.smtp.password', 12345);
         // dd(Config('mail.mailers.smtp.username'));
         $sorties=StockHistory::where('type', 'withdraw')->with(['category', 'demandeur'])->orderByDesc('id')->get();
-        $technicians= User::where('type', 'technician')->get();
+        $technicians= User::get();
         $categories = Category::all();
         return view('stock-out.sorties',['sorties'=>$sorties, 'technicians'=>$technicians, 'categories'=>$categories]);
     }
@@ -50,10 +50,14 @@ class StockHistoryController extends Controller
                                             "demandeur_id"=>$request->demandeur_id,
                                             "category_id"=>$request->category_id,
                                             "quantity"=>$request->quantity,
+                                            "quantity_restante"=> 0,
                                             // "quantity_restante"=>$stock->quantity_restante ?? 0 - $request->quantity,
                                             "etat"=>$request->etat,
                                             "type"=>"withdraw"
                                         ]);
+                                    if(!$stock){
+                                        $stock= $stock2;
+                                    }
                                         if(($stock->quantity_restante - $request->quantity)<=0){
                                             // $stock->delete();
                                             $stock2->delete();

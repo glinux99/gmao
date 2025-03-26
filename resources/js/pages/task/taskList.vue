@@ -65,7 +65,7 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <span class="badge" :style="'background-color: '+task.priority.color">
+                                                <span class="badge" :style="'background-color: '+task.priority.color ?? 'dark'">
                                                     <span class="text-muted mx-3">
                                                         {{ task.priority.title }}
                                                     </span>
@@ -157,7 +157,7 @@
                                                 Description: {{ task.description }}
                                             </div>
                                             <div class="fw-bold text-gray-600 mb-5">
-                                                Priorité: <span class="badge" :style="'background-color: '+task.priority.color">
+                                                Priorité: <span class="badge" :style="'background-color: '+task.priority.color ?? 'dark'">
                                                     <span class="text-muted mx-3">
                                                         {{ task.priority.title }}
                                                     </span>
@@ -322,6 +322,7 @@
             optionValue="id"
             placeholder="Sélectionner une priorité"
             class="w-full md:w-14rem"
+            required
           />
         </div>
         </div>

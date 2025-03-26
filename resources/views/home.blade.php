@@ -8,6 +8,8 @@
         <!--begin::Statistics Widget 5-->
         <a href="#" class="card bg-body-white hoverable card-xl-stretch mb-xl-8">
             <!--begin::Body-->
+            @hasrole('technicien')
+            @else
             <div class="card-body">
                 <i class="ki-duotone ki-chart text-muted display-3"><span class="path1"></span><span
                     class="path2"></span></i>
@@ -31,6 +33,7 @@
                    </div>
                 </div>
             </div>
+            @endrole
             <!--end::Body-->
         </a>
         <!--end::Statistics Widget 5-->

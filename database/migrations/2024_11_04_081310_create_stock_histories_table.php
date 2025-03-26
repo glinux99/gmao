@@ -23,8 +23,8 @@ return new class extends Migration
             $table->bigInteger('category_id')->unsigned();
             $table->foreign('entry_id')->references('id')->on('entries')->onDelete('cascade');
             $table->foreign('category_id')->references('id')->on('categories')->nullOnDelete();
-            $table->double('quantity')->default(1)->nullable();
-            $table->double('quantity_restante')->default(1)->nullable();
+            $table->double('quantity')->default(0)->nullable();
+            $table->double('quantity_restante')->default(0)->nullable();
             $table->timestamps();
         });
     }

@@ -7,7 +7,7 @@
 <meta http-equiv="content-type" content="text/html;charset=UTF-8" /><!-- /Added by HTTrack -->
 
 @include('layouts.header')
-@vite(['resources/js/app.js', 'resources/css/app.css'])
+@vite(['resources/js/app.js'])
 <!--begin::Body-->
 
 <body id="kt_body" class="aside-enabled">
