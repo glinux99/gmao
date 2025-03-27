@@ -1,4 +1,8 @@
 @extends('layouts.app')
 @section('content')
-<role-view />
+{{-- sss --}}
+
+<div id="contentVue">
+    <role-view />
+</div>
 @endsection

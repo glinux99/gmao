@@ -25,14 +25,14 @@ class TaskApiController extends Controller
                 $teamId[]=$team->team_id;
             }
             if($teamId){
-                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->get();
+                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->orderByDesc('id')->get();
             }else
                 {
-                    $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('assigned_user_id', Auth::user()->id)->get();
+                    $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('assigned_user_id', Auth::user()->id)->orderByDesc('id')->get();
 
                 }
            }else{
-            $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->get();
+            $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->orderByDesc('id')->get();
            }
             return response()->json(['data' => $tasks]);
       } catch (\Throwable $th) {
@@ -50,6 +50,7 @@ class TaskApiController extends Controller
     public function store(Request $request)
     {
         DB::beginTransaction();
+        $request['type']="Task";
         try {
             $taskData = $request->except('instructions');
             $task = Task::create($taskData);
@@ -83,7 +84,6 @@ class TaskApiController extends Controller
         try {
             $taskData = $request->except('instructions');
             $task->update($taskData);
-
             // Update or create instructions
             if ($request->has('instructions')) {
                 // Delete existing instructions
@@ -97,7 +97,9 @@ class TaskApiController extends Controller
 
             // Send notifications after updating the task
             try {
-                $this->sendTaskNotifications($task);
+                if($task->status=='paused'){
+                    $this->sendTaskNotifications($task);
+                }
             } catch (\Throwable $th) {
                 //throw $th;
             }

@@ -86,6 +86,7 @@
     </div>
 </div>
 <!--end::Row-->
+@can('tasksGraph')
 <div class="card mb-3">
     <div class="card-header border-0 pt-5">
         <h3 class="card-title align-items-start flex-column">
@@ -106,10 +107,12 @@
             </ul>
         </div> --}}
     </div>
+
     <div id="contentVue">
         <task-chart/>
     </div>
 </div>
+@endcan
 <!--begin::Row-->
 <div class="row g-5 g-xl-8">
     <!--begin::Col-->

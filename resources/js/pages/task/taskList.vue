@@ -29,7 +29,7 @@
                 <div v-if="isLoading">Loading...</div>
                 <div id="kt_app_content" class="app-content flex-column-fluid">
                      <!-- Display the table view if showTableView is true -->
-                    <div v-if="showTableView" id="kt_app_content_container_d-none" class="app-container container-xxl">
+                    <div v-if="showTableView" id="kt_app_content_container_d-none" class="app-container">
                         <div class="card card-flush">
                             <div class="card-header mt-6">
                                 <div class="card-title">
@@ -85,17 +85,27 @@
                                                     class="badge badge-danger">Delai depassé</span>
                                                 <span v-else class="badge badge-secondary">Inconnu</span>
                                             </td>
-                                            <td>{{ task.project ? task.project.name  : 'N/A' }}</td>
-                                            <td><span class="badge badge-light-primary">
+                                            <td>
+                                                <span class="fs-9">
+                                                    {{ task.project ? task.project.name  : 'N/A' }}
+                                                </span>
+                                            </td>
+                                            <td><span class="badge badge-light-success">
                                                 {{ task.owner_user? task.owner_user.name : 'N/A'  }}
                                             </span>
                                             <br>
-
                                             </td>
                                             <td>
-                                                <span class="badge badge-light-primary">
-                                                {{ task.assigned_user? task.assigned_user.name : 'N/A'  }}
-                                            </span>
+                                                <template v-if="task.assigned_user">
+                                                    <span class="badge badge-light-primary">
+                                                        {{ task.assigned_user ? task.assigned_user.name : 'N/A' }}
+                                                    </span>
+                                                </template>
+                                                <template v-else-if="task.assigned_team && task.assigned_team.users">
+                                                    <span v-for="team in task.assigned_team.users" :key="team.id" class="badge badge-light-primary">
+                                                        {{ team.name }} {{ team.post_name}}
+                                                        </span>
+                                                </template>
                                             </td>
                                             <td class="fs-9">
 
@@ -822,4 +832,3 @@ export default {
     },
 };
 </script>
-

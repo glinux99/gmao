@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Imports\ImportCategory;
 use Symfony\Component\HttpFoundation\Response;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryApiController extends Controller
 {
@@ -74,5 +76,25 @@ class CategoryApiController extends Controller
             'message' => 'Category deleted successfully',
             'success' => true
         ]);
+    }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        try {
+            Excel::import(new ImportCategory, $request->file('file'));
+            return back()->with('success', 'Categories imported successfully.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row " . $failure->row() . ": " . implode(", ", $failure->errors());
+            }
+            return back()->with('errors', $errors);
+        } catch (\Exception $e) {
+            return back()->with('error', 'An error occurred during import.');
+        }
     }
 }

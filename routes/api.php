@@ -10,6 +10,8 @@ use App\Http\Controllers\TaskApiController;
 use App\Http\Controllers\UserApiController;
 use App\Http\Controllers\TeamApiController;
 use App\Http\Controllers\CategoryApiController;
+use App\Http\Controllers\EntryApiController;
+use App\Http\Controllers\EntryController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\LoginApiController;
 use Illuminate\Http\Request;
@@ -38,6 +40,7 @@ Route::middleware('auth:sanctum')->group(function(){
         'priority'=>PriorityApiController::class,
         'categories'=>CategoryApiController::class,
         'instructions'=>InstructionApiController::class,
+        'entries' =>EntryApiController::class,
 
     ]);
 });

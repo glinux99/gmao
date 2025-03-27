@@ -21,7 +21,7 @@ export default defineConfig({
     ],
     server:{
         https: false,
-        host: '192.168.176.186'
+        // host: '192.168.176.186'
     },
     resolve: {
         alias: {

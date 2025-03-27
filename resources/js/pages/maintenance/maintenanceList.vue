@@ -45,7 +45,7 @@
           <div
             v-if="showTableView"
             id="kt_app_content_container_d-none"
-            class="app-container container-xxl"
+            class="app-container"
           >
             <div class="card card-flush">
               <div class="card-header mt-6">

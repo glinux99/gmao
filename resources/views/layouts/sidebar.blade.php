@@ -400,11 +400,13 @@
                     </a>
                     @endcan
                 </div>
+                @if(auth()->user()->hasAnyPermission(['repports', 'priority']))
                 <div class="menu-item">
                     <div class="menu-content pt-8 pb-2">
                         <span class="menu-section text-muted text-uppercase fs-8 ls-1">SYSTEME CONFIGURATION</span>
                     </div>
                 </div>
+                @endif
                 <div data-kt-menu-trigger="click" class="menu-item menu-accordion mb-1">
                     <span class="menu-link">
                         <span class="menu-icon">
@@ -452,6 +454,7 @@
                         </div>
                     </div>
                 </div>
+                @can('repports')
                 <div class="menu-item">
                     <a class="menu-link" href="{{ route('repports.index') }}">
                         <span class="menu-icon">
@@ -461,6 +464,8 @@
                         <span class="menu-title">Rapports</span>
                     </a>
                 </div>
+                @endcan
+                @can('priority')
                 <div class="menu-item">
                     <a class="menu-link" href="{{ route('priorities.index') }}">
                         <span class="menu-icon">
@@ -470,6 +475,7 @@
                         <span class="menu-title">Priorité du système</span>
                     </a>
                 </div>
+                @endcan
             </div>
             <!--end::Menu-->
         </div>

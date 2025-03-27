@@ -36,6 +36,7 @@ class EntryController extends Controller
     public function store(Request $request)
     {
 
+
         $entry= Entry::create($request->all());
         $stock=StockHistory::where('category_id', $request->category_id)
         ->orderByDesc('id')->first();

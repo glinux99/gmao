@@ -51,6 +51,7 @@ import maintenanceList from './pages/maintenance/maintenanceList.vue';
 import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
 import roleList from "./pages/roles/roleList.vue";
+import roleView from "./pages/roles/roleView.vue";
 import taskList from "./pages/task/taskList.vue";
 import taskShow from "./pages/task/taskShow.vue";
 import teamList from "./teams/teamList.vue";
@@ -73,7 +74,8 @@ const app = createApp({
         priorityList,
         modalComponent,
         taskShow,
-        loginUser
+        loginUser,
+        roleView
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);

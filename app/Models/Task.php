@@ -119,7 +119,7 @@ class Task extends Model
      */
     public function assigned_team(): BelongsTo
     {
-        return $this->belongsTo(Team::class, 'assigned_team_id');
+        return $this->belongsTo(Team::class, 'assigned_team_id')->with('users');
     }
     public function priority(): HasOne
     {

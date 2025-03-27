@@ -133,7 +133,7 @@
                 <!--end::Row-->
 
                 <!--begin::Instructions-->
-                <div class="mt-5">
+                <div class="mt-5" v-if="form.instructions.length>0">
                   <h3 class="mb-5">Instructions</h3>
                   <div class="progress mb-3">
                     <div class="progress-bar" role="progressbar" :style="{ width: progressPercentage + '%' }"
@@ -208,6 +208,11 @@
                   </div>
                   <!--end::Instruction Item-->
                 </div>
+                <div v-else>
+                    <span class="text-muted" >
+                        Aucune instruction a été configurée pour cette tâche
+                    </span>
+                </div>
                 <!--end::Instructions-->
               </div>
               <!--end::Card body-->
@@ -234,13 +239,16 @@ import useTasks from "../../services/taskServices";
             start_date_user: null,
             due_date_user: null,
             status : '',
+            instructions: []
         });
       onMounted(async () => {
         taskId.value = window.location.pathname.split("/")[2];
         await getTask(taskId.value);
         Object.assign(form, task.value);
         calculateProgress();
-
+        if(form.instructions && form.instructions.length==0){
+            progressPercentage.value=100;
+        }
       });
 
       const calculateProgress = () => {
@@ -263,6 +271,7 @@ import useTasks from "../../services/taskServices";
         } else {
           progressPercentage.value = 0;
         }
+
       };
 
       const updateInstructionResponse = async (instruction) => {
@@ -347,7 +356,7 @@ import useTasks from "../../services/taskServices";
 
       const pauseTask = async () => {
         try {
-            form.status="pending";
+            form.status="paused";
 
           await updateTask(taskId.value, form);
           await getTask(taskId.value); // Refresh task data

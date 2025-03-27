@@ -13,7 +13,7 @@
               <h1
                 class="page-heading d-flex text-dark fw-bold fs-3 flex-column justify-content-center my-0"
               >
-                Liste de roles
+                Liste de rôles
               </h1>
             </div>
           </div>
@@ -30,7 +30,7 @@
                   <div class="card card-flush h-md-100">
                     <div class="card-header">
                       <div class="card-title">
-                        <h2>{{ role.name }}</h2>
+                        <h2>{{ role.name.toUpperCase() }}</h2>
                       </div>
                     </div>
 
@@ -78,7 +78,7 @@
                         @click="viewRole(role.id)"
                         class="card btn btn-light btn-active-primary my-1 me-2"
                       >
-                        Afficher le role
+                        Afficher le rôle
                       </span>
 
                       <button
@@ -87,7 +87,7 @@
                         data-bs-toggle="modal"
                         data-bs-target="#kt_modal_update_role"
                       >
-                        Editer le role
+                        Editer le rôle
                       </button>
                     </div>
                   </div>
@@ -112,7 +112,7 @@
                       <div
                         class="fw-bold fs-3 text-gray-600 text-hover-primary"
                       >
-                        Ajouter un nouveau role
+                        Ajouter un nouveau rôle
                       </div>
                     </button>
                   </div>
@@ -130,7 +130,7 @@
       :form="form"
       @instance-modal="createRole"
     >
-      <template #title>Création d'un role</template>
+      <template #title>Création d'un rôle</template>
       <template #body>
         <div class="card text-start">
           <div class="card-body">
@@ -146,12 +146,12 @@
             >
               <div class="fv-row mb-10">
                 <label class="fs-5 fw-bold form-label mb-2">
-                  <span class="required">Nom de role</span>
+                  <span class="required">Nom de rôle</span>
                 </label>
 
                 <input
                   class="form-control form-control-solid"
-                  placeholder="Enter a role name"
+                  placeholder="Enter a rôle name"
                   v-model="form.name"
                 />
               </div>
@@ -169,7 +169,7 @@
 
               <div class="fv-row">
                 <label class="fs-5 fw-bold form-label mb-2"
-                  >Permissions par roles</label
+                  >Permissions par rôles</label
                 >
 
                 <div class="table-responsive">
@@ -281,10 +281,10 @@
   </div>
 </template>
 <script>
-import { onMounted, reactive, ref } from "vue";
-import useRoles from "../../services/roleservices.js";
-import modalComponent from "../../components/modals/modalComponent.vue";
 import { useCookie } from "@vue-composable/cookie";
+import { onMounted, reactive, ref } from "vue";
+import modalComponent from "../../components/modals/modalComponent.vue";
+import useRoles from "../../services/roleservices.js";
 
 export default {
   components: {
