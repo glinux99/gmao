@@ -11,7 +11,6 @@ export default function useCategories() {
         isLoading.value = true;
         try {
             const response = await instance.get('/api/categories');
-             //   console.log(response.data);
             categories.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;
@@ -19,15 +18,14 @@ export default function useCategories() {
             isLoading.value = false;
         }
     };
-     const storeCategory = async (data) => {
+
+    const storeCategory = async (data) => {
         errors.value = {};
         isLoading.value = true;
         try {
-             console.log("store");
-             console.log(data);
             const response = await instance.post('/api/categories', data);
             categories.value.push(response.data.data);
-             return true;
+            return true;
         } catch (e) {
             errors.value = e.response.data.errors;
             return false;
@@ -35,7 +33,8 @@ export default function useCategories() {
             isLoading.value = false;
         }
     };
-     const updateCategory = async (id, data) => {
+
+    const updateCategory = async (id, data) => {
         errors.value = {};
         isLoading.value = true;
         try {
@@ -52,7 +51,8 @@ export default function useCategories() {
             isLoading.value = false;
         }
     };
-       const destroyCategory = async (id) => {
+
+    const destroyCategory = async (id) => {
         errors.value = {};
         isLoading.value = true;
         try {
@@ -65,7 +65,29 @@ export default function useCategories() {
         }
     };
 
+    const importCategories = async (data) => {
+        errors.value = {};
+        isLoading.value = true;
+        try {
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data', // Add this header
+                },
+            };
+            const response = await instance.post('/api/categories/import', data, config);
+            // categories.value = response.data.data; // You might want to refresh the categories list after import
+
+        } catch (e) {
+            errors.value = e.response.data.errors;
+            console.log("errors.value");
+            console.log(errors.value);
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     return {
+        importCategories,
         categories,
         errors,
         isLoading,

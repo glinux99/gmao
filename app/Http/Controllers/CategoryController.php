@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportCategory;
 use App\Models\Category;
 use App\Models\Unity;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Facades\Excel;
 
 class CategoryController extends Controller
 {
@@ -14,12 +16,13 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $categories = Category::with('unity')->latest()->get();
-        $unities= Unity::all();
-        $title = 'Supprimer cette categorie!';
-        $text = "Voulez-vous supprimer cette categorie?";
-        confirmDelete($title, $text);
-        return view('categories.categories', ['categories'=>$categories, 'unities'=>$unities]);
+        // $categories = Category::with('unity')->latest()->get();
+        // $unities= Unity::all();
+        // $title = 'Supprimer cette categorie!';
+        // $text = "Voulez-vous supprimer cette categorie?";
+        // confirmDelete($title, $text);
+        // return view('categories.categories', ['categories'=>$categories, 'unities'=>$unities]);
+        return view('categories.categories');
     }
 
     /**
@@ -103,6 +106,36 @@ class CategoryController extends Controller
             //throw $th;
             toast('La catégorie '.$category->designation.' n\'a pas été supprimé car elle est utilisé','error');
             return redirect()->route('categories.index');
+        }
+    }
+    public function import(Request $request)
+    {
+        // $request->validate([
+        //     'file' => 'required|mimes:xlsx,xls',
+        // ]);
+
+        try {
+            Excel ::import(new ImportCategory, $request->file('file'));
+            return response()->json([
+                'message' => 'Categories imported successfully',
+                'success' => true
+            ]);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row " . $failure->row() . ": " . implode(", ", $failure->errors());
+            }
+            return response()->json([
+                'errors' => $errors,
+                'message' => 'Validation error',
+                'success' => false
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred during import.',
+                'success' => false
+            ]);
         }
     }
 }

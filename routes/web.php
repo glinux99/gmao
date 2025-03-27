@@ -88,6 +88,7 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'instructions'=>InstructionApiController::class,
 
     ]);
+    Route::post('/categories/import', [CategoryController::class, 'import'])->name('categories.imports');
     Route::put('instruction-task', [InstructionApiController::class,'updateInstructions'])->name('instruction.updateInstructions');
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');
         // Route::get('category/destroy/{id}', [UserController::class, 'destroy'])->name('category.destroy');

@@ -17,8 +17,9 @@ class InventoryController extends Controller
         $sorties=StockHistory::with(['category'])
             ->orderByDesc("id")
             ->get()->unique('category_id');
+
         $technicians= User::where('type', 'technician')->get();
-        $categories = Category::all();
+        $categories = Category::with('unity')->get();
         return view('inventories.inventories',['sorties'=>$sorties, 'technicians'=>$technicians, 'categories'=>$categories]);
     }
 

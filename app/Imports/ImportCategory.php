@@ -18,22 +18,22 @@ class ImportCategory implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row)
     {
-        // Check if the unity exists
-        $unity = Unity ::find($row['unity_id']);
-        if (!$unity) {
-            // Handle the case where the unity doesn't exist
-            // You might want to throw an exception or log an error here
-            // For now, we'll just skip this row
-            return null;
+        // Find the Unity by its designation (name)
+        $unity = Unity::where('designation', $row['unite'])->first();
+        if($unity == null){
+            $unity=Unity::create(['designation' =>  $row['unite'], 'abbreviation'=> $row['unite'][0]?? '']);
         }
+        // If the Unity doesn't exist, set unity_id to null
+        $unityId = $unity ? $unity->id : null;
+
         return new Category([
             'designation' => $row['designation'],
-            'unity_id' => $row['unity_id'],
+            'unity_id' => $unityId, // Use the ID or null
             'caracteristique' => $row['caracteristique'],
-            'avatar' => $row['avatar'], // You might need to handle file uploads differently
-            'is_remise' => $row['is_remise'], // Assuming this is a boolean or similar
-            'description' => $row['description'],
+            'is_remise' => $row['is_remise'] === 'Oui' ? true : false, // Convert "Oui" to true, otherwise false
             'type' => $row['type'],
+            // 'avatar' => $row['avatar'], // Removed because it's not in the header
+            // 'description' => $row['description'], // Removed because it's not in the header
         ]);
     }
 
@@ -41,22 +41,20 @@ class ImportCategory implements ToModel, WithHeadingRow, WithValidation
     {
         return [
             'designation' => 'required|string|max:255',
-            'unity_id' => [
-                'required',
-                'integer',
-                Rule::exists('unities', 'id'), // Ensure unity_id exists in the unities table
-            ],
+            'unite' => 'nullable|string', // Validate that the 'Unité' exists in the unities table by designation
             'caracteristique' => 'nullable|string',
-            'avatar' => 'nullable|string', // Adjust validation based on how you handle avatars
-            'is_remise' => 'nullable|boolean', // Adjust validation based on your data type
-            'description' => 'nullable|string',
+            'is_remise' => 'nullable|in:1,0', // Validate that is_remise is either "Oui" or "Non"
             'type' => 'nullable|string',
+            // 'avatar' => 'nullable|string', // Removed because it's not in the header
+            // 'description' => 'nullable|string', // Removed because it's not in the header
         ];
     }
+
     public function customValidationMessages()
     {
         return [
-            'unity_id.exists' => 'The selected unity is invalid.',
+            'unite.exists' => 'The selected unity is invalid.',
+            'is_remise.in' => 'The is_remise field must be either "Oui" or "Non".',
         ];
     }
 }

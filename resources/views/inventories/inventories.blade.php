@@ -75,7 +75,7 @@
                                 {{ $sortie->category->designation }}/  {{ $sortie->etat }}
                                 </div>
                                 <div class="fw-bold text-light">
-                               Restant: <span class="fw-bolder">{{ $sortie->quantity_restante }}</span> {{ $sortie->category->unity->abbreviation ?? "" }}
+                               Restant: <span class="fw-bolder">{{ $sortie->quantity_restante }}</span> {{ $sortie->category->unity->abbreviation ?? $sortie->category->unity->designation ?? "" }}
                                 </div>
                             </div>
                             <!--end::Body-->

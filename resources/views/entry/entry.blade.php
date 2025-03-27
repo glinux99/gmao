@@ -24,7 +24,7 @@
                                 <div class="mb-8">
                                     <span class="me-2">Etat</span>
                                     <span class="badge badge-light-warning">
-                                        {{ $entry->etat }}
+                                        {{ $entry->etat??"Reste sur terrain" }}
                                     </span>
                                 </div>
                                 <!--end::Labels-->
