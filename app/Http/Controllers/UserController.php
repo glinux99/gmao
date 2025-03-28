@@ -35,17 +35,8 @@ class UserController extends Controller
     {
         $this->validate($request, [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
         ],   [
             'name.required' => 'Le champ nom d\'utilisateur est obligatoire',
-            'email.required' => 'le champ email est obligatoire',
-            'email.email' => 'le champ email doit être une adresse email valide',
-            'email.max' => 'le champ email ne doit pas dépasser 255 caractères',
-            'email.unique' => 'l\'email existe déjà',
-            'password.required' => 'le champ mot de passe est obligatoire',
-            'password.min' => 'le champ mot de passe doit contenir au moins 8 caractères',
-            'password.confirmed' => 'la confirmation du mot de passe ne correspond pas',
         ]);
         $avatar = $request->file('avatar');
         if ($request->file('avatar')) {

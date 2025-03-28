@@ -406,25 +406,25 @@
             </div>
             <div class="col-md-6">
               <div v-if="form.assignToType === 'user'" class="fv-row mb-7">
-                <label class="required fw-semibold fs-6 mb-2">Technicien</label>
+                <label class="required fw-semibold fs-6 mb-2 d-block">Technicien</label>
                 <Dropdown
                   v-model="form.assigned_user_id"
                   :options="users"
                   optionLabel="name"
                   optionValue="id"
                   placeholder="Sélectionner un technicien"
-                  class="w-full md:w-14rem"
+                  class="w-full md:w-14rem w-100"
                 />
               </div>
               <div v-else-if="form.assignToType === 'team'" class="fv-row mb-7">
-                <label class="required fw-semibold fs-6 mb-2">Équipe</label>
+                <label class="required fw-semibold fs-6 mb-2 d-block">Équipe</label>
                 <Dropdown
                   v-model="form.assigned_team_id"
                   :options="teams"
                   optionLabel="name"
                   optionValue="id"
                   placeholder="Sélectionner une équipe"
-                  class="w-full md:w-14rem"
+                  class="w-full md:w-14rem w-100"
                 />
               </div>
             </div>
@@ -435,7 +435,7 @@
               <div class="fv-row">
                 <InputText
                   type="number"
-                  class="w-full md:w-14rem"
+                  class="w-full md:w-14rem w-100"
                   placeholder=""
                   v-model="form.nbre_tacherons"
                     @change="addTModal"
@@ -455,7 +455,7 @@
         <template #content>
           <div class="row">
             <div class="col-md-6">
-              <label class="col-form-label fw-bold fs-6">
+              <label class="col-form-label fw-bold fs-6 d-block">
                 <span>Fréquence</span>
               </label>
               <Dropdown
@@ -464,12 +464,12 @@
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Sélectionner la fréquence"
-                class="w-full md:w-14rem"
+                class="w-full md:w-14rem w-100"
                 @change="handleFrequencyChange"
               />
             </div>
             <div class="col-md-6" v-if="form.frequency === 'weekly'">
-              <label class="col-form-label fw-bold fs-6">
+              <label class="col-form-label fw-bold fs-6 d-block">
                 <span>Jour de la semaine</span>
               </label>
               <MultiSelect
@@ -478,40 +478,50 @@
                 optionLabel="label"
                 optionValue="value"
                 placeholder="Sélectionner les jours"
-                class="w-full md:w-14rem"
+                class="w-full md:w-14rem w-100"
               />
             </div>
 
             <div class="col-md-6">
-              <label class="fw-bold fs-6 col-form-label">Date de debut</label>
+              <label class="fw-bold fs-6 col-form-label d-block">Date de debut</label>
               <Calendar
                 v-model="form.start_date"
                 showTime
                 hourFormat="24"
-                class="w-full md:w-14rem"
+                class="w-full md:w-14rem w-100"
                 placeholder="Date de debut"
                 required
               />
             </div>
             <div class="col-md-6">
-              <label class="fw-bold fs-6 col-form-label">Date de fin</label>
+              <label class="fw-bold fs-6 col-form-label d-block">Date de fin</label>
               <Calendar
                 v-model="form.end_date"
                 dateFormat="yy-mm-dd"
             showTime
                 hourFormat="24"
-                class="w-full md:w-14rem"
+                class="w-full md:w-14rem w-100"
                 placeholder="Date de fin"
                 required
               />
             </div>
-            <div class="col-md-6" v-if="form.frequency != 'daily'">
-              <label class="fw-bold fs-6 col-form-label">Nombre d'heure journaliere</label>
+            <div class="col-md-3" v-if="form.frequency != 'daily'">
+              <label class="fw-bold fs-6 col-form-label d-block">Heure/jour</label>
               <InputText
                             type="number"
-                            class="w-full md:w-14rem"
+                            class="w-full md:w-14rem w-100"
                             placeholder="0"
                             v-model="form.man_hours"
+                            @input="updateTacheronsExpense"
+                        />
+            </div>
+            <div class="col-md-3">
+              <label class="fw-bold fs-6 col-form-label d-block">Rappel(jours)</label>
+              <InputText
+                            type="number"
+                            class="w-full md:w-14rem w-100"
+                            placeholder="0"
+                            v-model="form.rappel"
                             @input="updateTacheronsExpense"
                         />
             </div>
@@ -613,7 +623,7 @@
             placeholder="Titre de la dépense"
             v-model="expense.title"
             @input="updateExpenseData(index, 'title', expense.title)"
-            class="w-full"
+            class="w-full w-100"
             :readonly="expense.readonly? true: false"
           />
         </div>
@@ -625,7 +635,7 @@
             locale="fr-FR"
             placeholder="Montant"
             @input="updateExpenseData(index, 'amount', expense.amount)"
-            class="w-full"
+            class="w-full w-100"
             :readonly="expense.readonly? true: false"
           >
             <template #incrementbuttonicon></template>
@@ -898,8 +908,8 @@
                 </div>
                 <div class="row mb-6">
                     <div class="col-md-6">
-                        <label class="required fw-semibold fs-6 mb-2">Status</label>
-                        <Dropdown  aria-label="Status" class="w-full md:w-14rem"
+                        <label class="required fw-semibold fs-6 mb-2 d-block">Status</label>
+                        <Dropdown  aria-label="Status" class="w-full md:w-14rem w-100"
                             v-model="eform.status" :options="statusOptions" optionLabel="label" optionValue="value" />
                     </div>
                     <div class="col-md-6">
@@ -911,14 +921,14 @@
                 </div>
                 <div class="row mb-6">
                     <div class="col-md-6">
-                        <label class="fw-semibold fs-6 mb-2">Projet</label>
-                        <Dropdown class="w-full md:w-14rem" aria-label="project"
+                        <label class="fw-semibold fs-6 mb-2 d-block">Projet</label>
+                        <Dropdown class="w-full md:w-14rem w-100" aria-label="project"
                             v-model="eform.project_id" :options="projects" optionLabel="name" optionValue="id"
                             placeholder="Sélectionner un projet" />
                     </div>
                     <div class="col-md-6">
-                        <label class="fw-semibold fs-6 mb-2">Utilisateur</label>
-                        <Dropdown class="w-full md:w-14rem" aria-label="user"
+                        <label class="fw-semibold fs-6 mb-2 d-block">Utilisateur</label>
+                        <Dropdown class="w-full md:w-14rem w-100" aria-label="user"
                             v-model="eform.user_id" :options="users" optionLabel="name" optionValue="id"
                             placeholder="Sélectionner un utilisateur" />
                     </div>
@@ -927,13 +937,13 @@
                     <div class="col-md-3">
                         <label class="fw-semibold fs-6 mb-2">Date d'achat</label>
                         <Calendar type="date" name="purchase_date"
-                            class="form-control  mb-3 mb-lg-0"
+                            class="w-100"
                             v-model="eform.purchase_date" />
                     </div>
                     <div class="col-md-3">
                         <label class="fw-semibold fs-6 mb-2">Garantie</label>
                         <Calendar view="year" dateFormat="yy"
-                            class="form-control  mb-3 mb-lg-0"
+                            class="w-100"
                             v-model="eform.warranty_end_date" />
                     </div>
                     <div class="col-md-6">
@@ -941,7 +951,7 @@
                             <InputGroup class="md:w-80">
 
                     <IftaLabel>
-                        <InputNumber v-model="eform.purchase_price" inputId="Price" mode="currency" currency="USD" locale="fr-FR" />
+                        <InputNumber ca v-model="eform.purchase_price" inputId="Price" mode="currency" currency="USD" locale="fr-FR" />
                         <label for="price">Prix d'achat</label>
                     </IftaLabel>
                     <InputGroupAddon>
@@ -954,7 +964,7 @@
             </div>
             <template #footer>
                 <Button label="Annuler" icon="pi pi-times" class="p-button-text" @click="eVisible=false" />
-                <Button label="Enregistrer" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
+                <Button label="Enregistrer" severity="warn" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
             </template>
         </Dialog>
         <Dialog
@@ -1019,6 +1029,7 @@ import useCategories from "../../services/categoryServices.js";
 import useEquipments from "../../services/equipmentService.js";
 import useInstructions from "../../services/instructionServices.js";
 import useMaintenances from "../../services/maintenanceService.js";
+import useTeams from "../../services/teamServices.js";
 import useUsers from "../../services/userservices.js";
 export default {
   components: {
@@ -1034,6 +1045,7 @@ export default {
       errors,
       isLoading,
     } = useMaintenances();
+    const {teams, getTeams} = useTeams();
     const { getUsers, users } = useUsers();
     const { getEquipments, equipments, storeEquipment, updateEquipment } = useEquipments();
     const { getCategories, categories, storeCategory } = useCategories();
@@ -1062,6 +1074,7 @@ export default {
       instructions:[],
       expenses:[],
       totalExpenses:0,
+      rappel: 7,
     });
 
     // Set default time to 00:00 for new dates
@@ -1076,6 +1089,7 @@ export default {
       await getMaintenances();
       await getUsers();
       await getEquipments();
+      await getTeams();
       showTableView.value = true;
       form.start_date = setDefaultTime(new Date().toISOString());
       form.end_date = setDefaultTime(new Date().toISOString());
@@ -1155,6 +1169,7 @@ export default {
       form.instructions = [];
       form.expenses = [];
       form.totalExpenses=0;
+      form.rappel=7;
 
     };
 
@@ -1562,6 +1577,7 @@ const formatDate=(dateLocal)=>{
       frequencies,
       userList,
       search,
+      teams,
       // setDefaultTime,
       formatDeadline,
       calculateDelay,

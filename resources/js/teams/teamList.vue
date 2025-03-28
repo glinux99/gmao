@@ -12,142 +12,133 @@
                         </div>
 
                         <div class="d-flex align-items-center gap-2 gap-lg-3">
-                            <button type="button" class="btn btn-primary" @click="addTeam">
-                                Ajouter une Equipe
-                            </button>
+                            <Button label="Ajouter une Equipe"  icon="pi pi-plus" severity="warn" class="p-button-primary" @click="addTeam" />
                         </div>
                     </div>
                 </div>
 
-                <div v-if="isLoading">Loading...</div>
-                <div id="kt_app_content" class="app-content flex-column-fluid">
+                <div v-if="isLoading" class="text-center">
+                    <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
+                        animationDuration=".5s" />
+                </div>
+                <div v-else id="kt_app_content" class="app-content flex-column-fluid">
                     <div id="kt_app_content_container" class="app-container container-xxl">
                         <div class="card card-flush">
                             <div class="card-header mt-6">
                                 <div class="card-title">
                                     <div class="d-flex align-items-center position-relative my-1 me-5">
-                                        <i class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"><span
-                                                class="path1"></span><span class="path2"></span></i>
-                                        <input type="text" data-kt-permissions-table-filter="search"
+                                        <i class="pi pi-search fs-3 position-absolute ms-5"></i>
+                                        <InputText type="text"
                                             class="form-control form-control-solid w-250px ps-13"
                                             placeholder="Rechercher une équipe" v-model="searchQuery" />
                                     </div>
                                 </div>
                             </div>
                             <div class="card-body pt-0">
-                                <table class="table align-middle table-row-dashed fs-6 gy-5 mb-0"
-                                    id="kt_permissions_table">
-                                    <thead>
-                                        <tr class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0">
-                                            <th class="min-w-125px">Nom</th>
-                                            <th class="min-w-125px">Description</th>
-                                            <th class="min-w-125px">Chef d'équipe</th>
-                                            <th class="min-w-125px">Membres</th>
-                                            <th class="text-end min-w-100px">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="fw-semibold text-gray-600">
-                                        <tr v-for="team in filteredTeams" :key="team.id">
-                                            <td>{{ team.name }}</td>
-                                            <td>{{ team.description }}</td>
-                                            <td>{{ team.user ? team.user.name : 'N/A' }}</td>
-                                            <td>
-                                                <ul class="list-unstyled">
-                                                    <li v-for="member in team.users" :key="member.id">
-                                                        {{ member.name }}
-                                                    </li>
-                                                </ul>
-                                            </td>
-                                            <td class="text-end">
-                                                <button @click="editTeam(team)"
-                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#kt_modal_update_team">
-                                                    <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span
-                                                            class="path2"></span><span class="path3"></span><span
-                                                            class="path4"></span><span class="path5"></span></i>
-                                                </button>
-                                                <button @click="configureMembers(team)"
-                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px">
-                                                    <i class="ki-duotone ki-user-edit fs-3"><span class="path1"></span><span
-                                                            class="path2"></span></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                <DataTable :value="filteredTeams" tableStyle="min-width: 50rem"  :paginator="true" :rows="10"
+                                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                                    :rowsPerPageOptions="[5, 10, 25, 50]"
+                                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} equipes"
+                                    >
+                                    <Column field="name" header="Nom" />
+                                    <Column field="description" header="Description" />
+                                    <Column header="Chef d'équipe">
+                                        <template #body="slotProps">
+                                            {{ slotProps.data.user ? slotProps.data.user.name : 'N/A' }}
+                                        </template>
+                                    </Column>
+                                    <Column header="Membres">
+                                        <template #body="slotProps">
+                                            <ul class="list-unstyled">
+                                                <li class=" d-flex my-2" v-for="member in slotProps.data.users" :key="member.id">
+                                                   <span class="badge badge-light-info" >
+                                                    {{ member.name }}
+                                                </span>
+                                                </li>
+                                            </ul>
+                                        </template>
+                                    </Column>
+                                    <Column header="Actions" style="text-align: right">
+                                        <template #body="slotProps">
+                                            <Button icon="pi pi-pencil" class="p-button-text p-button-secondary"
+                                                @click="editTeam(slotProps.data)" />
+                                            <Button icon="pi pi-users" class="p-button-text p-button-secondary"
+                                                @click="configureMembers(slotProps.data)" />
+                                        </template>
+                                    </Column>
+                                </DataTable>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <modal-component :id="'team-modal'" positionModal="center mw-800px" :form="form" @instance-modal="submitTeam">
-            <template #title>{{ isEditMode ? 'Modifier' : 'Créer' }} une Equipe</template>
-            <template #body>
-                <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll"
-                    data-kt-scroll="true" data-kt-scroll-activate="true" data-kt-scroll-max-height="auto"
-                    data-kt-scroll-dependencies="#kt_modal_add_user_header"
-                    data-kt-scroll-wrappers="#kt_modal_add_user_scroll" data-kt-scroll-offset="300px">
-                    <div class="fv-row mb-7 fv-plugins-icon-container">
-                        <label class="required fw-semibold fs-6 mb-2">Nom</label>
-                        <input type="text" name="name" class="form-control form-control-solid mb-3 mb-lg-0"
-                            placeholder="Nom de l'équipe" v-model="form.name" required>
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <div class="fv-row mb-7 fv-plugins-icon-container">
-                        <label class="fw-semibold fs-6 mb-2">Description</label>
-                        <textarea name="description" class="form-control form-control-solid mb-3 mb-lg-0"
-                            placeholder="Description de l'équipe" v-model="form.description"></textarea>
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <div class="fv-row mb-7 fv-plugins-icon-container">
-                        <label class="required fw-semibold fs-6 mb-2">Chef d'équipe</label>
-                        <select class="form-select form-select-solid mb-3 mb-lg-0"
-                            aria-label="Chef d'équipe" v-model="form.user_id">
-                            <option value="">Selectionner un chef d'équipe</option>
-                            <option v-for="user in users" :value="user.id" :key="user.id">
-                                {{ user.name }}
-                            </option>
-                        </select>
-                        <div
-                            class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
-                        </div>
-                    </div>
-                    <div class="fv-row mb-7 fv-plugins-icon-container">
-                        <label class="fw-semibold fs-6 mb-2">Membres</label>
-                        <div v-for="user in users" :key="user.id" class="form-check">
-                            <input class="form-check-input" type="checkbox" :value="user.id"
-                                :id="'member-' + user.id" v-model="form.members">
-                            <label class="form-check-label" :for="'member-' + user.id">
-                                {{ user.name }}
-                            </label>
-                        </div>
+        <Dialog v-model:visible="teamModalVisible" :header="isEditMode ? 'Modifier' : 'Créer' + ' une Equipe'"
+            :style="{ width: '50vw' }" :breakpoints="{ '960px': '75vw', '640px': '100vw' }" :modal="true" class="p-fluid"
+            @hide="resetForm">
+            <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll">
+                <div class="fv-row mb-7 fv-plugins-icon-container">
+                    <label class="required fw-semibold fs-6 mb-2">Nom</label>
+                    <InputText type="text" class="form-control form-control-solid mb-3 mb-lg-0"
+                        placeholder="Nom de l'équipe" v-model="form.name" required />
+                    <div
+                        class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                     </div>
                 </div>
+                <div class="fv-row mb-7 fv-plugins-icon-container">
+                    <label class="fw-semibold fs-6 mb-2">Description</label>
+                    <Textarea class="form-control form-control-solid mb-3 mb-lg-0"
+                        placeholder="Description de l'équipe" v-model="form.description" />
+                    <div
+                        class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    </div>
+                </div>
+                <div class="fv-row mb-7 fv-plugins-icon-container">
+                    <label class="required fw-semibold fs-6 mb-2">Chef d'équipe</label>
+                    <Dropdown  class="w-full md:w-14rem col-12"
+              :filter="true"
+              filterBy="name,post_name, email"
+                        aria-label="Chef d'équipe" v-model="form.user_id" :options="users" optionValue="id" optionLabel="name"
+                        placeholder="Selectionner un chef d'équipe" />
+                    <div
+                        class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                    </div>
+                </div>
+                <div class="fv-row mb-7 fv-plugins-icon-container">
+                    <label class="fw-semibold fs-6 mb-2">Membres</label>
+
+                        <div v-for="user in users" :key="user.id" class="form-check ">
+
+                        <Checkbox :value="user.id"  :inputId="'member-' + user.id" v-model="form.members" />
+                        <label class="form-check-label" :for="'member-' + user.id">
+                            {{ user.name }} <span v-if="user.email">
+                                ( {{ user.email }})
+                            </span>
+                        </label>
+                        <div class="separator separator-dashed my-3"></div>
+                    </div>
+
+                </div>
+            </div>
+             <template #footer>
+                <Button label="Annuler" icon="pi pi-times" class="p-button-text" @click="teamModalVisible = false" />
+                <Button label="Sauvegarder" severity="warn" icon="pi pi-check" @click="submitTeam" class="p-button-primary"/>
             </template>
-        </modal-component>
+        </Dialog>
     </div>
 </template>
 
 <script>
 import { computed, onMounted, reactive, ref } from 'vue';
-import modalComponent from '../components/modals/modalComponent.vue';
 import useTeams from '../services/teamServices.js';
 import useUsers from '../services/userServices.js';
 export default {
-    components: {
-        modalComponent,
-    },
     setup() {
         const { teams, getTeams, storeTeam, updateTeam, isLoading } = useTeams();
         const { getUsers, users } = useUsers();
         const isEditMode = ref(false);
         const searchQuery = ref('');
+        const teamModalVisible = ref(false);
 
         const form = reactive({
             id: null,
@@ -168,23 +159,23 @@ export default {
                 success = await updateTeam(form.id, form);
             } else {
                 success = await storeTeam(form);
+                resetForm();
             }
             if (success) {
                 await getTeams();
-                $("#team-modal").modal("hide");
-                resetForm();
+                 teamModalVisible.value = false;
+
             }
         };
 
         const addTeam = () => {
             isEditMode.value = false;
-            $("#team-modal").modal("show");
-            resetForm();
+            teamModalVisible.value = true;
         };
 
         const editTeam = (team) => {
             isEditMode.value = true;
-            $("#team-modal").modal("show");
+           teamModalVisible.value=true;
             Object.assign(form, { ...team, members: team.users.map(user => user.id) });
         };
         const configureMembers = (team) => {
@@ -219,6 +210,7 @@ export default {
             searchQuery,
             filteredTeams,
             configureMembers,
+            teamModalVisible
         };
     },
 };

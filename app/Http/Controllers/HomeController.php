@@ -68,6 +68,8 @@ class HomeController extends Controller
             $t= Task ::where('maintenance_id', $depense->maintenance_id)->where('status', 'canceled')->count();
             $maintenanceCancel += $t* $depense->amount;
         }
-        return view('home', ['maintenanceCancel'=>$maintenanceCancel,'maintenanceRealise'=>$totalRealised,'maintenanceBuget'=>$total, 'categories'=>$categories, 'months'=>$months, 'days'=>$days, 'weeks'=>$weeks]);
+        $mouvements = StockHistory::count();
+        $users=User::role('technicien')->count();
+        return view('home', ['mouvements'=>$mouvements,'maintenanceCancel'=>$maintenanceCancel,'techniciens'=>$users, 'maintenanceRealise'=>$totalRealised,'maintenanceBuget'=>$total, 'categories'=>$categories, 'months'=>$months, 'days'=>$days, 'weeks'=>$weeks]);
     }
 }

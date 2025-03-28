@@ -14,6 +14,7 @@ use App\Http\Controllers\EntryApiController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\LoginApiController;
+use App\Http\Controllers\TechnicianApiController;
 use App\Http\Controllers\UnityApiController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,11 @@ Route::get('/permissions', [RolesPermissionsController::class, 'index4']);
 Route::post('login', [LoginApiController::class, 'login']);
 
 Route::middleware('auth:sanctum')->group(function(){
+
     Route::post('categories/import', [CategoryApiController::class, 'import'])->name('categories.import');
+    Route::post('users/import', [UserApiController::class, 'import'])->name('users.import');
+    Route::post('tasks/import', [TaskApiController::class, 'import'])->name('tasks.import');
+
     Route::apiResources ([
         'users'=>UserApiController::class,
         'tasks'=>TaskApiController::class,
@@ -43,6 +48,7 @@ Route::middleware('auth:sanctum')->group(function(){
         'instructions'=>InstructionApiController::class,
         'entries' =>EntryApiController::class,
         'unities'=>UnityApiController ::class,
+        'techniciens'=>TechnicianApiController::class,
 
     ]);
 });

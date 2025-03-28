@@ -27,11 +27,20 @@ class TeamApiController extends Controller
      */
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required',
-            'user_id' => 'required|exists:users,id',
-        ]);
-        $team = Team::create($request->all());
+        try {
+            $request->validate([
+                'name' => 'required',
+                'user_id' => 'required|exists:users,id',
+            ]);
+            $team = Team::create($request->all());
+            foreach ($request->members as $value) {
+                # code...
+                TeamUser::create(['user_id'=>$value, 'team_id'=>$team->id]);
+            }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return $th->getMessage();
+        }
         return response()->json(['data' => $team], 201);
     }
 

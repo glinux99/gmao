@@ -28,10 +28,10 @@ class ImportCategory implements ToModel, WithHeadingRow, WithValidation
 
         return new Category([
             'designation' => $row['designation'],
-            'unity_id' => $unityId, // Use the ID or null
-            'caracteristique' => $row['caracteristique'],
+            'unity_id' => $unityId  ?? null, // Use the ID or null
+            'caracteristique' => $row['caracteristique']  ?? null,
             'is_remise' => $row['is_remise'] === 'Oui' ? true : false, // Convert "Oui" to true, otherwise false
-            'type' => $row['type'],
+            'type' => $row['type'] ?? null,
             // 'avatar' => $row['avatar'], // Removed because it's not in the header
             // 'description' => $row['description'], // Removed because it's not in the header
         ]);

@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('pointure')->nullable();
             $table->string('size')->nullable();
             $table->string('type')->nullable();
+            $table->string('function')->nullable();
             $table->string('level')->nullable();
             $table->string('status')->nullable();
             $table->text('address')->nullable();

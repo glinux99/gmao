@@ -89,6 +89,20 @@ export default function useTasks() {
            {"name": "Inspection"}
         ];
     }
+    const storeImport=async(data)=>{
+          try{
+              const res= await instance.post('/api/import-planning',data,{
+                  headers: {
+                      'Content-Type': 'multipart/form-data',
+                  }
+              })
+             console.log(res.data);
+
+          }catch(e){
+                  console.log(e.message);
+          }
+
+      }
 
     return {
         tasks,
@@ -100,6 +114,7 @@ export default function useTasks() {
         storeTask,
         updateTask,
         destroyTask,
-        getTaskCategories
+        getTaskCategories,
+        storeImport
     };
 }

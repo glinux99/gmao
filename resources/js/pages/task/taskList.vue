@@ -286,14 +286,16 @@
           ></div>
         </div>
         <div class="fv-row fv-plugins-icon-container col-md-6">
-          <label class="required fw-semibold fs-6 mb-2">Responsable</label>
+          <label class="required fw-semibold fs-6 mb-2 d-block">Responsable</label>
           <Dropdown
             v-model="form.owner"
             :options="users"
             optionLabel="name"
             optionValue="id"
             placeholder="Sélectionner un responsable"
-            class="w-full md:w-14rem"
+            class="w-full md:w-14rem w-100"
+               :filter="true"
+              filterBy="name,post_name, email"
           />
           <div
             class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
@@ -318,20 +320,20 @@
               optionLabel="name"
               optionValue="value"
               placeholder="Sélectionner un status"
-              class="w-full md:w-14rem"
+              class="w-full md:w-14rem w-100"
             />
           </div>
           <!--end::Col-->
         </div>
         <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-          <label class="required fw-semibold fs-6 mb-2">Priorité</label>
+          <label class="required fw-semibold fs-6 mb-2 d-block">Priorité</label>
           <Dropdown
             v-model="form.priority_id"
             :options="priorities"
             optionLabel="title"
             optionValue="id"
             placeholder="Sélectionner une priorité"
-            class="w-full md:w-14rem"
+            class="w-full md:w-14rem w-100"
             required
           />
         </div>
@@ -402,7 +404,9 @@
             optionLabel="name"
             optionValue="id"
             placeholder="Sélectionner un technicien"
-            class="w-full md:w-14rem"
+            class="w-full md:w-14rem w-100"
+               :filter="true"
+              filterBy="name,post_name, email"
           />
         </div>
         <div v-else-if="form.assignToType === 'team'" class="fv-row mb-7">
@@ -413,7 +417,7 @@
             optionLabel="name"
             optionValue="id"
             placeholder="Sélectionner une équipe"
-            class="w-full md:w-14rem"
+            class="w-full md:w-14rem w-100"
           />
         </div>
                     </div>
@@ -632,8 +636,6 @@ export default {
 
         const submitTask = async () => {
             let success = false;
-            console.log("sddddddddddddd");
-            console.log({...form});
             // Check if it's assigned to a user or a team
             if (form.assignToType === 'user') {
                 form.assigned_team_id = null;

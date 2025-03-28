@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportPlanning;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\TeamUser;
@@ -10,6 +11,8 @@ use App\Notifications\TaskAssignedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Exceptions\SheetNotFoundException;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TaskApiController extends Controller
 {
@@ -162,4 +165,21 @@ class TaskApiController extends Controller
             }
         }
     }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+
+        $file = $request->file('file');
+
+        try {
+             $import = new ImportPlanning ();
+            Excel ::import($import, $file);
+              return response()->json(['message' => 'Planning import successful!']);
+        } catch (SheetNotFoundException $e) {
+           return response()->json(['message' => 'Error importing Planning', 'error'=>$e->getMessage()], 500);
+        }
+    }
+
 }

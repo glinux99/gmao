@@ -51,10 +51,15 @@
                         <path opacity="0.3" d="M3 13H10C10.6 13 11 13.4 11 14V21C11 21.6 10.6 22 10 22H3C2.4 22 2 21.6 2 21V14C2 13.4 2.4 13 3 13Z" fill="black" />
                         <path opacity="0.3" d="M14 13H21C21.6 13 22 13.4 22 14V21C22 21.6 21.6 22 21 22H14C13.4 22 13 21.6 13 21V14C13 13.4 13.4 13 14 13Z" fill="black" />
                     </svg>
+
                 </span>
                 <!--end::Svg Icon-->
-                <div class="text-white fw-bolder fs-2 mb-2 mt-5">Techniciens</div>
-                <div class="fw-bold text-white">Nombre de techniciens</div>
+                <div class="text-white fw-bolder fs-2 mb-2 mt-5">
+                    <span class="fs-1">
+                        {{$techniciens}}
+                    </span>
+                    Techniciens</div>
+                <div class="fw-bold text-white">Techniciens enregistrés</div>
             </div>
             <!--end::Body-->
         </a>
@@ -75,9 +80,10 @@
                     </svg>
                 </span>
                 <!--end::Svg Icon-->
-                <div class="text-gray-100 fw-bolder fs-2 mb-2 mt-5">Statistiques</div>
+                <div class="text-gray-100 fw-bolder fs-2 mb-2 mt-5">
+                    {{ $mouvements}} Mouvements</div>
                 <div class="fw-bold text-gray-100">
-                    Mouvement
+                    Statistiques
                 </div>
             </div>
             <!--end::Body-->

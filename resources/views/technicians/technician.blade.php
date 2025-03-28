@@ -139,7 +139,7 @@ Gestion d'utilisateurs
 
                         <div class="col-lg-8 fv-row">
                             <input type="email" class="form-control form-control-lg form-control-solid"
-                                placeholder="nom de l'agence" value="{{ $user->email}}"  />
+                                placeholder="votre adresse email" value="{{ $user->email}}"  />
                         </div>
 
                     </div>

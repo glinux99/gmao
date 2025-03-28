@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ImportUser;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserApiController extends Controller
 {
@@ -61,5 +63,36 @@ class UserApiController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+    public function import(Request $request)
+    {
+        // $request->validate([
+        //     'file' => 'required|mimes:xlsx,xls',
+        // ]);
+
+        try {
+            Excel::import(new ImportUser, $request->file('file'));
+            return response()->json([
+                'message' => 'users imported successfully',
+                'success' => true
+            ]);
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Row " . $failure->row() . ": " . implode(", ", $failure->errors());
+            }
+            return response()->json([
+                'errors' => $errors,
+                'message' => 'Validation error ',
+                'success' => false
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'An error occurred during import.',
+                'errors'=>$e->getMessage(),
+                'success' => false
+            ]);
+        }
     }
 }
