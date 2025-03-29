@@ -14,6 +14,8 @@ class Team extends Model
     protected $fillable = [
         'name',
         'description',
+        "start_date",
+        "due_date",
         'user_id', // Foreign key for the team leader
     ];
 

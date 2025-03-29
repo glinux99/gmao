@@ -344,16 +344,17 @@ export default {
             const formData = new FormData();
             formData.append('file', file);
            await storeImportUser(formData);
-            getTechniciens();
+           await getTechniciens();
+           fetchTechniciens();
             showImportDialog.value=false;
-            errors.value.forEach((e)=>{
-                toast.add({
-                    severity: 'error',
-                    summary: 'Error',
-                    detail: e,
-                    life: 3000,
-                });
-            })
+            // errors.value.forEach((e)=>{
+            //     toast.add({
+            //         severity: 'error',
+            //         summary: 'Error',
+            //         detail: e,
+            //         life: 3000,
+            //     });
+            // })
 
 
         };

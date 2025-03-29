@@ -37,32 +37,6 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                 continue; // Skip row if essential data is missing
             }
 
-            // Find or create the team
-            $teamName = $row['equipes'];
-            $authUser = Auth::id();
-            $team = Team::firstOrCreate(['name' => $teamName, 'user_id' => $authUser]);
-            $team->save();
-
-            // Extract and process technicians
-            $technicianNames = preg_split('/[-,\s]+/', $row['techniciens']); // Split by -, comma, or space
-            foreach ($technicianNames as $technicianName) {
-                $technicianName = trim($technicianName); // Clean up whitespace
-                if (empty($technicianName)) continue;
-
-                // Check if technician exists by name, post_name, or nickname
-                $technician = User::where(function ($query) use ($technicianName) {
-                    $query->where('name', 'like', '%' . $technicianName . '%')
-                        ->orWhere('post_name', 'like', '%' . $technicianName . '%')
-                        ->orWhere('nickname', 'like', '%' . $technicianName . '%');
-                })->first();
-
-                if ($technician) {
-                    // Attach technician to team if not already attached
-                    if (!$team->users()->where('user_id', $technician->id)->exists()) {
-                        TeamUser::create(['team_id' => $team->id, 'user_id' => $technician->id]);
-                    }
-                }
-            }
 
             //Create task
             $dates = $this->extractDatesFromSheetName($this->currentSheetName);
@@ -77,6 +51,38 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                 $endTime = Carbon::now()->format('H:i:s');
                 $startDateTime = Carbon::parse($startDate->toDateString() . " " . $startTime);
                 $endDateTime = Carbon::parse($dueDate->toDateString() . " " . $endTime);
+                // Find or create the team
+            $teamName = $row['equipes'];
+            $authUser = Auth::id();
+            $team = Team::create(['name' => $teamName, 'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
+            $team->save();
+
+            // Extract and process technicians
+            $technicianNames = preg_split('/[-,\s]+/', $row['techniciens']); // Split by -, comma, or space
+            $chef=0;
+            foreach ($technicianNames as $technicianName) {
+                $technicianName = trim($technicianName); // Clean up whitespace
+                if (empty($technicianName)) continue;
+                $chef+=1;
+                // Check if technician exists by name, post_name, or nickname
+                $technician = User::where(function ($query) use ($technicianName) {
+                    $query->where('name', 'like', '%' . $technicianName . '%')
+                        ->orWhere('post_name', 'like', '%' . $technicianName . '%')
+                        ->orWhere('nickname', 'like', '%' . $technicianName . '%');
+                })->firstOrCreate(['name'=>$technicianName]);
+                $technician->syncRoles('technicien');
+
+                if ($technician) {
+                    if($chef==1){
+                        Team::find($team->id)->update(['user_id'=> $technician->id]);
+                    }
+                    // Attach technician to team if not already attached
+                    if (!$team->users()->where('user_id', $technician->id)->exists()) {
+                       TeamUser::create(['team_id' => $team->id, 'user_id' => $technician->id]);
+                    }
+                }
+            }
+
                 // dd($endDateTime);
                 $taskData = [
                     'description' => $row['priorite'],
