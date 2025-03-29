@@ -91,7 +91,7 @@ export default function useTasks() {
     }
     const storeImport=async(data)=>{
           try{
-              const res= await instance.post('/api/import-planning',data,{
+              const res= await instance.post('/api/tasks/import',data,{
                   headers: {
                       'Content-Type': 'multipart/form-data',
                   }

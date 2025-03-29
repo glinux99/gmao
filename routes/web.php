@@ -15,6 +15,7 @@ use App\Http\Controllers\ProjectApiController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StockHistoryController;
+use App\Http\Controllers\TaskApiController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\TechnicianController;
 use App\Http\Controllers\UnityController;
@@ -88,7 +89,9 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'instructions'=>InstructionApiController::class,
 
     ]);
-    Route::post('/categories/import', [CategoryController::class, 'import'])->name('categories.imports');
+
+    Route::get('/import2/{id}', [TaskApiController::class, 'extractDatesFromSheetName'])->name('extractDatesFromSheetName.imports');
+    Route::post('/categories/import2', [TaskApiController::class, 'import'])->name('task.imports');
     Route::put('instruction-task', [InstructionApiController::class,'updateInstructions'])->name('instruction.updateInstructions');
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');
         // Route::get('category/destroy/{id}', [UserController::class, 'destroy'])->name('category.destroy');

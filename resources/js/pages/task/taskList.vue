@@ -12,20 +12,52 @@
                                 Liste des Tâches
                             </h1>
                         </div>
-
                         <div class="d-flex align-items-center gap-2 gap-lg-3"><!-- Toggle View Button -->
                             <button type="button" class="btn btn-light btn-active-light-primary me-2" @click="toggleView">
                                <span v-if="showTableView">Vue Grille</span>
                                <span v-else>Vue Liste</span>
                            </button>
                            <!-- End Toggle View Button -->
-                            <button type="button" class="btn btn-primary" @click="addTask">
-                                Ajouter une Tâche
-                            </button>
+
+                            <div class="d-flex justify-content-end">
+
+                <Button
+                  label=" Ajouter une Tâche"
+                  icon="pi pi-plus"
+                  severity="warn"
+                  class="p-button-primary me-2"
+                  @click="addTask"
+                />
+                <Button v-if="!selectedFileName"
+                  label="Importer xls"
+                  icon="pi pi-upload"
+                  @click="openFileDialog"
+                />
+                <Button v-else
+                  label="Importer vers le server"
+                  class="p-button-primary ms-3"
+                  icon="pi pi-upload"
+                  @click="importTasksToServer"
+                />
+                <input
+                  type="file"
+                  class="d-none"
+                  name="file"
+                  ref="fileInput"
+                  @change="handleFileChange"
+                />
+              </div>
                         </div>
                     </div>
                 </div>
-
+                <div v-if="selectedFileName" class="mb-3">
+              <div class="d-flex align-items-center">
+                <i class="pi pi-file me-2"></i>
+                <span class="text-muted fs-8">
+                  Fichier sélectionné : {{ selectedFileName }}
+                </span>
+              </div>
+            </div>
                 <div v-if="isLoading">Loading...</div>
                 <div id="kt_app_content" class="app-content flex-column-fluid">
                      <!-- Display the table view if showTableView is true -->
@@ -111,6 +143,7 @@
 
                                                 <div class="fw-bold text-gray-600 ">
                         Debut : {{ formatDate(task.start_date) }} <br />
+                        Debut : {{ formatDate(task.due_date) }} <br />
                         Duree :
                         <span class=" fs-8 text-center">
                           <span class="badge badge-light-success">
@@ -520,12 +553,14 @@
         @click="submitTask"
       />
     </template>
+    <Toast/>
   </Dialog>
 
     </div>
 </template>
 <script>
 import { useCookie } from "@vue-composable/cookie";
+import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref } from "vue";
 import useInstructions from '../../services/instructionServices.js';
 import usePriorities from "../../services/priorityServices.js";
@@ -542,6 +577,7 @@ export default {
             updateTask,
             getTaskCategories,
             errors,
+            storeImport,
             isLoading
         } = useTasks();
         const {getProjects,projects}=useProjects();
@@ -799,8 +835,57 @@ export default {
         hour: 'numeric',
         minute: 'numeric'
     }).format(date);
-}
+};
+const toast=useToast();
+const selectedFileName = ref(null);
+        const fileInput = ref(null);
+        const openFileDialog = () => {
+            fileInput.value.click();
+        };
+        const handleFileChange = (event) => {
+            const file = event.target.files[0];
+            selectedFileName.value = file ? file.name : null;
+        };
+        const importTasksToServer = async () => {
+            if (!selectedFileName.value) {
+                toast.add({
+                    severity: 'warn',
+                    summary: 'Warning',
+                    detail: 'Veuillez sélectionner un fichier',
+                    life: 3000,
+                });
+                return;
+            }
+            const file = fileInput.value.files[0];
+            const formDataFile = new FormData();
+            formDataFile.append('file', file);
+
+            try {
+                await storeImport(formDataFile);
+                await getTasks();
+                await getTaskCategories();
+                selectedFileName.value = null;
+                toast.add({
+                    severity: 'success',
+                    summary: 'Success',
+                    detail: 'Catégories importées avec succès',
+                    life: 3000,
+                });
+            } catch (error) {
+                console.error('Error importing categories:', error);
+                toast.add({
+                    severity: 'error',
+                    summary: 'Error',
+                    detail: 'Erreur lors de l\'importation des catégories',
+                    life: 3000,
+                });
+            }
+        };
         return {
+            selectedFileName, fileInput,
+            handleFileChange,
+            importTasksToServer,
+            openFileDialog,
             formatDate,
             addInstruction,
             formatDeadline,
