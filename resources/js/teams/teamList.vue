@@ -42,6 +42,7 @@
                                     >
                                     <Column field="name" header="Nom" />
                                     <Column field="description" header="Description" />
+                                    <Column field="vehicule" header="Véhicule" />
                                     <Column header="Chef d'équipe">
                                         <template #body="slotProps">
                                             {{ slotProps.data.user ? slotProps.data.user.name : 'N/A' }}

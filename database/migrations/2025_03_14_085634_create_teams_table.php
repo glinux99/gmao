@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('teams', function (Blueprint $table) {
             $table->id();
             $table->string('name');
+            $table->string('vehicule')->nullable();
             $table->date('start_date')->nullable();
             $table->date('due_date')->nullable();
             $table->text('description')->nullable();

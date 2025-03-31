@@ -31,6 +31,7 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                 !isset($row['techniciens']) ||
                 !isset($row['priorite']) ||
                 !isset($row['objectif_hebdo']) ||
+                !isset($row['vehicules']) ||
                 !isset($row['heure_et_lieux_de_depart']) ||
                 !isset($row['heure_et_lieux_de_retour'])
 
@@ -65,8 +66,10 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
             $chef=0;
             // Find or create the team
             $teamName = $row['equipes'];
+            $vehicule = $row['vehicules'] ?? '';
+
             $authUser = Auth::id();
-            $team = Team::create(['name' => $teamName, 'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
+            $team = Team::create(['name' => $teamName, 'vehicule'=> $vehicule,  'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
             $team->save();
             foreach ($technicianNames as $technicianName) {
                 $technicianName = trim($technicianName); // Clean up whitespace

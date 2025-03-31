@@ -17,6 +17,7 @@ class Team extends Model
         "start_date",
         "due_date",
         'user_id', // Foreign key for the team leader
+        'vehicule',
     ];
 
     /**
