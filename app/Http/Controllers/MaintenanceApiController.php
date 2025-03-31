@@ -77,12 +77,170 @@ class MaintenanceApiController extends Controller
     {
         //
     }
+ /**
+     * Calculate the number of tasks and their dates based on frequency.
+     *
+     * @param array $tasksData
+     * @param string $startDate
+     * @param string $endDate
+     * @param string $frequency
+     * @return array
+     */
+    protected function calculateTasksDates(array $tasksData, string $startDate, string $endDate, string $frequency): array
+    {
+        $start = Carbon::parse($startDate);
+        $end = Carbon::parse($endDate);
+        $tasksToCreate = [];
 
+        // determine the number of tasks that need to be created based on the frequency
+         $numberOfTasks = match ($frequency) {
+            'daily' => $start->diffInDays($end) + 1,
+            'weekly' => $start->diffInWeeks($end) + 1,
+            'bimonthly' => $start->diffInMonths($end) / 2 + 1,
+            'quarterly' => $start->diffInQuarters($end) + 1,
+            'biannual' => $start->diffInMonths($end) / 6 + 1,
+            'annual' => $start->diffInYears($end) + 1,
+            default => 1, // Default to 1 task if frequency is not recognized
+        };
+        $numberOfTasks=1; //REMOVE THIS LINE
+        // Iterate over each original task to calculate start and due dates
+        foreach ($tasksData as $originalTask) {
+            for ($i = 0; $i < $numberOfTasks; $i++) {
+                // Determine the start and due dates for the current task iteration
+                $taskStartDate = match ($frequency) {
+                    'daily' => $start->copy()->addDays($i),
+                    'weekly' => $start->copy()->addWeeks($i),
+                    'bimonthly' => $start->copy()->addMonths($i * 2),
+                    'quarterly' => $start->copy()->addQuarters($i),
+                    'biannual' => $start->copy()->addMonths($i * 6),
+                    'annual' => $start->copy()->addYears($i),
+                    default => $start->copy(), // Default to start date
+                };
+                $taskDueDate = $taskStartDate->copy();
+
+                // Clone the original task and modify it
+                $newTask = $originalTask;
+                $newTask['start_date'] = $taskStartDate->format('Y-m-d H:i:s');
+                $newTask['due_date'] = $taskDueDate->format('Y-m-d H:i:s');
+                $tasksToCreate[] = $newTask;
+            }
+        }
+
+        return $tasksToCreate;
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        if($request->has('tasks') && is_array($request->tasks) && Count($request->tasks)>0){
+            try {
+                DB::beginTransaction();
+
+                // Create the maintenance record
+                $maintenanceData = $request->except(['daysOfWeek', 'techniciens', 'materials', 'instructions', 'tasks', 'expenses']);
+                $maintenance = Maintenance::create($maintenanceData);
+
+                // Handle Expenses
+                $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
+                foreach ($allDep as $dep) {
+                    $dep->delete();
+                }
+                if ($request->expenses) {
+                    foreach ($request->expenses as $expense) {
+                        $expense['maintenance_id'] = $maintenance->id;
+                        Depense::create($expense);
+                    }
+                }
+
+                $maintenance->load('equipment');
+
+                // Assign technicians if provided
+                if ($request->has('techniciens')) {
+                    $maintenance->technicians()->attach($request->techniciens);
+                }
+
+                // Handle materials for maintenance
+                if ($request->materials) {
+                    foreach ($request->materials as $materialData) {
+                        $material = Category::find($materialData['id']);
+                        if ($material) {
+                            $maintenance->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                        }
+                    }
+                }
+
+                // Handle instructions for maintenance
+                if ($request->instructions && Count($request->instructions) > 0) {
+                    foreach ($request->instructions as $instructionData) {
+                        $instructionData['maintenance_id'] = $maintenance->id;
+                        $instruction = new Instruction($instructionData);
+                        $maintenance->instructions()->save($instruction);
+                    }
+                }
+
+                // Handle tasks
+                if ($request->has('tasks') && is_array($request->tasks)) {
+                    $tasksToCreate=$this->calculateTasksDates($request->tasks, $maintenance->start_date, $maintenance->end_date, $maintenance->frequency);
+                    foreach ($tasksToCreate as $taskData) {
+
+                        $taskData['maintenance_id'] = $maintenance->id;
+                        $taskData['owner'] = $request->user_id;
+                        $taskData['user_id'] = $request->user_id;
+                        $taskData['status'] = 'pending';
+                        $task = Task::create($taskData);
+
+                        // Handle instructions for each task
+                        if (isset($taskData['instructions']) && is_array($taskData['instructions'])) {
+                            foreach ($taskData['instructions'] as $instructionData) {
+                                $instructionData['task_id'] = $task->id;
+                                Instruction::create($instructionData);
+                            }
+                        }
+
+                        // Handle materials for each task
+                        if (isset($taskData['materials']) && is_array($taskData['materials'])) {
+                            foreach ($taskData['materials'] as $materialData) {
+                                $material = Category::find($materialData['id']);
+                                if ($material) {
+                                    $task->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                                }
+                            }
+                        }
+                        //assign user to task
+                        if(isset($taskData['assigned_user_id']) && $taskData['assignToType'] == 'user'){
+                            $task->assigned_user_id = $taskData['assigned_user_id'];
+                            $task->assigned_team_id = null;
+                            $task->save();
+                        }
+                        //assign team to task
+                        if(isset($taskData['assigned_team_id']) && $taskData['assignToType'] == 'team'){
+                            $task->assigned_team_id = $taskData['assigned_team_id'];
+                            $task->assigned_user_id = null;
+                            $task->save();
+                        }
+                    }
+                }
+
+                // Schedule next tasks if frequency is set
+                // if ($maintenance->frequency ) {
+                //     $this->scheduleNextTasks($maintenance);
+                // }
+
+                DB::commit();
+                return response()->json(['data' => $maintenance->load(['technicians', 'materials' => function ($query) {
+                    $query->select('categories.*', 'maintenance_material.quantity');
+                }, 'instructions', 'tasks.instructions', 'tasks.materials'])]);
+            } catch (\Illuminate\Validation\ValidationException $e) {
+                DB::rollBack();
+                return response()->json(['errors' => $e->errors()], 422);
+            } catch (\Throwable $th) {
+                DB::rollBack();
+                Log::error($th->getMessage());
+                return response()->json(['error' => $th->getMessage()], 500);
+            }
+        }else{
+
         try {
             DB::beginTransaction();
             // Create the maintenance record
@@ -139,6 +297,8 @@ class MaintenanceApiController extends Controller
         return response()->json(['data' => $maintenance->load(['technicians', 'materials' => function ($query) {
             $query->select('categories.*', 'maintenance_material.quantity');
         }, 'instructions'])]);
+        }
+
     }
 
     protected function createTaskFromMaintenance(Maintenance $maintenance, $start_date, $due_date)
@@ -148,7 +308,7 @@ class MaintenanceApiController extends Controller
         $taskData = [
             'description' => 'Maintenance sur l\'équipement ' . ($maintenance->equipment->name ?? "N/A") . ' : ' . $maintenance->description,
             'priority_id' => 2, // Default priority to Moyen
-            'status' => 'pending',
+            'status' => 'planned',
             'user_id' => $maintenance->assigned_user_id,
             'assigned_user_id' => $maintenance->assigned_user_id,
             'assigned_team_id' => $maintenance->assigned_team_id,

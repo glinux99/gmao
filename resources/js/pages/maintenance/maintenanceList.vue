@@ -320,7 +320,7 @@
         isEditMode ? 'Modifier une Maintenance' : 'Créer une Maintenance'
       "
       v-model:visible="visible"
-      :style="{ width: '800px' }"
+      :style="{ width: '900px' }"
       position="center"
       :modal="true"
       :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
@@ -332,11 +332,11 @@
           <div class="row">
             <div class="col-md-6">
               <label class="col-form-label fw-bold fs-6">
-                <span class="required">Designation de la maintenance</span>
+                <span class="required">Désignation de la maintenance</span>
                 <i
                   class="fas fa-exclamation-circle ms-1 fs-7"
                   data-bs-toggle="tooltip"
-                  title="equipement"
+                  title="designationn de la maintenance"
                 ></i>
               </label>
               <div class="fv-row">
@@ -344,13 +344,31 @@
                   type="text"
                   name="designation"
                   class="form-control mb-3 mb-lg-0"
-                  placeholder="designation de la maintenance"
+                  placeholder="maintenance du transfo de la zone 17"
                   v-model="form.description"
                   required
                 />
               </div>
             </div>
             <div class="col-md-6">
+                <label class="col-form-label fw-bold fs-6">
+                <span class="">Type de maintenance</span>
+                <i
+                  class="fas fa-exclamation-circle ms-1 fs-7"
+                  data-bs-toggle="tooltip"
+                  title="choisir un type de maintenance"
+                ></i>
+              </label>
+                    <Dropdown
+                  v-model="form.type"
+                  :options="typeMaintenance"
+                  optionLabel="label"
+                  optionValue="value"
+                  placeholder="Sélectionner le type de maintenance"
+                  class="w-full md:w-14rem w-100"
+                />
+                </div>
+            <div class="col-md-6" v-if="form.type=='equipment'">
               <label class="col-form-label fw-bold fs-6">
                 <span class="required">Equipement</span>
                 <i
@@ -376,7 +394,7 @@
           </div>
         </template>
       </Card>
-      <Card class="mt-2 bg-secondary">
+      <Card class="mt-2 bg-secondary"  v-if="form.type=='equipment'">
         <template #title> Assigner à </template>
         <template #content>
           <div class="fv-row fv-plugins-icon-container row">
@@ -528,7 +546,7 @@
           </div>
         </template>
       </Card>
-      <Card class="bg-secondary mt-2">
+      <Card class="bg-secondary mt-2"  v-if="form.type=='equipment'">
         <template #title>Matériels à utiliser</template>
         <template #content>
           <div class="row">
@@ -598,6 +616,78 @@
           </div>
         </template>
       </Card>
+      <Card class="bg-secondary mt-2"  v-if="form.type=='quarterly'">
+        <template #content>
+          <div class="fv-row mb-7 fv-plugins-icon-container">
+            <div class="d-flex justify-content-between align-items-center">
+                <span class="fw-bold ms-5">
+                  {{ form.tasks.length> 1? `${form.tasks.length} Tâches`: `${form.tasks.length} Tâche`}} à éffectuer lors de la maintenance trimestriel</span>
+                  <Button
+                label="Ajouter une tâche"
+                icon="pi pi-plus-circle flex"
+                @click="addTask"
+                severity="warn"
+                class="p-button-primary"
+              >
+
+              </Button>
+            </div>
+            <div
+
+            class="my-1 border rounded "
+          >
+          <Accordion :value="index" expandIcon="pi pi-plus" collapseIcon="pi pi-minus">
+  <AccordionPanel v-for="(task, index) in form.tasks" :key="index">
+    <AccordionHeader>
+      <div class="d-flex flex-row align-items-center justify-content-between w-full w-100">
+        <span class="flex items-center gap-2">
+          <div class="font-bold whitespace-nowrap">{{ getAssingedName(task.assigned_user_id) }}</div>
+          <div class="fs-9 my-2">
+            <Badge :value="task.instructions.length" class="" /> Instructions
+          </div>
+        </span>
+       <span> <Button icon="pi pi-pencil" @click="editTask(task)" severity="warn" class="me-5" /></span>
+      </div>
+    </AccordionHeader>
+    <AccordionContent>
+      <div v-for="(instruction, i) in task.instructions" :key="i" class="my-1 border rounded">
+        <div class="d-flex justify-content-between align-items-center">
+          <label class="fw-bold">Instruction {{ i + 1 }}</label>
+        </div>
+        <div class="row">
+          <div class="col-md-8">
+            <InputText
+              type="text"
+              name="designation"
+              class="form-control mb-3 mb-lg-0"
+              placeholder="Description de l'instruction"
+              v-model="instruction.description"
+              @input="taddInstructionValue('description', instruction.description, i, index)"
+            />
+          </div>
+          <div class="col-md-3">
+            <Dropdown
+              class="w-full md:w-14rem"
+              v-model="instruction.response_type"
+              :options="['checkbox', 'text / valeur']"
+              placeholder="Type de reponse"
+              @change="taddInstructionValue('response_type', instruction.response_type, i, index)"
+            />
+          </div>
+          <div class="col-md-1 d-flex align-items-start justify-content-start" @click="tremoveInstruction(i, index)">
+            <button><i class="fa fa-trash text-danger m-0 p-0 display-6"></i></button>
+          </div>
+        </div>
+      </div>
+    </AccordionContent>
+  </AccordionPanel>
+</Accordion>
+
+
+          </div>
+          </div>
+        </template>
+      </Card>
       <Card class="bg-secondary mt-2">
     <template #title> Dépenses </template>
     <template #content>
@@ -664,8 +754,10 @@
         </div>
       </div>
     </template>
-  </Card>
-      <Card class="bg-secondary mt-2">
+        </Card>
+
+
+      <Card class="bg-secondary mt-2"  v-if="form.type=='equipment'">
         <template #content>
           <div class="fv-row mb-7 fv-plugins-icon-container">
             <div class="d-flex justify-content-end">
@@ -675,7 +767,9 @@
                 @click="addInstruction"
                 severity="warn"
                 class="p-button-primary"
-              />
+              >
+
+              </Button>
             </div>
             <div
               v-for="(instruction, index) in form.instructions"
@@ -880,7 +974,7 @@
       </template>
     </Dialog>
     <Dialog
-            :header="isEditMode ? 'Modifier un équipement' : 'Créer un équipement'"
+            :header="eisEditMode ? 'Modifier un équipement' : 'Créer un équipement'"
             v-model:visible="eVisible"
             :style="{ width: '700px' }"
             position="center"
@@ -929,7 +1023,7 @@
                     <div class="col-md-6">
                         <label class="fw-semibold fs-6 mb-2 d-block">Utilisateur</label>
                         <Dropdown class="w-full md:w-14rem w-100" aria-label="user"
-                            v-model="eform.user_id" :options="users" optionLabel="name" optionValue="id"
+                            v-model="eform.user_id" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
                             placeholder="Sélectionner un utilisateur" />
                     </div>
                 </div>
@@ -981,32 +1075,32 @@
       <div class="row">
         <div class="col-md-6">
           <div class="field">
-            <label class="required fw-semibold fs-6 mb-2" for="designation">Designation</label>
-            <InputText id="designation" type="text" placeholder="Designation de la catégorie" v-model="mform.designation" class="w-full" required />
+            <label class="required fw-semibold fs-6 mb-2 d-block" for="designation">Designation</label>
+            <InputText id="designation" type="text" placeholder="Designation de la catégorie" v-model="mform.designation" class="w-full w-100" required />
           </div>
         </div>
         <div class="col-md-6">
           <div class="field">
-            <label class="fw-semibold fs-6 mb-2" for="caracteristique">Caractéristiques</label>
-            <InputText id="caracteristique" type="text" placeholder="Caracteristique de la catégorie" v-model="mform.caracteristique" class="w-full" />
+            <label class="fw-semibold fs-6 mb-2 d-block" for="caracteristique">Caractéristiques</label>
+            <InputText id="caracteristique" type="text" placeholder="Caracteristique de la catégorie" v-model="mform.caracteristique" class="w-full w-100" />
           </div>
         </div>
         <div class="col-md-6">
           <div class="field">
-            <label class="fw-semibold fs-6 mb-2" for="unity">Unité</label>
-            <Dropdown id="unity" v-model="mform.unity_id" :options="unities" optionLabel="designation" optionValue="id" placeholder="Selectionner une unité..." class="w-full" />
+            <label class="fw-semibold fs-6 mb-2 d-block" for="unity">Unité</label>
+            <Dropdown id="unity" v-model="mform.unity_id" :options="unities" optionLabel="designation" optionValue="id" placeholder="Selectionner une unité..." class="w-full  w-100" />
           </div>
         </div>
         <div class="col-md-6">
           <div class="field">
-            <label class="fw-semibold fs-6 mb-2" for="type">Type d'équipement</label>
-            <Dropdown id="type" v-model="mform.type" :options="typeOptions" optionLabel="label" optionValue="value" placeholder="Selectionner un type..." class="w-full" />
+            <label class="fw-semibold fs-6 mb-2 d-block" for="type">Type d'équipement</label>
+            <Dropdown id="type" v-model="mform.type" :options="typeOptions" optionLabel="label" optionValue="value" placeholder="Selectionner un type..." class="w-full  w-100" />
           </div>
         </div>
         <div class="col-md-6">
-          <div class="field-checkbox">
+          <div class="field-checkbox my-2">
             <Checkbox id="is_remise" v-model="mform.is_remise" :binary="true" />
-            <label for="is_remise" class="ml-2">A remettre?</label>
+            <label for="is_remise" class="ml-2 me-3">A remettre au magasin?</label>
           </div>
         </div>
       </div>
@@ -1015,6 +1109,218 @@
       <Button label="Annuler" icon="pi pi-times"  @click="mVisible=false" />
       <Button label="Enregistrer" icon="pi pi-check" severity="warn" @click="submitCategory" />
     </template>
+  </Dialog>
+  <Dialog :id="id" :header="isEditMode ? 'Modifier une Tâche' : 'Créer une Tâche'" v-model:visible="taskVisible"
+    :style="{ width: '800px' }" position="center" :modal="true" :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    @hide="closeModal" :closable="true">
+    <template #header>
+      {{ isEditMode ? 'Modifier' : 'Créer' }} une Tâche
+    </template>
+    <div class="d-flex flex-column scroll-y px-3 px-lg-5 ">
+      <Card class="bg-secondary">
+        <template #content>
+          <div class="row">
+            <div class="fv-row fv-plugins-icon-container col-md-6 col-md-6">
+              <label class="required fw-semibold fs-6 mb-2">Description</label>
+              <InputText type="text" name="designation" class="form-control  mb-3 mb-lg-0"
+                placeholder="Perte de puissance signalée"  v-model="selectedTask.description" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+            <div class="fv-row fv-plugins-icon-container col-md-6">
+              <label class="required fw-semibold fs-6 mb-2 d-block">Responsable</label>
+              <Dropdown v-model="selectedTask.owner" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
+                placeholder="Sélectionner un responsable" class="w-full md:w-14rem w-100" :filter="true"
+                filterBy="name,post_name, email" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+            <div class="col-md-6 ">
+              <!--begin::Label-->
+              <label class="fw-semibold fs-6 mb-2">
+                <span class="">Status</span>
+              </label>
+              <!--end::Label-->
+              <!--begin::Col-->
+              <div class="fv-row ">
+                <Dropdown v-model="selectedTask.status" :options="[
+                  { name: 'En attente', value: 'pending' },
+                  { name: 'En cours', value: 'in_progress' },
+                  { name: 'Terminée', value: 'completed' },
+                  { name: 'Annulée', value: 'canceled' },
+                ]" optionLabel="name" optionValue="value" placeholder="Sélectionner un status"
+                  class="w-full md:w-14rem w-100" />
+              </div>
+              <!--end::Col-->
+            </div>
+            <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
+              <label class="required fw-semibold fs-6 mb-2 d-block">Priorité</label>
+              <Dropdown v-model="selectedTask.priority_id" :options="priorities" optionLabel="title" optionValue="id"
+                placeholder="Sélectionner une priorité" class="w-full md:w-14rem w-100" required />
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <div class="row">
+        <div class="col-md-6" v-if="projects.length">
+          <div class="my-6">
+            <label class="col-form-label fw-bold fs-6">
+              <span class="required">Projet</span>
+              <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip" title="categorie"></i>
+            </label>
+            <div class="fv-row">
+              <Dropdown v-model="selectedTask.project_id" :options="projects" optionLabel="name" optionValue="id"
+                placeholder="Sélectionner un projet" class="w-full md:w-14rem" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <Card class="mt-2 bg-secondary mb-2">
+        <template #title>
+          Assigner à
+        </template>
+        <template #content>
+          <div class="fv-row  fv-plugins-icon-container row">
+            <div class="col-md-6">
+              <div class="form-check form-check-custom form-check-solid mb-3">
+                <RadioButton inputId="assignToUser" value="user" v-model="selectedTask.assignToType" name="assignToType" />
+                <label class="form-check-label" for="assignToUser">
+                  Technicien
+                </label>
+              </div>
+              <div class="form-check form-check-custom form-check-solid">
+                <RadioButton inputId="assignToTeam" value="team" v-model="selectedTask.assignToType" name="assignToType" />
+                <label class="form-check-label" for="assignToTeam">
+                  Équipe
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div v-if="selectedTask.assignToType === 'user'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Technicien</label>
+                <Dropdown v-model="selectedTask.assigned_user_id" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
+                  placeholder="Sélectionner un technicien" class="w-full md:w-14rem w-100" :filter="true"
+                  filterBy="name,post_name,email" />
+              </div>
+              <div v-else-if="selectedTask.assignToType === 'team'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Équipe</label>
+                <Dropdown v-model="selectedTask.assigned_team_id" :options="teams" optionLabel="name" optionValue="id"
+                  placeholder="Sélectionner une équipe" class="w-full md:w-14rem w-100" />
+              </div>
+            </div>
+          </div>
+          <!-- Conditional rendering for user/team selection -->
+
+        </template>
+      </Card>
+      <Card class="bg-secondary">
+        <template #content>
+          <div class="fv-row mb-7 fv-plugins-icon-container">
+            <div class="d-flex justify-content-end">
+              <Button label="Ajouter une instruction" icon="pi pi-plus-circle" @click="addInstructionToTask" severity="warn"
+                class="p-button-primary" />
+            </div>
+            <div v-for="(instruction, index) in selectedTask.instructions" :key="index" class="my-1 border rounded">
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="fw-bold">Instruction {{ index + 1 }}</label>
+
+              </div>
+              <div class="row">
+                <div class="col-md-8">
+                  <InputText type="text" name="designation" class="form-control  mb-3 mb-lg-0"
+                    placeholder="Description de l'instruction" v-model="instruction.description"
+                    @input="addInstructionValueToTask('description',instruction.description, index)" />
+                </div>
+                <div class="col-md-3">
+                  <Dropdown class="w-full md:w-14rem" v-model="instruction.response_type"
+                    :options="['checkbox', 'text / valeur']" placeholder="Type de reponse"
+                    @change="addInstructionValueToTask('response_type',instruction.response_type, index)" />
+                </div>
+                <div class="col-md-1 d-flex align-items-start justify-content-start" @click="removeInstructionFromTask(index)">
+                  <button><i class="fa fa-trash text-danger m-0 p-0 display-6"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+      <Card class="bg-secondary mt-2" >
+        <template #title>Matériels à utiliser</template>
+        <template #content>
+          <div class="row">
+            <div class="col-md-12">
+              <label class="col-form-label fw-bold fs-6">Matériel</label>
+
+              <InputGroup>
+                <AutoComplete
+                v-model="selectedTask.materials"
+                class="w-full md:w-14rem"
+                placeholder="Rechercher un matériel"
+                :suggestions="filteredSuggestions"
+                @complete="search"
+                field="designation"
+                optionLabel="designation"
+                optionValue="id"
+                @item-select="handleMaterialSelect"
+                multiple
+              />
+                <Button
+                icon="pi pi-plus-circle"
+                @click="addMateriels"
+                severity="warn"
+                class="p-button-primary"
+              />
+              </InputGroup>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="col-form-label fw-bold fs-6">
+              Matériels ajoutés
+            </label>
+            <ul class="list-group">
+              <li
+                v-for="(material, index) in selectedTask.materials"
+                :key="index"
+                class="list-group-item  "
+              >
+                <div class="row">
+                    <div class="col-md-6 ">
+                    {{ getMaterialName(material.id) }}
+                        </div>
+                        <div class="col-md-4">
+                            <InputText
+                            type="text"
+                            name="designation"
+                            class="w-full md:w-14rem"
+                            placeholder="0"
+                            v-model="material.quantity"
+                        />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-center">
+                            <span v-if="material.unity">
+                            {{ material.unity.designation }}
+                        </span>
+                        </div>
+                <div class="col-md-1">
+                    <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  @click="thandleRemoveMaterial(index)"
+                />
+                </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </template>
+      </Card>
+    </div>
+    <template #footer>
+      <Button label="Annuler" icon="pi pi-times" severity="secondary" variant="text" class="p-button-text"
+        @click="taskVisible=false" />
+      <Button label="Enregistrer" icon="pi pi-check" severity="warn" class="p-button-primary" raised
+        @click="submitTask()" />
+    </template>
+    <Toast />
   </Dialog>
   </div>
 </template>
@@ -1029,7 +1335,10 @@ import useCategories from "../../services/categoryServices.js";
 import useEquipments from "../../services/equipmentService.js";
 import useInstructions from "../../services/instructionServices.js";
 import useMaintenances from "../../services/maintenanceService.js";
+import usePriorities from "../../services/priorityServices.js";
+import useProjects from "../../services/projectServices.js";
 import useTeams from "../../services/teamServices.js";
+import useUnities from '../../services/unityServices';
 import useUsers from "../../services/userservices.js";
 export default {
   components: {
@@ -1075,6 +1384,8 @@ export default {
       expenses:[],
       totalExpenses:0,
       rappel: 7,
+      type: 'equipment',
+      tasks:[],
     });
 
     // Set default time to 00:00 for new dates
@@ -1084,12 +1395,16 @@ export default {
       }
       return null;
     };
+        const {getUnities, unities} = useUnities();
 
     onMounted(async () => {
+        form.type ="equipment";
       await getMaintenances();
       await getUsers();
       await getEquipments();
+      await getUnities();
       await getTeams();
+      await initTask();
       showTableView.value = true;
       form.start_date = setDefaultTime(new Date().toISOString());
       form.end_date = setDefaultTime(new Date().toISOString());
@@ -1106,11 +1421,12 @@ export default {
     const submitMaintenance = async () => {
         // form.expenses= expenses.expenses;
       console.log({ ...form });
-      console.log("form.value");
+    //   console.log("form.value");
       let success = false;
       if (isEditMode.value) {
         success = await updateMaintenance(form.id, { ...form });
       } else {
+        // console.log({...form});
         success = await storeMaintenance({ ...form });
 
       }
@@ -1149,6 +1465,7 @@ export default {
     };
 
     const resetForm = () => {
+         form.type ="equipment";
       form.id = null;
       form.description = "";
       form.status = "pending";
@@ -1176,9 +1493,6 @@ export default {
     const filteredMaintenances = computed(() => {
       return maintenances.value.filter((maintenance) => {
         return (
-          maintenance.description
-            .toLowerCase()
-            .includes(searchQuery.value.toLowerCase()) ||
           (maintenance.equipment &&
             maintenance.equipment.name
               .includes(searchQuery.value.toLowerCase()))  ||
@@ -1346,12 +1660,27 @@ export default {
         const existingMaterialIndex = form.materials.findIndex(
           (m) => m.id === materialId
         );
+        const existingMaterialIndex2 = selectedTask.materials.findIndex(
+          (m) => m.id === materialId
+        );
+       if(existingMaterialIndex2==-1){
         if (existingMaterialIndex !== -1) {
           // If material already exists, update quantity
           form.materials[existingMaterialIndex].quantity = quantity;
         } else {
           // Add material to the form
           form.materials.push({
+            material_id: materialId,
+            quantity: quantity,
+          });
+        }
+       }
+        if (existingMaterialIndex2 !== -1) {
+          // If material already exists, update quantity
+          selectedTask.materials[existingMaterialIndex2].quantity = quantity;
+        } else {
+          // Add material to the form
+          selectedTask.materials.push({
             material_id: materialId,
             quantity: quantity,
           });
@@ -1411,6 +1740,7 @@ export default {
         form.instructions[index][type]=value;
         console.log(form.instructions);
       }
+
       const removeInstruction = (index) => {
         form.instructions.splice(index, 1);
       };
@@ -1423,10 +1753,11 @@ export default {
     const addEquipment = () => {
             eVisible.value = true;
         };
+        const eisEditMode=ref(false);
         const submitEquipment = async () => {
             let success = false;
             eVisible.value=false;
-            if (isEditMode.value) {
+            if (eisEditMode.value) {
                 success = await updateEquipment(eform.id, { ...eform });
             } else {
                 success = await storeEquipment({ ...eform });
@@ -1544,7 +1875,169 @@ const formatDate=(dateLocal)=>{
             { label: 'En maintenance', value: 'under_maintenance' },
             { label: 'Endommagé', value: 'broken' },
         ]);
+        const typeMaintenance= ref ([
+            {
+                label: "Maintenance sur un équipement", value: 'equipment'
+            },
+            {
+                label: "Autre maintenance", value: 'quarterly'
+            },
+
+        ]);
+
+const initTask=async()=>{
+    await getProject();
+    await getPriorities();
+}
+const {getProject, projects} =useProjects();
+const {getPriorities, priorities} = usePriorities();
+const taskVisible = ref(false);
+        const selectedTask = reactive({
+              id: null,
+              priority_id: null, //set default value
+              status: "pending",
+              comments: "",
+              complete: null,
+              description: "",
+              type: "",
+              user_id: null,
+              category_id: null,
+              category: null,
+              owner: null,
+              task_id: null,
+              assigned_date: null,
+              start_date: null,
+              due_date: null,
+              delay: null,
+              end_time: null,
+              start_time:null,
+              assignToType: 'user', // Default to assigning to a user
+              assigned_user_id: null,
+              assigned_team_id: null,
+              instructions:[],
+              tasks:[],
+              materials:[],
+          });
+          const resetTaskForm = () => {
+              selectedTask.id = null;
+              selectedTask.priority_id = null;
+              selectedTask.status = "pending";
+              selectedTask.comments = "";
+              selectedTask.complete = null;
+              selectedTask.description = "";
+              selectedTask.type = "";
+              selectedTask.user_id = null;
+              selectedTask.category_id = null;
+              selectedTask.category=null;
+              selectedTask.owner = null;
+              selectedTask.task_id = null;
+              selectedTask.assigned_date = null;
+              selectedTask.start_date = setDefaultTime(new Date().toISOString());
+              selectedTask.due_date = setDefaultTime(new Date().toISOString());
+              selectedTask.delay = null;
+              selectedTask.start_time=null;
+              selectedTask.end_time=null;
+              selectedTask.assignToType = 'user';
+              selectedTask.assigned_user_id = null;
+              selectedTask.assigned_team_id = null;
+              selectedTask.instructions = [];
+              selectedTask.materials =[]
+          };
+        const addTask = () => {
+          isEditMode.value = false;
+          taskVisible.value=true;
+          selectedTask.description=form.description;
+          selectedTask.start_date = setDefaultTime(new Date().toISOString());
+          selectedTask.due_date = setDefaultTime(new Date().toISOString());
+          resetTaskForm();
+        };
+        const editTask=(task)=>{
+          isEditMode.value = true;
+          taskVisible.value=true;
+          Object.assign(selectedTask, task);
+        }
+        const removeTask=(task)=>{
+          const index = form.tasks.indexOf(task);
+          if (index > -1) {
+              form.tasks.splice(index, 1);
+          }
+        }
+        const addInstructionToTask=()=>{
+              selectedTask.instructions.push({
+                  description: "",
+                  response_type: ""
+              });
+          }
+          const addInstructionValueToTask=(type,value, index)=>{
+              selectedTask.instructions[index][type]=value;
+          }
+          const removeInstructionFromTask = (index) => {
+              selectedTask.instructions.splice(index, 1);
+          };
+        const submitTask=()=>{
+          if(isEditMode.value){
+              const index = form.tasks.findIndex(t => t.id === selectedTask.id);
+              if (index !== -1) {
+                  form.tasks[index] = { ...selectedTask };
+              }
+          }else{
+              form.tasks.push({...selectedTask});
+          }
+          taskVisible.value=false;
+          resetTaskForm();
+        }
+          const getOwnerName=(ownerId)=>{
+              const user = users.value.find((u) => u.id === ownerId);
+              return user ? user.name : "N/A";
+          }
+          const getPriorityName=(priorityId)=>{
+              const priority = priorities.value.find((p) => p.id === priorityId);
+              return priority ? priority.title : "N/A";
+          }
+          const getProjectName=(projectId)=>{
+              const project = projects.value.find((p) => p.id === projectId);
+              return project ? project.name : "N/A";
+          }
+        const  getAssingedName=(userId)=>{
+            const user = users.value.find((u) => u.id === userId);
+            return user ? `${user.name} ${user.post_name} ${user.nickname}` : "N/A";
+          }
+          const taddInstructionValue=(type,value,i, index)=>{
+        form.tasks[index].instructions[i][type]=value;
+      }
+      const tremoveInstruction = (i,index) => {
+        form.tasks[index].instructions.splice(i, 1);
+      };
+      const thandleRemoveMaterial=(e)=>{
+            if (materialToRemove) {
+               const index = selectedTask.materials.indexOf(materialToRemove);
+                if (index > -1) {
+                    selectedTask.materials.splice(index, 1);
+                }
+            }
+           selectedMaterials.value= selectedMaterials.value.filter((m)=> m !== e.value);
+
+        }
     return {
+        thandleRemoveMaterial,
+        tremoveInstruction,
+        taddInstructionValue,
+        getAssingedName,
+        submitTask,
+          removeTask,
+          editTask,
+          getOwnerName,
+          getPriorityName,
+          getProjectName,
+          addInstructionToTask,
+          addInstructionValueToTask,
+          removeInstructionFromTask,
+          addTask,
+          taskVisible,
+          selectedTask,
+          projects,
+        priorities,
+        typeMaintenance,
         statusOptions,
         formatDate,
         expenses,
@@ -1601,6 +2094,8 @@ const formatDate=(dateLocal)=>{
       filteredMaintenances,
       qVisible,
       submitQuantity,
+      eisEditMode,
+      unities,
     };
   },
 };

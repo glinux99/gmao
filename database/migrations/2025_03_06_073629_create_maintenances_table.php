@@ -24,6 +24,7 @@ return new class extends Migration
             $table->double('price_tacherons')->nullable()->default(0);
             $table->string('materiels')->nullable();
             $table->string('frequency')->nullable();
+            $table->string('type')->nullable();
 
             // $table->a('techniciens')->nullable();
             $table->decimal('man_hours', 8, 2)->nullable(); // Example: 123456.78

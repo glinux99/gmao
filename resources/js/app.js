@@ -110,9 +110,15 @@ import SplitButton from 'primevue/splitbutton';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 
+import Accordion from 'primevue/accordion';
+import AccordionContent from 'primevue/accordioncontent';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionPanel from 'primevue/accordionpanel';
+import Badge from "primevue/badge";
 import ColumnGroup from 'primevue/columngroup'; // optional
 import DataTable from 'primevue/datatable';
 import Password from "primevue/password";
+
 
 
 
@@ -139,6 +145,11 @@ app.component('Column', Column);
 app.component('Row', Row);
 app.component('ColumnGroup', ColumnGroup);
 app.component('Password', Password);
+app.component('Accordion', Accordion);
+app.component('AccordionContent', AccordionContent);
+app.component('AccordionHeader', AccordionHeader);
+app.component('AccordionPanel', AccordionPanel);
+app.component('Badge', Badge);
 
 app.use(ToastService);
 

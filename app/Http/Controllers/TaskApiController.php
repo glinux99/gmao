@@ -18,63 +18,16 @@ use Maatwebsite\Excel\Facades\Excel;
 class TaskApiController extends Controller
 {
 
-    protected function extractDatesFromSheetName($sheetName)
+    protected function extractDatesFromSheetName($technicianName)
     {
-        if (empty($sheetName)) {
-            return null;
-        }
+        $lowerTechnicianName =($technicianName);
+        return User::where(function ($query) use ($lowerTechnicianName) {
 
-        // Pattern complet avec tous les cas possibles
-        $pattern = '/
-            ^Semaine\s+(?:du|DU)\s+          # Début du motif
-            (\d{2})                          # Jour de début (groupe 1)
-            (?:\s+(\d{2}))?                  # Mois de début optionnel (groupe 2)
-            \s+(?:au|AU)\s+                  # Séparateur
-            (\d{2})\s+(\d{2})               # Jour et mois de fin (groupes 3-4)
-            (?:\s+(\d{4}))?                 # Année optionnelle (groupe 5)
-        $/ix';
+            $query->orWhere(DB::raw('lower(name)'), 'like', '%' . $lowerTechnicianName . '%')
+                ->orWhere(DB::raw('lower(post_name)'), 'like', '%' . $lowerTechnicianName . '%')
+                ->orWhere(DB::raw('lower(nickname)'), 'like', '%' . $lowerTechnicianName . '%');
+        })->first();
 
-        if (preg_match($pattern, $sheetName, $matches)) {
-            try {
-                // Nettoyage des matches
-                $matches = array_map('trim', $matches);
-
-                // Extraction des composants
-                $startDay = $matches[1];
-                $startMonth = !empty($matches[2]) ? $matches[2] : $matches[4]; // Si mois omis, on prend le mois de fin
-                $endDay = $matches[3];
-                $endMonth = $matches[4];
-                $year = !empty($matches[5]) ? $matches[5] : Carbon::now()->year;
-
-                // Validation des mois (1-12)
-                if ($startMonth < 1 || $startMonth > 12 || $endMonth < 1 || $endMonth > 12) {
-                    return null;
-                }
-
-                // Création des dates
-                $startDate = Carbon::createFromFormat('d m Y', "$startDay $startMonth $year");
-                $endDate = Carbon::createFromFormat('d m Y', "$endDay $endMonth $year");
-
-                // Validation des dates
-                if (!$startDate || !$endDate) {
-                    return null;
-                }
-
-                // Correction si la semaine traverse une nouvelle année
-                if ($startDate > $endDate) {
-                    $startDate->subYear();
-                }
-
-                return [
-                    'start' => $startDate->startOfDay(),
-                    'end' => $endDate->endOfDay(),
-                ];
-            } catch (\Exception $e) {
-                return null;
-            }
-        }
-
-        return null;
     }
 
     public function index()

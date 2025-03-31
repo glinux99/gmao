@@ -199,10 +199,13 @@ export default {
                                 colorsSatus.value.push('#F79306FF');
                                 break;
                             case "in_progress":
-                                colorsSatus.value.push('#292b2c');
+                                colorsSatus.value.push('#417E45FF');
                                 break;
                             case "completed":
                                 colorsSatus.value.push('#03C503FF');
+                                break;
+                            case "planned":
+                                colorsSatus.value.push('#7C8508FF');
                                 break;
                             case "canceled":
                                 colorsSatus.value.push('#000000FF');

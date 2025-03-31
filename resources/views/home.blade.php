@@ -4,12 +4,13 @@
 <!--begin::Row-->
 <div class=" container-xxl " id="kt_content_container" data-select2-id="select2-data-kt_content_container">
 <div class="row g-5 g-xl-8">
+    @hasrole('technicien')
+            @else
     <div class="col-xl-4">
         <!--begin::Statistics Widget 5-->
         <a href="#" class="card bg-body-white hoverable card-xl-stretch mb-xl-8">
             <!--begin::Body-->
-            @hasrole('technicien')
-            @else
+
             <div class="card-body">
                 <i class="ki-duotone ki-chart text-muted display-3"><span class="path1"></span><span
                     class="path2"></span></i>
@@ -33,11 +34,12 @@
                    </div>
                 </div>
             </div>
-            @endrole
+
             <!--end::Body-->
         </a>
         <!--end::Statistics Widget 5-->
     </div>
+    @endrole
     <div class="col-xl-4">
         <!--begin::Statistics Widget 5-->
         <a href="#" class="card bg-primary hoverable card-xl-stretch mb-xl-8">

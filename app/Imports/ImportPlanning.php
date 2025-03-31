@@ -9,6 +9,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
@@ -45,36 +46,52 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                 $startDate = $dates['start']->startOfDay(); // Start of the day
                 $dueDate = $dates['end']->endOfDay(); // End of the day
 
-                // $startTime = Carbon::parse($row['heure_et_lieux_de_depart'])->format('H:i:s');
-                // $endTime = Carbon::parse($row['heure_et_lieux_de_retour'])->format('H:i:s');
-                 $startTime = Carbon::now()->format('H:i:s');
-                $endTime = Carbon::now()->format('H:i:s');
+                $startTime = $this->extractTimeFromString($row['heure_et_lieux_de_depart']);
+                $endTime = $this->extractTimeFromString($row['heure_et_lieux_de_retour']);
+
+                if (!$startTime) {
+                    $startTime = Carbon::parse("07:00:00")->format('H:i:s'); // default 7h
+
+                }
+                if (!$endTime) {
+                    $endTime = Carbon::parse("16:00:00")->format('H:i:s'); // default 16h
+                }
                 $startDateTime = Carbon::parse($startDate->toDateString() . " " . $startTime);
                 $endDateTime = Carbon::parse($dueDate->toDateString() . " " . $endTime);
-                // Find or create the team
-            $teamName = $row['equipes'];
-            $authUser = Auth::id();
-            $team = Team::create(['name' => $teamName, 'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
-            $team->save();
+
 
             // Extract and process technicians
             $technicianNames = preg_split('/[-,\s]+/', $row['techniciens']); // Split by -, comma, or space
             $chef=0;
+            // Find or create the team
+            $teamName = $row['equipes'];
+            $authUser = Auth::id();
+            $team = Team::create(['name' => $teamName, 'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
+            $team->save();
             foreach ($technicianNames as $technicianName) {
                 $technicianName = trim($technicianName); // Clean up whitespace
                 if (empty($technicianName)) continue;
+                $lowerTechnicianName = strtolower($technicianName);
+                if (strlen($technicianName) < 3) continue;
                 $chef+=1;
                 // Check if technician exists by name, post_name, or nickname
-                $technician = User::where(function ($query) use ($technicianName) {
-                    $query->where('name', 'like', '%' . $technicianName . '%')
-                        ->orWhere('post_name', 'like', '%' . $technicianName . '%')
-                        ->orWhere('nickname', 'like', '%' . $technicianName . '%');
-                })->firstOrCreate(['name'=>$technicianName]);
+                $technician = User::where(function ($query) use ($lowerTechnicianName) {
+
+                    $query->where(DB::raw('lower(name)'), 'like', '%' . $lowerTechnicianName . '%')
+                        ->orWhere(DB::raw('lower(post_name)'), 'like', '%' . $lowerTechnicianName . '%')
+                        ->orWhere(DB::raw('lower(nickname)'), 'like', '%' . $lowerTechnicianName . '%');
+                })->first();
+                if(!$technician){
+                    $technician = new User();
+                    $technician->name = $technicianName;
+                    $technician->save();
+                }
+
                 $technician->syncRoles('technicien');
 
                 if ($technician) {
                     if($chef==1){
-                        Team::find($team->id)->update(['user_id'=> $technician->id]);
+                        Team::find($team->id)->update(['user_id'=> $technician->id, 'name'=> "Equipe de ".$teamName."-".$technicianName." (".$this->currentSheetName. ")"]);
                     }
                     // Attach technician to team if not already attached
                     if (!$team->users()->where('user_id', $technician->id)->exists()) {
@@ -212,6 +229,26 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                 ];
             } catch (\Exception $e) {
                 return null;
+            }
+        }
+
+        return null;
+    }
+    protected function extractTimeFromString($timeString)
+    {
+        // Pattern to match time in HH:MM or HHhMM or HH or HHh format
+        $pattern = '/(\d{1,2})[h:]{0,1}(\d{2})?/';
+
+        if (preg_match($pattern, $timeString, $matches)) {
+
+            $hours = intval($matches[1]);
+            $minutes = isset($matches[2]) ? intval($matches[2]) : 0;
+
+
+            // Validate hours and minutes
+            if ($hours >= 0 && $hours <= 23 && $minutes >= 0 && $minutes <= 59) {
+
+                return sprintf('%02d:%02d:00', $hours-3, $minutes);
             }
         }
 

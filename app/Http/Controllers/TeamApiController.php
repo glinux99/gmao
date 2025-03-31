@@ -14,7 +14,7 @@ class TeamApiController extends Controller
     public function index()
     {
        try {
-        $teams = Team::with('user','users')->get();
+        $teams = Team::with('user','users')->orderBy('id', 'DESC')->get();
        } catch (\Throwable $th) {
         //throw $th;
         return $th->getMessage();

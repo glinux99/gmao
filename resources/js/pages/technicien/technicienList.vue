@@ -27,7 +27,7 @@
                         <template #body="slotProps">
                             <a :href="`/technicians/${slotProps.data.id}/edit`"
                                 class="fw-bolder text-gray-800 text-hover-primary fs-6">
-                                {{ slotProps.data.name }} {{ slotProps.data.post_name }}
+                                {{ slotProps.data.name }} {{ slotProps.data.post_name }}  {{ slotProps.data.nickname }}
                             </a>
                             <span class="text-muted fw-bold d-block">
                                 {{ slotProps.data.email }}

@@ -98,7 +98,7 @@
                     <Dropdown  class="w-full md:w-14rem col-12"
               :filter="true"
               filterBy="name,post_name, email"
-                        aria-label="Chef d'équipe" v-model="form.user_id" :options="users" optionValue="id" optionLabel="name"
+                        aria-label="Chef d'équipe" v-model="form.user_id" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
                         placeholder="Selectionner un chef d'équipe" />
                     <div
                         class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
@@ -111,7 +111,7 @@
 
                         <Checkbox :value="user.id"  :inputId="'member-' + user.id" v-model="form.members" />
                         <label class="form-check-label" :for="'member-' + user.id">
-                            {{ user.name }} <span v-if="user.email">
+                            {{ user.name }} {{ user.post_name }} {{ user.nickname }}  <span v-if="user.email">
                                 ( {{ user.email }})
                             </span>
                         </label>

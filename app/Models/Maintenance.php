@@ -28,6 +28,7 @@ class Maintenance extends Model
         'assigned_user_id',
         'assigned_team_id',
         'frequency',
+        'type',
     ];
 
     public function equipment()
@@ -58,6 +59,8 @@ class Maintenance extends Model
     }
     public function tasks(): HasMany
     {
-        return $this->hasMany(Task::class);
+        return $this->hasMany(Task::class)->with(['materials' => function ($query) {
+                $query->select('categories.*', 'maintenance_material.quantity');
+            },'owner_user','instructions','assigned_user','assigned_team','priority','project']);
     }
 }

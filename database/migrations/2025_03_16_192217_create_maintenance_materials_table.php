@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('maintenance_material', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('maintenance_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('maintenance_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('task_id')->nullable()->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained()->cascadeOnDelete();
             $table->integer('quantity')->default(1);
             $table->integer('quantity_remise')->default(0)->nullable();
             $table->timestamps();
