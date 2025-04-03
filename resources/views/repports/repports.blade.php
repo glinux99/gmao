@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('contentTitle')
+        Rapports
+@endsection
 @section('menuTitle')
 Gestion d'utilisateurs
 @endsection

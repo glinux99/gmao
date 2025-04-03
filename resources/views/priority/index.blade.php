@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('contentTitle')
+        Priorités
+@endsection
 @section('content')
 {{-- sss --}}
 

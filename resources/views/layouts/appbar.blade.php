@@ -4,7 +4,7 @@
     <div class="header-brand">
         <!--begin::Logo-->
         <a href="https://energies.virunga.org/" target="_blank">
-            <img alt="Logdo" src="{{ asset('assets/media/logos/custom-1.png') }}" class="h-40px h-lg-30px" />
+            <img alt="Logdo" src="{{ asset('assets/media/logos/custom-1.png') }}" class="h-50px h-lg-40px" />
         </a>
         <!--end::Logo-->
         <!--begin::Aside minimize-->
@@ -51,7 +51,7 @@
             <!--begin::Page title-->
             <div class="page-title d-flex flex-column me-5">
                 <!--begin::Title-->
-                <h1 class="d-flex flex-column text-dark fw-bolder fs-3 mb-0">Dashboard</h1>
+                <h1 class="d-flex flex-column text-dark fw-bolder fs-3 mb-0 text-uppercase"> @yield('contentTitle')</h1>
                 <!--end::Title-->
                 <!--begin::Breadcrumb-->
                 <ul class="breadcrumb breadcrumb-separatorless fw-bold fs-7 pt-1">

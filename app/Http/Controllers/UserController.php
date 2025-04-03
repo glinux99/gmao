@@ -15,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users= User::withoutRole('technicien')->get();
+        // $users= User::withoutRole('technicien')->get();
+        $users= User::get();
         $roles= Role::all();
         return view('users.users',['users'=>$users, 'roles'=>$roles]);
     }
@@ -102,13 +103,23 @@ class UserController extends Controller
         $hashed_password = $user->password;
         $confirmemailpassword = $request['confirmemailpassword'];
         $password = $request['password'];
-
+        if($request->has('password')){
+            $request['password'] = bcrypt($request->password);
+        }else{
+            $request['password'] = $hashed_password;
+        }
         //return  Hash::check($password, $hashed_password);
+       try {
         if (Hash::check($password, $hashed_password)) {
-
             $request['password'] = bcrypt($request->newpassword);
             $user->update($request->except(['avatar']));
         }
+       } catch (\Throwable $th) {
+        //throw $th;
+        $request['password'] = bcrypt($hashed_password);
+        $user->update(['password'=>$request['password']]);
+        $hashed_password = $user->password;
+       }
         if (Hash::check($confirmemailpassword, $hashed_password)) {
 
             $request['password'] = bcrypt($request->confirmemailpassword);

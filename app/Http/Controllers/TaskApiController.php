@@ -45,10 +45,10 @@ class TaskApiController extends Controller
                 $teamId[]=$team->team_id;
             }
             if($teamId){
-                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->orderByDesc('id')->get();
+                $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('user_id', Auth::user()->id)->OrWhere('assigned_user_id', Auth::user()->id)->orWhereIn('assigned_team_id', $teamId)->orWhere('owner', Auth::user()->id)->orderByDesc('id')->get();
             }else
                 {
-                    $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('assigned_user_id', Auth::user()->id)->orderByDesc('id')->get();
+                    $tasks = Task::with('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority')->where('assigned_user_id', Auth::user()->id) ->orWhere('owner', Auth::user()->id)->orderByDesc('id')->get();
 
                 }
            }else{

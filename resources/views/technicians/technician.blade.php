@@ -3,8 +3,8 @@
 Gestion d'utilisateurs
 @endsection
 @section('contentTitle')
-<li class="breadcrumb-item text-dark">
-    Technicien </li>
+
+    Technicien
 @endsection
 
 @section('content')

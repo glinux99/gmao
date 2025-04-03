@@ -36,9 +36,16 @@ export default function useCalendar() {
                 endDate = new Date(task.created_at);
                formattedEndDate = endDate.toISOString();
            }
+           console.log(task.assigned_team);
+           const assigned_team = ref("");
+           try {
+             assigned_team.value =task.assigned_team.users[0].name ;
+           } catch (error) {
+            console.log(error);
+           }
             return {
             id: task.id,
-            title: task.description ? task.description + ` (${task.assigned_user ? task.assigned_user.name : "No user"})` : "Task ID : " + task.id,
+            title: task.description ? task.description + ` (${task.assigned_user ? task.assigned_user.name : assigned_team.value? assigned_team.value: "No User"})` : "Task ID : " + task.id,
             start: task.start_date ? task.start_date : task.created_at,
             end: task.due_date ? task.due_date : task.created_at,
             color: task.priority.color ? task.priority.color : getPriorityColor(task.priority.name), // Use priority-based color
@@ -46,7 +53,7 @@ export default function useCalendar() {
             projectId: task.project ? task.project.id : null, // Add project id
             projectName: task.project ? task.project.name : "No Project", // Add project name
             owner: task.owner ? task.owner_user.name : "No owner",
-            user: task.assigned_user ? task.assigned_user.name : "No user",
+            user: task.assigned_user ? task.assigned_user.name : assigned_team? assigned_team: "No User",
             id2:task.id,
             status: task.status,
             }

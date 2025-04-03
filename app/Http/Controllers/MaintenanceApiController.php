@@ -185,7 +185,7 @@ class MaintenanceApiController extends Controller
                     foreach ($tasksToCreate as $taskData) {
 
                         $taskData['maintenance_id'] = $maintenance->id;
-                        $taskData['owner'] = $request->user_id;
+                        $taskData['owner'] = $request->owner;
                         $taskData['user_id'] = $request->user_id;
                         $taskData['status'] = 'pending';
                         $task = Task::create($taskData);

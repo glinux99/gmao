@@ -34,7 +34,8 @@
                             </span>
                         </template>
                     </Column>
-                    <Column field="roles" header="Role">
+                    <Column header="Matricule" field="mat"></Column>
+                    <Column field="roles" header="Fonction">
                         <template #body="slotProps">
                             <template v-for="role in slotProps.data.roles" :key="role.id">
                                 <label class="badge badge-success">
@@ -51,7 +52,7 @@
                             {{ slotProps.data.size }} / {{ slotProps.data.pointure }}
                         </template>
                     </Column>
-                    <Column field="number" header="Téléphone" />
+                    <Column field="number" header="Contact" />
                     <Column header="Actions">
                         <template #body="slotProps">
                             <a  class="p-button-text p-button-secondary"
@@ -227,7 +228,8 @@
 </template>
 
 <script>
-import { useToast } from 'primevue';
+  import { useToast } from 'primevue';
+import Column from 'primevue/column';
 import { onMounted, reactive, ref } from 'vue';
 import useTechniens from '../../../js/services/technicienServices';
 

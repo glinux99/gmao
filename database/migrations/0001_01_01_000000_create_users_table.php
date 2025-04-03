@@ -30,7 +30,7 @@ return new class extends Migration
             $table->string('avatar')->nullable()->default('assets/media/avatars/defaut.png');
             $table->string('nickname')->nullable();
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->default('123456789')->nullable();
+            $table->string('password')->default(bcrypt(12345678))->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

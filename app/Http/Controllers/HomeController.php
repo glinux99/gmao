@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Depense;
+use App\Models\Entry;
 use App\Models\StockHistory;
 use App\Models\Task;
 use App\Models\User;
@@ -69,6 +70,7 @@ class HomeController extends Controller
             $maintenanceCancel += $t* $depense->amount;
         }
         $mouvements = StockHistory::count();
+        $mouvements +=Entry::count();
         $users=User::role('technicien')->count();
         return view('home', ['mouvements'=>$mouvements,'maintenanceCancel'=>$maintenanceCancel,'techniciens'=>$users, 'maintenanceRealise'=>$totalRealised,'maintenanceBuget'=>$total, 'categories'=>$categories, 'months'=>$months, 'days'=>$days, 'weeks'=>$weeks]);
     }

@@ -3,8 +3,8 @@
     Gestion d'utilisateurs
 @endsection
 @section('contentTitle')
-    <li class="breadcrumb-item text-dark">
-        sortie des materiels </li>
+
+        sortie des materiels
 @endsection
 
 @section('content')
@@ -145,7 +145,7 @@
                                                             <option value="">Selectionner une categorie...</option>
                                                             @foreach ($categories as $category)
                                                                 <option value="{{ $category->id }}" data-kt-flag="{{ $category->avatar }}">
-                                                                {{ $category->designation }} </option>
+                                                                {{ $category->designation }} ({{ $category->caracteristique ?? "-" }}) </option>
                                                             @endforeach
 
                                                         </select>

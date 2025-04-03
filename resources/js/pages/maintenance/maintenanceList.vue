@@ -448,7 +448,7 @@
             </div>
             <div class="col-md-2">
               <label class="fw-semibold fs-6 mb-2">
-                <span class="">Tacherons</span>
+                <span class="">Tâcherons</span>
               </label>
               <div class="fv-row">
                 <InputText
@@ -462,8 +462,8 @@
               </div>
             </div>
             <span v-if="form.nbre_tacherons" class="fw-bold">Note:</span>
-            <span class="text-danger" v-if="form.nbre_tacherons > 0 && (form.price_tacherons == 0 || form.price_tacherons == null)"> Vous n'avez pas encore founis le prix par heure d'un tacherons!!</span>
-            <span v-if="form.nbre_tacherons > 0 && form.price_tacherons > 0">Pour ces {{ form.nbre_tacherons }} tacherons, le prix est de {{ form.nbre_tacherons * form.price_tacherons }} usd / heure</span>
+            <span class="text-danger" v-if="form.nbre_tacherons > 0 && (form.price_tacherons == 0 || form.price_tacherons == null)"> Vous n'avez pas encore founis le prix par heure d'un tâcherons!!</span>
+            <span v-if="form.nbre_tacherons > 0 && form.price_tacherons > 0">Pour ces {{ form.nbre_tacherons }} tâcherons, le prix est de {{ (form.nbre_tacherons * form.price_tacherons).toFixed(2) }} usd / heure</span>
           </div>
           <!-- Conditional rendering for user/team selection -->
         </template>
@@ -909,7 +909,7 @@
     </Dialog>
     <Dialog
       :id="id"
-      :header="isEditMode ? 'Modifier le paiement de tacherons' : 'Ajouter un paiement de tacherons'"
+      :header="isEditMode ? 'Modifier le paiement de tâcherons' : 'Ajouter un paiement de tâcherons'"
       v-model:visible="tVisible"
       :style="{ width: '400px' }"
       position="center"
@@ -921,7 +921,7 @@
       <div class="">
         <label class="col-form-label fw-bold fs-6">
           <span class=""
-            >Quelle est le montant sera donné à un tacherons par
+            >Quelle est le montant sera donné à un tâcheron par
             <span class="text-danger text-bold">heure</span>(usd)
             ?</span
           >
@@ -1836,14 +1836,14 @@ export default {
       form.expenses[index][field] = value;
   };
   const updateTacheronsExpense=()=>{
-    const existingTacheronsExpenseIndex=form.expenses.findIndex((expense)=>expense.title==='Cout de Tacherons');
+    const existingTacheronsExpenseIndex=form.expenses.findIndex((expense)=>expense.title==='Coût de Tâcherons');
     const tacheronsAmount=form.nbre_tacherons * form.price_tacherons * (form.man_hours>0 ? form.man_hours : 1);
 
     if(existingTacheronsExpenseIndex !== -1){
         form.expenses[existingTacheronsExpenseIndex].amount = tacheronsAmount;
     }else{
         form.expenses= form.expenses.filter((e)=> e.readonly!=true);
-        form.expenses.push({title:`Cout total de ${form.nbre_tacherons} Tacherons `,amount:tacheronsAmount, readonly: true});
+        form.expenses.push({title:`Coût total de ${form.nbre_tacherons} Tâcherons `,amount:tacheronsAmount, readonly: true});
     }
 
   }

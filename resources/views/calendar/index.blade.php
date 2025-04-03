@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('contentTitle')
+        Calendrier
+@endsection
 @section('content')
 {{-- sss --}}
 

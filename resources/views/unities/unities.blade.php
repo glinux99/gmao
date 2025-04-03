@@ -3,8 +3,7 @@
 Gestion d'utilisateurs
 @endsection
 @section('contentTitle')
-<li class="breadcrumb-item text-dark">
-    unités </li>
+    unités de mesure
 @endsection
 
 @section('content')

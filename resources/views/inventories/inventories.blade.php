@@ -3,9 +3,9 @@
     Gestion d'utilisateurs
 @endsection
 @section('contentTitle')
-    <li class="breadcrumb-item text-dark">
+
         inventaires
-    </li>
+
 @endsection
 
 @section('content')
@@ -75,7 +75,7 @@
                                 {{ $sortie->category->designation }}/  {{ $sortie->etat }}
                                 </div>
                                 <div class="fw-bold text-light">
-                               Restant: <span class="fw-bolder">{{ $sortie->quantity_restante }}</span> {{ $sortie->category->unity->abbreviation ?? $sortie->category->unity->designation ?? "" }}
+                               Restant: <span class="fw-bolder">{{ $sortie->quantity_restante }}</span> {{$sortie->category->unity->designation ??  $sortie->category->unity->abbreviation ?? "" }}
                                 </div>
                             </div>
                             <!--end::Body-->

@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('contentTitle')
+        Tâche
+@endsection
 @section('content')
 {{-- sss --}}
 

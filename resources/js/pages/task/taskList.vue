@@ -98,135 +98,101 @@
                 </div>
               </div>
               <div class="card-body pt-0">
-                <table
-                  class="table align-middle table-row-dashed fs-6 gy-5 mb-0"
-                  id="kt_permissions_table"
-                >
-                  <thead>
-                    <tr
-                      class="text-start text-gray-400 fw-bold fs-7 text-uppercase gs-0"
-                    >
-                      <th class="">Description</th>
-                      <th class="">Priorité</th>
-                      <th class="">Status</th>
-                      <th class="">Projet</th>
-                      <th class="">Responsable</th>
-                      <th class="">Technicien</th>
-                      <th class="">Duree</th>
-                      <th class="">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody class="fw-semibold text-gray-600">
-                    <tr
-                      v-for="(task, index) in filteredTasks"
-                      :key="task.id"
-                      :class="{
-                        'border-top border-success border-1': isNewWeek(task, index),
-                      }"
-                    >
-                      <td>
-                        <span class="text-gray-600 fs-8">
-                          {{ task.description }}
-                        </span>
-                      </td>
-                      <td>
-                        <span
+                <DataTable :value="filteredTasks" :paginator="true" :rows="10"
+                    paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
+                    :rowsPerPageOptions="[5, 10, 25, 50]"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} techniciens"
+                    tableStyle="min-width: 50rem">
+                    <Column field="description" header="Description"/>
+
+                    <Column field="priority" header="Priorité">
+                        <template #body="slotProps">
+                            <span
                           class="badge"
                           :style="
-                            'background-color: ' + task.priority.color ?? 'dark'
+                            'background-color: ' +slotProps.data.priority.color ?? 'dark'
                           "
                         >
                           <span class="text-muted mx-3">
-                            {{ task.priority.title }}
+                            {{ slotProps.data.priority.title }}
                           </span>
                         </span>
-                      </td>
-                      <td>
-                        <span
-                          v-if="task.status === 'pending'"
-                          class="badge badge-warning"
-                          >En attente</span
-                        >
-                        <span
-                          v-else-if="task.status === 'in_progress'"
-                          class="badge badge-info"
-                          >En cours</span
-                        >
-                        <span
-                          v-else-if="task.status === 'completed'"
-                          class="badge badge-success"
-                          >Terminée</span
-                        >
-                        <span
-                          v-else-if="task.status === 'canceled'"
-                          class="badge badge-dark"
-                          >Annulée</span
-                        >
-                        <span
-                          v-else-if="task.status === 'delayed'"
-                          class="badge badge-danger"
-                          >Delai depassé</span
-                        >
-                        <span v-else class="badge badge-secondary"
-                          >Inconnu</span
-                        >
-                      </td>
-                      <td>
-                        <span class="fs-9">
-                          {{ task.project ? task.project.name : "N/A" }}
-                        </span>
-                      </td>
-                      <td>
-                        <span class="badge badge-light-success">
-                          {{ task.owner_user ? task.owner_user.name : "N/A" }}
-                        </span>
-                        <br />
-                      </td>
-                      <td>
-                        <template v-if="task.assigned_user">
-                          <span class="badge badge-light-primary">
-                            {{
-                              task.assigned_user
-                                ? task.assigned_user.name
-                                : "N/A"
-                            }}
-                          </span>
                         </template>
-                        <template
-                          v-else-if="
-                            task.assigned_team && task.assigned_team.users
-                          "
-                        >
-                          <span
-                            v-for="team in task.assigned_team.users"
-                            :key="team.id"
-                            class="badge badge-light-primary"
+                    </Column>
+
+                    <Column field="status" header="Status">
+                        <template #body="slotProps">
+                            <span
+                            v-if="slotProps.data.status === 'pending'"
+                            class="badge badge-warning"
+                            >En attente</span
                           >
-                            {{ team.name }} {{ team.post_name }}
-                          </span>
+                          <span
+                            v-else-if="slotProps.data.status === 'in_progress'"
+                            class="badge badge-info"
+                            >En cours</span
+                          >
+                          <span
+                            v-else-if="slotProps.data.status === 'completed'"
+                            class="badge badge-success"
+                            >Terminée</span
+                          >
+                          <span
+                            v-else-if="slotProps.data.status === 'canceled'"
+                            class="badge badge-dark"
+                            >Annulée</span
+                          >
+                          <span
+                            v-else-if="slotProps.data.status === 'delayed'"
+                            class="badge badge-danger"
+                            >Delai depassé</span
+                          >
+                          <span v-else class="badge badge-secondary"
+                            >Inconnu</span
+                          >
                         </template>
-                      </td>
-                      <td class="fs-9">
-                        <div class="fw-bold text-gray-600 fs-9">
-                          Debut : <br />
-                          {{ formatDate(task.start_date) }} <br />
-                          Durée :
-                          <span class="fs-8 text-center">
+                    </Column>
+
+                    <Column field="owner_user" header="Responsable">
+                        <template #body="slotProps">
                             <span class="badge badge-light-success">
-                              {{
-                                formatDeadline(
-                                  task.due_date,
-                                  task.start_date,
-                                  task
-                                )
-                              }}
-                            </span>
-                          </span>
-                        </div>
-                      </td>
-                      <td class="text-end">
-                        <button
-                          @click="editTask(task)"
+                                {{ slotProps.data.owner_user ? slotProps.data.owner_user.name : "N/A" }}
+                              </span>
+                        </template>
+                    </Column>
+                    <Column  header="Technicien">
+                        <template #body="slotProps">
+                            <template v-if="slotProps.data.assigned_user">
+                                <span class="badge badge-light-primary">
+                                  {{
+                                    slotProps.data.assigned_user
+                                      ? slotProps.data.assigned_user.name
+                                      : "N/A"
+                                  }}
+                                </span>
+                              </template>
+                              <template
+                                v-else-if="
+                                slotProps.data.assigned_team && slotProps.data.assigned_team.users
+                                "
+                              >
+                                <span
+                                  v-for="team in slotProps.data.assigned_team.users"
+                                  :key="team.id"
+                                  class="badge badge-light-primary"
+                                >
+                                  {{ team.name }} {{ team.post_name }}
+                                </span>
+                              </template>
+                        </template>
+                    </Column>
+                    <Column  filed="start_date" header="Start Date"/>
+                        <Column  filed="due_date" header="End Date"/>
+
+                    <Column header="Actions">
+                        <template #body="slotProps">
+                            <button
+                          @click="editTask(slotProps)"
                           class="btn btn-icon btn-active-light-primary w-30px h-30px"
                           data-bs-toggle="modal"
                           data-bs-target="#kt_modal_update_task"
@@ -239,10 +205,9 @@
                             ><span class="path5"></span
                           ></i>
                         </button>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                        </template>
+                    </Column>
+                </DataTable>
               </div>
             </div>
           </div>

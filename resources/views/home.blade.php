@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@section('contentTitle')
+        Dashboard
+@endsection
 @section('content')
 <!--begin::Row-->
 <div class=" container-xxl " id="kt_content_container" data-select2-id="select2-data-kt_content_container">
