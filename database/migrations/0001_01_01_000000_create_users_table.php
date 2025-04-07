@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('type')->nullable();
             $table->string('function')->nullable();
             $table->string('level')->nullable();
+            $table->string('provider')->nullable();
             $table->string('status')->nullable();
             $table->text('address')->nullable();
             $table->text('category')->nullable();

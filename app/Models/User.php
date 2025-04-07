@@ -40,6 +40,7 @@ class User extends Authenticatable
         'avatar',
         'token_email',
         'function',
+        'provider',
 
     ];
 

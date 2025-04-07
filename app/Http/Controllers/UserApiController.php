@@ -30,7 +30,32 @@ class UserApiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $this->validate($request, [
+        //     'name' => 'required|string|max:255',
+        // ],   [
+        //     'name.required' => 'Le champ nom d\'utilisateur est obligatoire',
+        // ]);
+
+        $avatar = $request->file('avatar');
+        if ($request->file('avatar')) {
+            $avatarPath = $avatar->store('avatars');
+            $request['avatar'] = $avatarPath;
+            $user=User::create($request->all());
+        }
+        else if($request['provider'] ='google.com'){
+            if(isset($request['password']) && $request['password']!=null && $request['password']!=""){
+                $request['password'] = bcrypt($request['password']);
+            }
+            $request['avatar'] = $request['avatar'];
+            $user=User::create($request->all());
+        }
+        // Create a new user
+        else {
+
+            $user=User ::create($request->except(['avatar']));
+
+        }
+        return $user;
     }
 
     /**

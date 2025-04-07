@@ -14,6 +14,7 @@ use App\Http\Controllers\EntryApiController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\LoginApiController;
+use App\Http\Controllers\StockHistoryApiController;
 use App\Http\Controllers\TechnicianApiController;
 use App\Http\Controllers\UnityApiController;
 use Illuminate\Http\Request;
@@ -51,6 +52,7 @@ Route::middleware('auth:sanctum')->group(function(){
         'entries' =>EntryApiController::class,
         'unities'=>UnityApiController ::class,
         'techniciens'=>TechnicianApiController::class,
+        'histories' =>StockHistoryApiController::class,
 
     ]);
 });
