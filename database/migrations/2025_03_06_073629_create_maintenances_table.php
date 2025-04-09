@@ -16,14 +16,17 @@ return new class extends Migration
             $table->unsignedBigInteger('assigned_user_id')->nullable();
             $table->unsignedBigInteger('assigned_team_id')->nullable();
             $table->unsignedBigInteger('equipment_id')->nullable();
+            $table->unsignedBigInteger('region_id')->nullable();
             $table->foreign('equipment_id')->references('id')->on('equipment')->onDelete('set null');
             $table->foreign('assigned_user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('assigned_team_id')->references('id')->on('teams')->onDelete('set null');
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
             $table->string('work_order')->nullable();
             $table->double('nbre_tacherons')->nullable()->default(0);
             $table->double('price_tacherons')->nullable()->default(0);
             $table->string('materiels')->nullable();
             $table->string('frequency')->nullable();
+            $table->string('region')->nullable();
             $table->string('type')->nullable();
 
             // $table->a('techniciens')->nullable();

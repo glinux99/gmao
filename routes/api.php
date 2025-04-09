@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\RegionApiController;
 use App\Http\Controllers\CalendarApiController;
 use App\Http\Controllers\EquipmentApiController;
 use App\Http\Controllers\MaintenanceApiController;
@@ -14,6 +15,7 @@ use App\Http\Controllers\EntryApiController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\LoginApiController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\StockHistoryApiController;
 use App\Http\Controllers\TechnicianApiController;
 use App\Http\Controllers\UnityApiController;
@@ -53,6 +55,7 @@ Route::middleware('auth:sanctum')->group(function(){
         'unities'=>UnityApiController ::class,
         'techniciens'=>TechnicianApiController::class,
         'histories' =>StockHistoryApiController::class,
+        'regions'=>RegionApiController::class,
 
     ]);
 });

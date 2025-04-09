@@ -52,6 +52,7 @@ import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
 import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
+import regionList from "./pages/region/regionList.vue";
 import roleList from "./pages/roles/roleList.vue";
 import roleView from "./pages/roles/roleView.vue";
 import taskList from "./pages/task/taskList.vue";
@@ -82,7 +83,8 @@ const app = createApp({
         categoryList,
         userList,
         entryList,
-        technicienList
+        technicienList,
+        regionList
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
@@ -176,12 +178,14 @@ app.use(PrimeVue, {
         menu: 1000,         //overlay menus
         tooltip: 1100       //tooltip
     },
-    theme:{
+    theme: {
         preset: Aura,
-        options:{
-            prefix: 'bs',
-            darkModeSelector: true,
-            csslayer: false
+        options: {
+            prefix: 'p',
+            darkModeSelector: 'system',
+            cssLayer: false,
+            ripple: true,
+            inputStyle: 'outlined',
         }
     }
 });

@@ -14,6 +14,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PriorityController;
 use App\Http\Controllers\ProjectApiController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\RegionController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\StockHistoryController;
 use App\Http\Controllers\TaskApiController;
@@ -88,6 +89,8 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'teams' => TeamController::class,
         'priorities'=>PriorityController::class,
         'instructions'=>InstructionApiController::class,
+        'regions'=>RegionController::class,
+
 
     ]);
 

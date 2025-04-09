@@ -22,16 +22,16 @@
                     <span class="fw-bold text-danger fs-2"> {{$maintenanceBuget}} USD</span>
                    </div>
                    <div class="col-6">
-                    @if($maintenanceRealise)
-                    <span class="badge badge-light-success">
+                    {{--  @if($maintenanceRealise)
+                    <span class="badge badge-light-success" v-if="false">
                         {{ number_format(($maintenanceRealise*100/$maintenanceBuget), 2)}} % réalisé
                     </span>
                     @endif
                     @if($maintenanceCancel)
-                    <span class="badge badge-light-dark">
+                    <span class="badge badge-light-dark" v-if="false">
                         {{ number_format(($maintenanceCancel*100/$maintenanceBuget), 2)}} % annulé
                     </span>
-                    @endif
+                    @endif  --}}
 
                    </div>
                 </div>

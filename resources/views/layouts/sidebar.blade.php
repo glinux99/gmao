@@ -468,6 +468,15 @@
                         <span class="menu-title">Rapports</span>
                     </a>
                 </div>
+                <div class="menu-item">
+                    <a class="menu-link" href="{{ route('regions.index') }}">
+                        <span class="menu-icon">
+                            <i class="ki-duotone ki-calendar-8 fs-3 position-absolute"><span class="path1"></span><span
+                                    class="path2"></span></i>
+                        </span>
+                        <span class="menu-title">Region</span>
+                    </a>
+                </div>
                 @endrole
                 @can('priority')
                 <div class="menu-item">

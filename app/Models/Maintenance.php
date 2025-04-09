@@ -29,7 +29,12 @@ class Maintenance extends Model
         'assigned_team_id',
         'frequency',
         'type',
+        'region_id'
     ];
+    public function region()
+    {
+        return $this->belongsTo(Region::class);
+    }
 
     public function equipment()
     {

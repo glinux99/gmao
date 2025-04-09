@@ -32,7 +32,7 @@ class MaintenanceApiController extends Controller
         try {
             $query = Maintenance::with(['equipment','tasks', 'user','expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');
-            }, 'instructions']);
+            }, 'instructions', 'region']);
 
             if ($request->has('search')) {
                 $search = $request->input('search');

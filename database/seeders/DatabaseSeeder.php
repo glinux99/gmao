@@ -24,6 +24,7 @@ $user=
         $this->call([
             PermissionSeeder::class,
             PrioritySeeder::class,
+            RegionSeeder::class,
         ]);
         $user->assignRole('Root');
     }
