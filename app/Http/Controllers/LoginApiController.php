@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Str;
 
 class LoginApiController extends Controller
 {
@@ -20,8 +21,9 @@ class LoginApiController extends Controller
      * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function userApi(){
-        $user=User::find(Auth::id());
+    public function userApi()
+    {
+        $user = User::find(Auth::id());
         $token = $user->createToken('authToken')->plainTextToken;
         return response()->json([
             'user' => $user,
@@ -31,33 +33,38 @@ class LoginApiController extends Controller
     }
     public function login(Request $request)
     {
-        $request['passwordR']=$request['password'];
-        if($request->provider == 'google.com'){
-            $user = User::where('email', $request->email)->first();
-            // return 123;
-            // return $user;
-            if(!$user){
+        try {
+            if ($request->provider == 'google.com') {
 
-                $userApi =new UserApiController();
-                $request['name'] = $request->displayName;
-            //    $user=$userApi->store($request);
-            if(isset($request['password']) && $request['password']!=null && $request['password']!=""){
+                $user = User::where('email', $request->email)->first();
+                if (!$user) {
 
-                $request['password'] = bcrypt($request['password']);
-                // return $request['password'];
+                    $request['name'] = $request->displayName;
+                    if (isset($request['password']) && $request['password'] != null && $request['password'] != "") {
+
+                        $request['password'] = bcrypt($request['password']);
+                    } else {
+                        // Generate a random password if not provided
+                        $request['password'] = bcrypt(Str ::random(10));
+                    }
+                    $request['avatar'] = $request['avatar'];
+                    $user = User::create($request->all());
+                }
+                // Log in the user directly
+                Auth::login($user, true);
+                $token = $user->createToken('authToken')->plainTextToken;
+                return response()->json([
+                    'user' => $user,
+                    'token' => $token,
+                    'token_type' => 'Bearer',
+                ], 200);
+            } else {
+                $request['passwordR'] = $request['password'];
+                $user = User::where('email', $request->email)->first();
             }
-            $request['avatar'] = $request['avatar'];
-            $user=User::create($request->all());
-
-            }
-        }
-        $user = User::where('email', $request->email)->first();
-        // return $user;
-// $2y$12$2Ql0KooK8le1lxwu0kJA8e/2MWiL0H5/uD3gatHSUynDWYhK3q5Ay
-        // return !Hash::check($request->passwordR, $user->password);
 
         if (!$user) {
-            return response()->json(['errors' => 'login error !', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
+            return response()->json(['errors' => 'login error!', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
         }
 
         try {
@@ -65,20 +72,17 @@ class LoginApiController extends Controller
                 return response()->json(['errors' => 'login error x', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
             }
         } catch (\Throwable $th) {
-            $request['password'] = bcrypt($user->password);
-            $user->update(['password'=>$request['password']]);
-           return $th->getMessage();
+            return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
         }
 
-            // return 223;
-        // Attempt to log in the user using Laravel's built-in authentication
+
         if (Auth::attempt(['email' => $request->email, 'password' => $request->passwordR], $request->has('remember'))) {
             // Generate a token for the user (for API)
             $token = $user->createToken('authToken')->plainTextToken;
 
             // Log in the user into the Laravel web session.
             //  Auth::login($user, $request->has('remember')); is deprecated so we will use Auth::loginUsingId instead
-             Auth::loginUsingId($user->id);
+            Auth::loginUsingId($user->id);
             //  Auth::loginUsingId($user->id, $request->has('remember'));
             // For API: Return JSON response with user and token
             if ($request->expectsJson()) {
@@ -93,13 +97,16 @@ class LoginApiController extends Controller
                 'token' => $token,
                 'token_type' => 'Bearer',
             ], 200);
-        }
-        else{
+        } else {
             return response()->json([], 401);
 
             //  return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
         }
+       } catch (\Throwable $th) {
+            return response()->json(['errors' => 'login error', 'message' => $th->getMessage()], 500);
+       }
     }
+
 
     /**
      * Handle the logout request (API and web-based logout).

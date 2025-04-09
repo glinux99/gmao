@@ -101,7 +101,7 @@
                 <DataTable :value="filteredTasks" :paginator="true" :rows="10"
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25, 50]"
-                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} techniciens"
+                    currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tâches"
                     tableStyle="min-width: 50rem">
                     <Column field="description" header="Description"/>
 
@@ -192,7 +192,7 @@
                     <Column header="Actions">
                         <template #body="slotProps">
                             <button
-                          @click="editTask(slotProps)"
+                          @click="editTask(slotProps.data)"
                           class="btn btn-icon btn-active-light-primary w-30px h-30px"
                           data-bs-toggle="modal"
                           data-bs-target="#kt_modal_update_task"
@@ -355,7 +355,7 @@
       position="center"
       :modal="true"
       :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
-      @hide="closeModal"
+      @hide="visible=false"
       :closable="true"
     >
       <template #header>
@@ -776,6 +776,7 @@ export default {
 
     const submitTask = async () => {
       let success = false;
+        visible.value=false;
       // Check if it's assigned to a user or a team
       if (form.assignToType === "user") {
         form.assigned_team_id = null;
@@ -784,11 +785,20 @@ export default {
       }
       if (isEditMode.value) {
         success = await updateTask(form.id, form);
+
       } else {
         success = await storeTask(form);
       }
       if (success) {
         await getTasks();
+      taskCategories.value = await getTaskCategories();
+      await getUsers();
+      await getProjects();
+      await getTeams(); // Fetch teams on component mount
+      await getPriorities();
+      showTableView.value = true; //add
+      form.start_date = setDefaultTime(new Date().toISOString());
+      form.due_date = setDefaultTime(new Date().toISOString());
         visible.value = false;
         resetForm();
       }

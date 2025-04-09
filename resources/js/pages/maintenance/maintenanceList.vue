@@ -127,10 +127,18 @@
                             {{  maintenance.tasks.length  }}
                       </td>
                       <td>
-                        <span class="fs-8 badge badge-secondary">{{ maintenance.expenses.reduce(
+                        <span class="fs-8 badge badge-secondary" v-if="maintenance.type!='quarterly'">0">{{ maintenance.expenses.reduce(
               (total, expense) => total + (expense.amount || 0),
               0
           )* (maintenance.tasks.length>0 ? maintenance.tasks.length: 1) }} USD</span>
+          <span class="fs-8 badge badge-secondary" v-else>
+            {{ maintenance.expenses.reduce(
+              (total, expense) => total + (expense.amount || 0),
+              0
+          )* 1 }} USD
+            </span>
+
+
                       </td>
                       <td>
                         <span class="fs-8">

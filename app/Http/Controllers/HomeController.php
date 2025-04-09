@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Depense;
 use App\Models\Entry;
+use App\Models\Maintenance;
 use App\Models\StockHistory;
 use App\Models\Task;
 use App\Models\User;
@@ -57,17 +58,35 @@ class HomeController extends Controller
         $total =0;
         foreach($depenses as $depense){
             $t= Task ::where('maintenance_id', $depense->maintenance_id)->count();
+           $maint= Maintenance::find($depense->maintenance_id);
+           if($maint->type!="quarterly"){
             $total += $t* $depense->amount;
+           }else{
+            $total +=  $depense->amount;
+           }
+
         }
         $totalRealised =0;
         foreach($depenses as $depense){
             $t= Task ::where('maintenance_id', $depense->maintenance_id)->where('status', 'completed')->count();
+            $maint= Maintenance::find($depense->maintenance_id);
             $totalRealised += $t* $depense->amount;
+            // if($maint->type!="quarterly"){
+            //     $totalRealised += $t* $depense->amount;
+            //    }else{
+            //     $totalRealised += $depense->amount;
+            //    }
         }
         $maintenanceCancel =0;
         foreach($depenses as $depense){
             $t= Task ::where('maintenance_id', $depense->maintenance_id)->where('status', 'canceled')->count();
             $maintenanceCancel += $t* $depense->amount;
+            // $maint= Maintenance::find($depense->maintenance_id);
+            // if($maint->type!="quarterly"){
+            //     $maintenanceCancel += $t* $depense->amount;
+            //    }else{
+            //     $maintenanceCancel +=  $depense->amount;
+            //    }
         }
         $mouvements = StockHistory::count();
         $mouvements +=Entry::count();

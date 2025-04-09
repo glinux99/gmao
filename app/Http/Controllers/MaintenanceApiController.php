@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\MaintenanceImport;
 use App\Models\Maintenance;
 use App\Models\Task;
 use App\Models\Material;
@@ -17,6 +18,8 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Exceptions\SheetNotFoundException;
+use Maatwebsite\Excel\Facades\Excel;
 use PHPUnit\Framework\Constraint\Count;
 
 class MaintenanceApiController extends Controller
@@ -680,5 +683,28 @@ class MaintenanceApiController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['error' => $th->getMessage()], 500);
         }
+    }
+    public function import(Request $request)
+    {
+        try {
+            $request->validate([
+                'file' => 'required|mimes:xlsx,xls',
+            ]);
+
+            $file = $request->file('file');
+
+            try {
+
+                $import = new MaintenanceImport ();
+                Excel ::import($import, $file);
+
+              return response()->json(['message' => 'Planning import successful!']);
+        } catch (SheetNotFoundException $e) {
+           return response()->json(['message' => 'Error importing Planning', 'error'=>$e->getMessage()], 500);
+        }
+       } catch (\Throwable $th) {
+        //throw $th;
+        return response()->json(['message'=>$th->getMessage()]);
+       }
     }
 }

@@ -28,7 +28,7 @@ return new class extends Migration
             $table->text('category')->nullable();
             $table->text('token_email')->nullable();
             $table->string('contrat')->nullable()->default('virunga');
-            $table->string('avatar')->nullable()->default('assets/media/avatars/defaut.png');
+            $table->string('avatar')->nullable()->default('/assets/media/avatars/defaut.png');
             $table->string('nickname')->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password')->default(bcrypt(12345678))->nullable();

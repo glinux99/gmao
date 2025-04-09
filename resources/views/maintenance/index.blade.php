@@ -4,6 +4,11 @@
 @endsection
 @section('content')
 {{-- sss --}}
+{{--  <form action="{{ route('maintenances.imports')}}" enctype="multipart/form-data" method="POST">
+    @csrf
+    <input type="file" name="file" id="">
+    <button type="submit">Envoyer</button>
+</form>  --}}
 
 <div id="contentVue">
     <maintenance-list />

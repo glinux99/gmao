@@ -8,6 +8,7 @@ use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\LoginApiController;
+use App\Http\Controllers\MaintenanceApiController;
 use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\PriorityController;
@@ -91,7 +92,7 @@ Route::group(['middleware' =>[ 'auth']], function(){
     ]);
 
     Route::get('/import2/{id}', [TaskApiController::class, 'extractDatesFromSheetName'])->name('extractDatesFromSheetName.imports');
-    Route::post('/categories/import2', [TaskApiController::class, 'import'])->name('task.imports');
+    Route::post('/maintenance/import2', [MaintenanceApiController::class, 'import'])->name('maintenances.imports');
     Route::put('instruction-task', [InstructionApiController::class,'updateInstructions'])->name('instruction.updateInstructions');
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');
         // Route::get('category/destroy/{id}', [UserController::class, 'destroy'])->name('category.destroy');
