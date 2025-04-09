@@ -1,6 +1,8 @@
+import PrimeUI from 'tailwindcss-primeui';
 import defaultTheme from 'tailwindcss/defaultTheme';
 
 /** @type {import('tailwindcss').Config} */
+/** @type {import('tailwindcss-primeui').Config} */
 export default {
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
@@ -16,5 +18,5 @@ export default {
             },
         },
     },
-    plugins: [],
+    plugins: [PrimeUI],
 };

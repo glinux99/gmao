@@ -1,7 +1,8 @@
+import { PrimeVueResolver } from '@primevue/auto-import-resolver';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
+import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
-
 export default defineConfig({
     plugins: [
         laravel({
@@ -18,6 +19,11 @@ export default defineConfig({
                 },
             },
         }),
+        Components({
+            resolvers: [
+              PrimeVueResolver()
+            ]
+          }),
     ],
     server:{
         https: false,

@@ -50,6 +50,7 @@
 
                 <div class="card-body pt-0 w-100">
                   <DataTable
+                  class="p-column-filter p-bg-success"
                     :value="maintenances"
                     paginator
                     :rows="10"

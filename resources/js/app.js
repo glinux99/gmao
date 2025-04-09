@@ -37,6 +37,7 @@
 // require("./bootstrap");
 import { i18nVue } from "laravel-vue-i18n";
 import { createApp } from "vue";
+
 // import routers from "./router";
 // import store from "./store/index.js";
 import Aura from '@primeuix/themes/aura';
@@ -178,14 +179,14 @@ app.use(PrimeVue, {
         menu: 1000,         //overlay menus
         tooltip: 1100       //tooltip
     },
-    theme: {
+    theme:{
         preset: Aura,
-        options: {
+        options:{
+
             prefix: 'p',
-            darkModeSelector: 'system',
-            cssLayer: false,
-            ripple: true,
-            inputStyle: 'outlined',
+            darkModeSelector: ".data-bs-theme-mode",
+
+            csslayer: false
         }
     }
 });
