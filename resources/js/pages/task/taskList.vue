@@ -37,26 +37,7 @@
                   class="p-button-primary me-2"
                   @click="addTask"
                 />
-                <Button
-                  v-if="!selectedFileName"
-                  label="Importer xls"
-                  icon="pi pi-upload"
-                  @click="openFileDialog"
-                />
-                <Button
-                  v-else
-                  label="Importer vers le server"
-                  class="p-button-primary ms-3"
-                  icon="pi pi-upload"
-                  @click="importTasksToServer"
-                />
-                <input
-                  type="file"
-                  class="d-none"
-                  name="file"
-                  ref="fileInput"
-                  @change="handleFileChange"
-                />
+
               </div>
             </div>
           </div>
@@ -78,34 +59,52 @@
             class="app-container"
           >
             <div class="card card-flush">
-              <div class="card-header mt-6">
-                <div class="card-title">
-                  <div
-                    class="d-flex align-items-center position-relative my-1 me-5"
-                  >
-                    <i
-                      class="ki-duotone ki-magnifier fs-3 position-absolute ms-5"
-                      ><span class="path1"></span><span class="path2"></span
-                    ></i>
-                    <input
-                      type="text"
-                      data-kt-permissions-table-filter="search"
-                      class="form-control form-control-solid w-250px ps-13"
-                      placeholder="Rechercher une tâche"
-                      v-model="searchQuery"
-                    />
-                  </div>
-                </div>
-              </div>
+
               <div class="card-body pt-0">
-                <DataTable :value="filteredTasks" :paginator="true" :rows="10"
+                <DataTable ref="dt" v-model:filters="filters" :value="tasks" :paginator="true" :rows="10" stripedRows removableSort
                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                     :rowsPerPageOptions="[5, 10, 25, 50]"
                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} tâches"
                     tableStyle="min-width: 50rem">
-                    <Column field="description" header="Description"/>
+                    <template #header>
+                <div class="d-flex justify-content-end">
+                    <div class="mx-1">
 
-                    <Column field="priority" header="Priorité">
+                        <IconField>
+
+                        <InputText v-model="filters['global'].value" placeholder="Rechercher" />
+                        </IconField>
+                    </div>
+                    <div class="text-end pb-4">
+                    <Button icon="pi pi-external-link" severity="warn" label="Export" @click="exportCSV($event)" />
+                    </div>
+                    <div class="mx-1">
+                        <Button
+                  v-if="!selectedFileName"
+                  label="Importer xls"
+                  icon="pi pi-upload"
+                  @click="openFileDialog"
+                />
+                <Button
+                  v-else
+                  label="Importer vers le server"
+                  class="p-button-primary ms-3"
+                  icon="pi pi-upload"
+                  @click="importTasksToServer"
+                />
+                <input
+                  type="file"
+                  class="d-none"
+                  name="file"
+                  ref="fileInput"
+                  @change="handleFileChange"
+                />
+                    </div>
+                </div>
+            </template>
+                    <Column field="description" header="Description" sortable />
+
+                    <Column field="priority" header="Priorité" sortable >
                         <template #body="slotProps">
                             <span
                           class="badge"
@@ -120,7 +119,7 @@
                         </template>
                     </Column>
 
-                    <Column field="status" header="Status">
+                    <Column field="status" header="Status" sortable >
                         <template #body="slotProps">
                             <span
                             v-if="slotProps.data.status === 'pending'"
@@ -153,14 +152,14 @@
                         </template>
                     </Column>
 
-                    <Column field="owner_user" header="Responsable">
+                    <Column field="owner_user" header="Responsable" sortable >
                         <template #body="slotProps">
                             <span class="badge badge-light-success">
                                 {{ slotProps.data.owner_user ? slotProps.data.owner_user.name : "N/A" }}
                               </span>
                         </template>
                     </Column>
-                    <Column  header="Technicien">
+                    <Column  header="Technicien" sortable >
                         <template #body="slotProps">
                             <template v-if="slotProps.data.assigned_user">
                                 <span class="badge badge-light-primary">
@@ -562,6 +561,7 @@
   </div>
 </template>
 <script>
+import { FilterMatchMode } from '@primevue/core/api';
 import { useCookie } from "@vue-composable/cookie";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref } from "vue";
@@ -956,7 +956,67 @@ export default {
       const material = categories.value.find((m) => m.id === materialId);
       return material ? material.designation : "Matériel inconnu";
     };
+    const filters = ref({
+      global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      description: { value: null, matchMode: FilterMatchMode.CONTAINS },
+      "priority.title": { value: null, matchMode: FilterMatchMode.CONTAINS },
+      status: { value: null, matchMode: FilterMatchMode.EQUALS },
+      "owner_user.name": { value: null, matchMode: FilterMatchMode.CONTAINS },
+      "assigned_user.name": {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+      },
+      "assigned_team.users.name": {
+        value: null,
+        matchMode: FilterMatchMode.CONTAINS,
+      },
+    });
+    const dt = ref(null);
+    const exportCSV = () => {
+      const filteredData = tasks.value.map((task) => ({
+        Description: task.description,
+        Priorité: task.priority.title,
+        Status: task.status,
+        Responsable: task.owner_user ? task.owner_user.name : "N/A",
+        Technicien: task.assigned_user
+          ? task.assigned_user.name
+          : task.assigned_team && task.assigned_team.users
+          ? task.assigned_team.users.map((user) => user.name).join(", ")
+          : "N/A",
+      }));
+      const csvContent = convertToCSV(filteredData);
+      const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+      const link = document.createElement("a");
+      if (link.download !== undefined) {
+        const url = URL.createObjectURL(blob);
+        link.setAttribute("href", url);
+        link.setAttribute("download", "Listes_de_taches_virunga_energies.csv");
+        link.style.visibility = "hidden";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    };
+
+    const convertToCSV = (objArray) => {
+      const array = typeof objArray !== "object" ? JSON.parse(objArray) : objArray;
+      let str = "";
+      const headers = Object.keys(array[0]).join(",");
+      str += headers + "\r\n";
+      for (let i = 0; i < array.length; i++) {
+        let line = "";
+        for (let index in array[i]) {
+          if (line !== "") line += ",";
+          line += array[i][index];
+        }
+        str += line + "\r\n";
+      }
+      return str;
+    };
     return {
+        dt,
+        exportCSV,
+        filters,
         categories,
         getMaterialName,
         isNewWeek,

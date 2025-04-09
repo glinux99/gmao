@@ -30,11 +30,11 @@ return new class extends Migration
             // $table->foreignId('category_id')->nullable()->constrained('task_categories')->onDelete('cascade');
             $table->foreignId('owner')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('task_id')->nullable()->constrained('tasks')->nullOnDelete();
-            $table->date('assigned_date')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('start_date_user')->nullable();
-            $table->date('due_date')->nullable();
-            $table->date('due_date_user')->nullable();
+            $table->string('assigned_date')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('start_date_user')->nullable();
+            $table->string('due_date')->nullable();
+            $table->string('due_date_user')->nullable();
             $table->timestamps();
         });
     }

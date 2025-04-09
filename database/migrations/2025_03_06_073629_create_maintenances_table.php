@@ -29,8 +29,8 @@ return new class extends Migration
             // $table->a('techniciens')->nullable();
             $table->decimal('man_hours', 8, 2)->nullable(); // Example: 123456.78
             $table->decimal('maintenance_cost', 10, 2)->nullable(); // Example: 12345678.90
-            $table->date('start_date')->nullable();
-            $table->date('end_date')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('end_date')->nullable();
             $table->text('description')->nullable();
             $table->string('status')->default('pending'); // e.g., pending, in_progress, completed
             $table->unsignedBigInteger('user_id')->nullable(); // Add technician_id

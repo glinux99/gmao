@@ -649,7 +649,9 @@
     <AccordionHeader>
       <div class="d-flex flex-row align-items-center justify-content-between w-full w-100">
         <span class="flex items-center gap-2">
-          <div class="font-bold whitespace-nowrap">{{ getAssingedName(task.assigned_user_id) }}</div>
+
+          <div class="font-bold whitespace-nowrap" v-if="task.assignToType='team'">{{ getAssingedTeamName(task.assigned_team) }}</div>
+          <div class="font-bold whitespace-nowrap" v-else>{{ getAssingedName(task.assigned_user_id) }}</div>
           <div class="fs-9 my-2">
             <Badge :value="task.instructions.length" class="" /> Instructions
           </div>
@@ -1963,6 +1965,7 @@ const taskVisible = ref(false);
           isEditMode.value = true;
           taskVisible.value=true;
           Object.assign(selectedTask, task);
+          console.log(selectedTask);
         }
         const removeTask=(task)=>{
           const index = form.tasks.indexOf(task);
@@ -2026,7 +2029,16 @@ const taskVisible = ref(false);
            selectedMaterials.value= selectedMaterials.value.filter((m)=> m !== e.value);
 
         }
+        const getAssingedTeamName = (team) => {
+            if(team!=null){
+                return `${team.user.name ?? ""} ${team.user.post_name ?? ""} ${team.user.nickname ?? ""}`;
+
+            }
+            return "N/A";
+};
+
     return {
+        getAssingedTeamName,
         thandleRemoveMaterial,
         tremoveInstruction,
         taddInstructionValue,
