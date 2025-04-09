@@ -55,11 +55,11 @@ export default function useTasks() {
         isLoading.value = true;
         try {
             const response = await instance.put(`/api/tasks/${id}`, data);
-            const index = tasks.value.findIndex((t) => t.id === id);
-            if (index !== -1) {
-                tasks.value[index] = response.data.data;
-            }
-            return true;
+            // const index = tasks.value.findIndex((t) => t.id === id);
+            // if (index !== -1) {
+            //     tasks.value[index] = response.data.data;
+            // }
+            // return true;
         } catch (e) {
             errors.value = e.response.data.errors;
             return false;

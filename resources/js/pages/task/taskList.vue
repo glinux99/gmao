@@ -186,8 +186,8 @@
                               </template>
                         </template>
                     </Column>
-                    <Column  filed="start_date" header="Start Date"/>
-                        <Column  filed="due_date" header="End Date"/>
+                    <!-- <Column  filed="start_date" header="Start Date"/>
+                        <Column  filed="due_date" header="End Date"/> -->
 
                     <Column header="Actions">
                         <template #body="slotProps">
@@ -347,321 +347,225 @@
       </div>
     </div>
     <!-- ... -->
-    <Dialog
-      :id="id"
-      :header="isEditMode ? 'Modifier une Tâche' : 'Créer une Tâche'"
-      v-model:visible="visible"
-      :style="{ width: '800px' }"
-      position="center"
-      :modal="true"
-      :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
-      @hide="visible=false"
-      :closable="true"
-    >
-      <template #header>
-        {{ isEditMode ? "Modifier" : "Créer" }} une Tâche
-      </template>
-      <div class="d-flex flex-column scroll-y px-3 px-lg-5">
-        <Card class="bg-secondary">
-          <template #content>
-            <div class="row">
-              <div class="fv-row fv-plugins-icon-container col-md-6 col-md-6">
-                <label class="required fw-semibold fs-6 mb-2"
-                  >Description</label
-                >
-                <InputText
-                  type="text"
-                  name="designation"
-                  class="form-control mb-3 mb-lg-0"
-                  placeholder="Perte de puissance signalée"
-                  v-model="form.description"
-                  required
-                />
-                <div
-                  class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-                ></div>
-              </div>
-              <div class="fv-row fv-plugins-icon-container col-md-6">
-                <label class="required fw-semibold fs-6 mb-2 d-block"
-                  >Responsable</label
-                >
-                <Dropdown
-                  v-model="form.owner"
-                  :options="users"
-                  :optionLabel="
-                    (user) =>
-                      `${user.name ?? ''} ${user.post_name ?? ''}  ${
-                        user.nickname ?? ''
-                      }`
-                  "
-                  optionValue="id"
-                  placeholder="Sélectionner un responsable"
-                  class="w-full md:w-14rem w-100"
-                  :filter="true"
-                  filterBy="name,post_name, email"
-                />
-                <div
-                  class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-                ></div>
-              </div>
-              <div class="col-md-6">
-                <!--begin::Label-->
-                <label class="fw-semibold fs-6 mb-2">
-                  <span class="">Status</span>
-                </label>
-                <!--end::Label-->
-                <!--begin::Col-->
-                <div class="fv-row">
-                  <Dropdown
-                    v-model="form.status"
-                    :options="[
-                      { name: 'En attente', value: 'pending' },
-                      { name: 'En cours', value: 'in_progress' },
-                      { name: 'Terminée', value: 'completed' },
-                      { name: 'Annulée', value: 'canceled' },
-                    ]"
-                    optionLabel="name"
-                    optionValue="value"
-                    placeholder="Sélectionner un status"
-                    class="w-full md:w-14rem w-100"
-                  />
-                </div>
-                <!--end::Col-->
-              </div>
-              <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                <label class="required fw-semibold fs-6 mb-2 d-block"
-                  >Priorité</label
-                >
-                <Dropdown
-                  v-model="form.priority_id"
-                  :options="priorities"
-                  optionLabel="title"
-                  optionValue="id"
-                  placeholder="Sélectionner une priorité"
-                  class="w-full md:w-14rem w-100"
-                  required
-                />
-              </div>
+    <Dialog :id="id" :header="isEditMode ? 'Modifier une Tâche' : 'Créer une Tâche'" v-model:visible="visible"
+    :style="{ width: '800px' }" position="center" :modal="true" :breakpoints="{ '960px': '75vw', '640px': '100vw' }"
+    @hide="closeModal" :closable="true">
+    <template #header>
+      {{ isEditMode ? 'Modifier' : 'Créer' }} une Tâche
+    </template>
+    <div class="d-flex flex-column scroll-y px-3 px-lg-5 ">
+      <Card class="bg-secondary">
+        <template #content>
+          <div class="row">
+            <div class="fv-row fv-plugins-icon-container col-md-6 col-md-6">
+              <label class="required fw-semibold fs-6 mb-2">Description</label>
+              <InputText type="text" name="designation" class="form-control  mb-3 mb-lg-0"
+                placeholder="Perte de puissance signalée"  v-model="form .description" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
             </div>
-          </template>
-        </Card>
-
-        <div class="row">
-          <div class="col-md-6" v-if="projects.length">
-            <div class="my-6">
-              <label class="col-form-label fw-bold fs-6">
-                <span class="required">Projet</span>
-                <i
-                  class="fas fa-exclamation-circle ms-1 fs-7"
-                  data-bs-toggle="tooltip"
-                  title="categorie"
-                ></i>
+            <div class="fv-row fv-plugins-icon-container col-md-6">
+              <label class="required fw-semibold fs-6 mb-2 d-block">Responsable</label>
+              <Dropdown v-model="form .owner" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
+                placeholder="Sélectionner un responsable" class="w-full md:w-14rem w-100" :filter="true"
+                filterBy="name,post_name, email" />
+              <div class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"></div>
+            </div>
+            <div class="col-md-6 ">
+              <!--begin::Label-->
+              <label class="fw-semibold fs-6 mb-2">
+                <span class="">Status</span>
               </label>
-              <div class="fv-row">
-                <Dropdown
-                  v-model="form.project_id"
-                  :options="projects"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Sélectionner un projet"
-                  class="w-full md:w-14rem"
-                />
+              <!--end::Label-->
+              <!--begin::Col-->
+              <div class="fv-row ">
+                <Dropdown v-model="form .status" :options="[
+                  { name: 'En attente', value: 'pending' },
+                  { name: 'En cours', value: 'in_progress' },
+                  { name: 'Terminée', value: 'completed' },
+                  { name: 'Annulée', value: 'canceled' },
+                ]" optionLabel="name" optionValue="value" placeholder="Sélectionner un status"
+                  class="w-full md:w-14rem w-100" />
               </div>
+              <!--end::Col-->
+            </div>
+            <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
+              <label class="required fw-semibold fs-6 mb-2 d-block">Priorité</label>
+              <Dropdown v-model="form .priority_id" :options="priorities" optionLabel="title" optionValue="id"
+                placeholder="Sélectionner une priorité" class="w-full md:w-14rem w-100" required />
+            </div>
+          </div>
+        </template>
+      </Card>
+
+      <div class="row">
+        <div class="col-md-6" v-if="projects.length">
+          <div class="my-6">
+            <label class="col-form-label fw-bold fs-6">
+              <span class="required">Projet</span>
+              <i class="fas fa-exclamation-circle ms-1 fs-7" data-bs-toggle="tooltip" title="categorie"></i>
+            </label>
+            <div class="fv-row">
+              <Dropdown v-model="form .project_id" :options="projects" optionLabel="name" optionValue="id"
+                placeholder="Sélectionner un projet" class="w-full md:w-14rem" />
             </div>
           </div>
         </div>
-        <Card class="mt-2 bg-secondary">
-          <template #title> Assigner à </template>
-          <template #content>
-            <div class="fv-row fv-plugins-icon-container row">
-              <div class="col-md-6">
-                <div class="form-check form-check-custom form-check-solid mb-3">
-                  <RadioButton
-                    inputId="assignToUser"
-                    value="user"
-                    v-model="form.assignToType"
-                    name="assignToType"
-                  />
-                  <label class="form-check-label" for="assignToUser">
-                    Technicien
-                  </label>
-                </div>
-                <div class="form-check form-check-custom form-check-solid">
-                  <RadioButton
-                    inputId="assignToTeam"
-                    value="team"
-                    v-model="form.assignToType"
-                    name="assignToType"
-                  />
-                  <label class="form-check-label" for="assignToTeam">
-                    Équipe
-                  </label>
-                </div>
-              </div>
-              <div class="col-md-6">
-                <div v-if="form.assignToType === 'user'" class="fv-row mb-7">
-                  <label class="required fw-semibold fs-6 mb-2"
-                    >Technicien</label
-                  >
-                  <Dropdown
-                    v-model="form.assigned_user_id"
-                    :options="users"
-                    :optionLabel="
-                      (user) =>
-                        `${user.name ?? ''} ${user.post_name ?? ''}  ${
-                          user.nickname ?? ''
-                        }`
-                    "
-                    optionValue="id"
-                    placeholder="Sélectionner un technicien"
-                    class="w-full md:w-14rem w-100"
-                    :filter="true"
-                    filterBy="name,post_name, email"
-                  />
-                </div>
-                <div
-                  v-else-if="form.assignToType === 'team'"
-                  class="fv-row mb-7"
-                >
-                  <label class="required fw-semibold fs-6 mb-2">Équipe</label>
-                  <Dropdown
-                    v-model="form.assigned_team_id"
-                    :options="teams"
-                    optionLabel="name"
-                    optionValue="id"
-                    placeholder="Sélectionner une équipe"
-                    class="w-full md:w-14rem w-100"
-                  />
-                </div>
-              </div>
-            </div>
-            <!-- Conditional rendering for user/team selection -->
-          </template>
-        </Card>
-        <div class="row mt-3">
-          <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-            <label class="required fw-semibold fs-6 mb-2">Date de debut</label>
-            <Calendar
-              v-model="form.start_date"
-              dateFormat="yy-mm-dd"
-              showTime
-              hourFormat="24"
-              class="form-control form-control-solid mb-3 mb-lg-0"
-              placeholder="Date de debut"
-              required
-            />
-            <div
-              class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-            ></div>
-          </div>
-          <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-            <label class="required fw-semibold fs-6 mb-2">Date de fin</label>
-            <Calendar
-              v-model="form.due_date"
-              dateFormat="yy-mm-dd"
-              showTime
-              hourFormat="24"
-              class="form-control form-control-solid mb-3 mb-lg-0"
-              placeholder="Date de fin"
-              required
-            />
-            <div
-              class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback"
-            ></div>
-          </div>
-        </div>
-        <Card class="bg-secondary">
-          <template #content>
-            <div class="fv-row mb-7 fv-plugins-icon-container">
-              <div class="d-flex justify-content-end">
-                <Button
-                  label="Ajouter une instruction"
-                  icon="pi pi-plus-circle"
-                  @click="addInstruction"
-                  severity="warn"
-                  class="p-button-primary"
-                />
-              </div>
-              <div
-                v-for="(instruction, index) in form.instructions"
-                :key="index"
-                class="my-1 border rounded"
-              >
-                <div class="d-flex justify-content-between align-items-center">
-                  <label class="fw-bold">Instruction {{ index + 1 }}</label>
-                </div>
-                <div class="row">
-                  <div class="col-md-8">
-                    <InputText
-                      type="text"
-                      name="designation"
-                      class="form-control mb-3 mb-lg-0"
-                      placeholder="Description de l'instruction"
-                      v-model="instruction.description"
-                      @input="
-                        addInstructionValue(
-                          'description',
-                          instruction.description,
-                          index
-                        )
-                      "
-                    />
-                  </div>
-                  <div class="col-md-3">
-                    <Dropdown
-                      class="w-full md:w-14rem"
-                      v-model="instruction.response_type"
-                      :options="['checkbox', 'text / valeur']"
-                      placeholder="Type de reponse"
-                      @change="
-                        addInstructionValue(
-                          'response_type',
-                          instruction.response_type,
-                          index
-                        )
-                      "
-                    />
-                  </div>
-                  <div
-                    class="col-md-1 d-flex align-items-start justify-content-start"
-                    @click="removeInstruction(index)"
-                  >
-                    <button>
-                      <i class="fa fa-trash text-danger m-0 p-0 display-6"></i>
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-        </Card>
       </div>
-      <template #footer>
-        <Button
-          label="Annuler"
-          icon="pi pi-times"
-          severity="secondary"
-          variant="text"
-          class="p-button-text"
-          @click="closeModal"
-        />
-        <Button
-          label="Enregistrer"
-          icon="pi pi-check"
-          severity="warn"
-          class="p-button-primary"
-          raised
-          @click="submitTask"
-        />
-      </template>
-      <Toast />
-    </Dialog>
+      <Card class="mt-2 bg-secondary mb-2">
+        <template #title>
+          Assigner à
+        </template>
+        <template #content>
+          <div class="fv-row  fv-plugins-icon-container row">
+            <div class="col-md-6">
+              <div class="form-check form-check-custom form-check-solid mb-3">
+                <RadioButton inputId="assignToUser" value="user" v-model="form .assignToType" name="assignToType" />
+                <label class="form-check-label" for="assignToUser">
+                  Technicien
+                </label>
+              </div>
+              <div class="form-check form-check-custom form-check-solid">
+                <RadioButton inputId="assignToTeam" value="team" v-model="form .assignToType" name="assignToType" />
+                <label class="form-check-label" for="assignToTeam">
+                  Équipe
+                </label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div v-if="form .assignToType === 'user'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Technicien</label>
+                <Dropdown v-model="form .assigned_user_id" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
+                  placeholder="Sélectionner un technicien" class="w-full md:w-14rem w-100" :filter="true"
+                  filterBy="name,post_name,email" />
+              </div>
+              <div v-else-if="form .assignToType === 'team'" class="fv-row mb-7">
+                <label class="required fw-semibold fs-6 mb-2">Équipe</label>
+                <Dropdown v-model="form .assigned_team_id" :options="teams" optionLabel="name" optionValue="id"
+                  placeholder="Sélectionner une équipe" class="w-full md:w-14rem w-100" />
+              </div>
+            </div>
+          </div>
+          <!-- Conditional rendering for user/team selection -->
+
+        </template>
+      </Card>
+      <Card class="bg-secondary">
+        <template #content>
+          <div class="fv-row mb-7 fv-plugins-icon-container">
+            <div class="d-flex justify-content-end">
+              <Button label="Ajouter une instruction" icon="pi pi-plus-circle" @click="addInstructionToTask" severity="warn"
+                class="p-button-primary" />
+            </div>
+            <div v-for="(instruction, index) in form .instructions" :key="index" class="my-1 border rounded">
+              <div class="d-flex justify-content-between align-items-center">
+                <label class="fw-bold">Instruction {{ index + 1 }}</label>
+
+              </div>
+              <div class="row">
+                <div class="col-md-8">
+                  <InputText type="text" name="designation" class="form-control  mb-3 mb-lg-0"
+                    placeholder="Description de l'instruction" v-model="instruction.description"
+                    @input="addInstructionValueToTask('description',instruction.description, index)" />
+                </div>
+                <div class="col-md-3">
+                  <Dropdown class="w-full md:w-14rem" v-model="instruction.response_type"
+                    :options="['checkbox', 'text / valeur']" placeholder="Type de reponse"
+                    @change="addInstructionValueToTask('response_type',instruction.response_type, index)" />
+                </div>
+                <div class="col-md-1 d-flex align-items-start justify-content-start" @click="removeInstructionFromTask(index)">
+                  <button><i class="fa fa-trash text-danger m-0 p-0 display-6"></i></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </template>
+      </Card>
+      <Card class="bg-secondary mt-2" >
+        <template #title>Matériels à utiliser</template>
+        <template #content>
+          <div class="row">
+            <div class="col-md-12">
+              <label class="col-form-label fw-bold fs-6">Matériel</label>
+
+              <InputGroup>
+                <AutoComplete
+                v-model="form.materials"
+                class="w-full md:w-14rem"
+                placeholder="Rechercher un matériel"
+                :suggestions="filteredSuggestions"
+                @complete="search"
+                field="designation"
+                optionLabel="designation"
+                optionValue="id"
+                @item-select="handleMaterialSelect"
+                multiple
+              />
+                <Button
+                icon="pi pi-plus-circle"
+                @click="addMateriels"
+                severity="warn"
+                class="p-button-primary"
+              />
+              </InputGroup>
+            </div>
+          </div>
+          <div class="mt-4">
+            <label class="col-form-label fw-bold fs-6">
+              Matériels ajoutés
+            </label>
+            <ul class="list-group">
+              <li
+                v-for="(material, index) in form.materials"
+                :key="index"
+                class="list-group-item  "
+              >
+                <div class="row">
+                    <div class="col-md-6 ">
+                    {{ getMaterialName(material.id) }}
+                        </div>
+                        <div class="col-md-4">
+                            <InputText
+                            type="text"
+                            name="designation"
+                            class="w-full md:w-14rem"
+                            placeholder="0"
+                            v-model="material.quantity"
+                        />
+                        </div>
+                        <div class="col-md-1 d-flex align-items-center">
+                            <span v-if="material.unity">
+                            {{ material.unity.designation }}
+                        </span>
+                        </div>
+                <div class="col-md-1">
+                    <Button
+                  icon="pi pi-trash"
+                  severity="danger"
+                  @click="thandleRemoveMaterial(index)"
+                />
+                </div>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </template>
+      </Card>
+    </div>
+    <template #footer>
+      <Button label="Annuler" icon="pi pi-times" severity="secondary" variant="text" class="p-button-text"
+        @click="visible=false" />
+      <Button label="Enregistrer" icon="pi pi-check" severity="warn" class="p-button-primary" raised
+        @click="submitTask()" />
+    </template>
+    <Toast />
+  </Dialog>
   </div>
 </template>
 <script>
 import { useCookie } from "@vue-composable/cookie";
 import { useToast } from "primevue";
 import { computed, onMounted, reactive, ref } from "vue";
+import useCategories from "../../services/categoryServices.js";
 import useInstructions from "../../services/instructionServices.js";
 import usePriorities from "../../services/priorityServices.js";
 import useProjects from "../../services/projectServices.js";
@@ -762,21 +666,26 @@ export default {
       }
       return null;
     };
-    onMounted(async () => {
-      await getTasks();
+   const syncdata =async ()=>{
+        await getTasks();
       taskCategories.value = await getTaskCategories();
       await getUsers();
       await getProjects();
       await getTeams(); // Fetch teams on component mount
       await getPriorities();
+      await getCategories();
       showTableView.value = true; //add
       form.start_date = setDefaultTime(new Date().toISOString());
       form.due_date = setDefaultTime(new Date().toISOString());
+    }
+    onMounted(async () => {
+      syncdata();
     });
 
     const submitTask = async () => {
       let success = false;
-        visible.value=false;
+      success = await updateTask(form.id, form);
+      visible.value=false;
       // Check if it's assigned to a user or a team
       if (form.assignToType === "user") {
         form.assigned_team_id = null;
@@ -785,20 +694,14 @@ export default {
       }
       if (isEditMode.value) {
         success = await updateTask(form.id, form);
-
+        await getTasks();
       } else {
         success = await storeTask(form);
       }
       if (success) {
-        await getTasks();
-      taskCategories.value = await getTaskCategories();
-      await getUsers();
-      await getProjects();
-      await getTeams(); // Fetch teams on component mount
-      await getPriorities();
-      showTableView.value = true; //add
-      form.start_date = setDefaultTime(new Date().toISOString());
-      form.due_date = setDefaultTime(new Date().toISOString());
+        await syncdata();
+
+
         visible.value = false;
         resetForm();
       }
@@ -1048,8 +951,14 @@ export default {
       )
     );
   };
-
+  const {categories, getCategories} = useCategories();
+  const getMaterialName = (materialId) => {
+      const material = categories.value.find((m) => m.id === materialId);
+      return material ? material.designation : "Matériel inconnu";
+    };
     return {
+        categories,
+        getMaterialName,
         isNewWeek,
       selectedFileName,
       fileInput,
