@@ -3,6 +3,7 @@
 use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\EnginController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EquipmentController;
 use App\Http\Controllers\InstructionApiController;
@@ -90,6 +91,7 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'priorities'=>PriorityController::class,
         'instructions'=>InstructionApiController::class,
         'regions'=>RegionController::class,
+        'engins'=>EnginController::class,
 
 
     ]);

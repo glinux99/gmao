@@ -2,6 +2,11 @@
 @section('menuTitle')
     Gestion d'utilisateurs
 @endsection
+@section('contentSubTitle')
+
+        Gestion des actifs
+
+@endsection
 @section('contentTitle')
 
         inventaires

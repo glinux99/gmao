@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Team;
 use App\Models\TeamUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TeamApiController extends Controller
 {
@@ -14,7 +15,7 @@ class TeamApiController extends Controller
     public function index()
     {
        try {
-        $teams = Team::with('user','users')->orderBy('id', 'DESC')->get();
+        $teams = Team::with('user','users', 'region')->orderBy('id', 'DESC')->get();
        } catch (\Throwable $th) {
         //throw $th;
         return $th->getMessage();
@@ -78,6 +79,20 @@ class TeamApiController extends Controller
      */
     public function destroy(Team $team)
     {
-        //
+        try {
+            DB ::beginTransaction();
+
+            // Delete related TeamUser records
+            TeamUser::where('team_id', $team->id)->delete();
+
+            // Delete the team
+            $team->delete();
+
+            DB::commit();
+            return response()->json(['message' => 'Team and related members deleted successfully'], 200);
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
     }
 }

@@ -36,12 +36,21 @@ class Task extends Model
         'assigned_user_id', // This is the user assigned to the task
         'assigned_team_id', // This is the team assigned to the task
         'maintenance_id',
-        "localisation"
+        "localisation",
+        "region_id",
+        'nbre_tacherons',
+        'price_tacherons',
+        'engin_id',
+
     ];
     protected $casts=[
         'due_date'=>'datetime:Y-m-d\TH:i:s.z\Z',
         'start_date'=>'datetime:Y-m-d\TH:i:s.z\Z',
     ];
+    public function engin(): BelongsTo
+    {
+        return $this->belongsTo(Engin::class, 'engin_id');
+    }
 
     /**
      * Get the user that created the task.
@@ -53,6 +62,10 @@ class Task extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
     /**
      * Get the owner of the task.
      *

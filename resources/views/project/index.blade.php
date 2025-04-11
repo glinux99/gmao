@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@section('contentSubTitle')
+
+        Gestion des tâches
+
+@endsection
 @section('contentTitle')
         Projets
 @endsection

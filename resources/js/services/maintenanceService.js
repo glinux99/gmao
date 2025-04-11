@@ -66,7 +66,7 @@ export default function useMaintenances() {
         }
     };
 
-    const deleteMaintenance = async (id) => {
+    const destroyMaintenace = async (id) => {
         isLoading.value = true;
         errors.value = {};
         try {
@@ -104,7 +104,7 @@ export default function useMaintenances() {
         getMaintenance,
         storeMaintenance,
         updateMaintenance,
-        deleteMaintenance,
+        destroyMaintenace,
         errors,
         isLoading,
          searchAndFilter,

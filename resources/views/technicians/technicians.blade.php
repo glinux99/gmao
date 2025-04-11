@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@section('contentSubTitle')
+
+        Gestion des équipes
+
+@endsection
 @section('contentTitle')
         Techniciens
 @endsection

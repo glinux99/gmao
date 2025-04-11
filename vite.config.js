@@ -4,6 +4,13 @@ import laravel from 'laravel-vite-plugin';
 import Components from 'unplugin-vue-components/vite';
 import { defineConfig } from 'vite';
 export default defineConfig({
+    css: {
+        preprocessorOptions: {
+          scss: {
+            additionalData: `@import "primevue/resources/themes/lara-light-indigo/theme.css";`
+          }
+        }
+      },
     plugins: [
         laravel({
             input: [

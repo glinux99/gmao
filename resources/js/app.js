@@ -48,6 +48,7 @@ import modalComponent from "./components/modals/modalComponent.vue";
 import loginUser from './pages/auth/loginUser.vue';
 import calendarList from "./pages/calendar/calendarList.vue";
 import categoryList from "./pages/categories/categoryList.vue";
+import enginList from "./pages/engin/enginList.vue";
 import entryList from "./pages/entry/entryList.vue";
 import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
@@ -85,7 +86,8 @@ const app = createApp({
         userList,
         entryList,
         technicienList,
-        regionList
+        regionList,
+        enginList,
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
@@ -113,6 +115,7 @@ import SplitButton from 'primevue/splitbutton';
 import Toast from 'primevue/toast';
 import ToastService from 'primevue/toastservice';
 
+
 import Accordion from 'primevue/accordion';
 import AccordionContent from 'primevue/accordioncontent';
 import AccordionHeader from 'primevue/accordionheader';
@@ -126,6 +129,7 @@ import Password from "primevue/password";
 
 
 app.component('Dropdown', Dropdown);
+app.component('MultiSelect', MultiSelect);
 app.component("Calendar", Calendar);
 app.component("Dialog", Dialog);
 app.component('InputText', InputText);
@@ -182,9 +186,8 @@ app.use(PrimeVue, {
     theme:{
         preset: Aura,
         options:{
-
             prefix: 'p',
-            darkModeSelector: ".data-bs-theme-mode",
+            darkModeSelector: ".data-bs-theme",
 
             csslayer: false
         }

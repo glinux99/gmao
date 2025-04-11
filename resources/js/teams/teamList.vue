@@ -35,14 +35,16 @@
                                 </div>
                             </div>
                             <div class="card-body pt-0">
-                                <DataTable :value="filteredTeams" tableStyle="min-width: 50rem"  :paginator="true" :rows="10"
+                                <DataTable :value="filteredTeams" removableSort tableStyle="min-width: 50rem"  :paginator="true" :rows="10"
                                     paginatorTemplate="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown"
                                     :rowsPerPageOptions="[5, 10, 25, 50]"
                                     currentPageReportTemplate="Showing {first} to {last} of {totalRecords} equipes"
                                     >
-                                    <Column field="name" header="Nom" />
-                                    <Column field="description" header="Description" />
-                                    <Column field="vehicule" header="Véhicule" />
+                                    <Column field="name" header="Nom" sortable />
+                                    <Column field="description" sortable header="Description" />
+                                        <Column field="region.titre" sortable header="Region" >
+                                    </Column>
+                                    <Column field="vehicule" sortable header="Véhicule" />
                                     <Column header="Chef d'équipe">
                                         <template #body="slotProps">
                                             {{ slotProps.data.user ? slotProps.data.user.name : 'N/A' }}
@@ -63,8 +65,8 @@
                                         <template #body="slotProps">
                                             <Button icon="pi pi-pencil" class="p-button-text p-button-secondary"
                                                 @click="editTeam(slotProps.data)" />
-                                            <Button icon="pi pi-users" class="p-button-text p-button-secondary"
-                                                @click="configureMembers(slotProps.data)" />
+                                            <Button icon="pi pi-trash" class="p-button-text p-button-secondary"
+                                                @click="deleteTeam(slotProps.data.id)" />
                                         </template>
                                     </Column>
                                 </DataTable>
@@ -74,9 +76,29 @@
                 </div>
             </div>
         </div>
-        <Dialog v-model:visible="teamModalVisible" :header="isEditMode ? 'Modifier' : 'Créer' + ' une Equipe'"
+        <Dialog v-model:visible="teamModalVisible"
             :style="{ width: '50vw' }" :breakpoints="{ '960px': '75vw', '640px': '100vw' }" :modal="true" class="p-fluid"
             @hide="resetForm">
+            <template #header>
+                <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="me-4 ">
+                <span class="fw-bold">{{  isEditMode ? 'Modifier' : 'Créer' + ' une Equipe' }}</span>
+                pour la région de
+              </span>
+            </div>
+            <div>
+              <Dropdown
+                class="w-full md:w-14rem"
+                :options="regions"
+                v-model="form.region_id"
+                optionLabel="titre"
+                optionValue="id"
+                placeholder="Choisissez la region"
+              />
+            </div>
+          </div>
+            </template>
             <div class="d-flex flex-column scroll-y px-5 px-lg-10" id="kt_modal_add_user_scroll">
                 <div class="fv-row mb-7 fv-plugins-icon-container">
                     <label class="required fw-semibold fs-6 mb-2">Nom</label>
@@ -100,24 +122,30 @@
               :filter="true"
               filterBy="name,post_name, email"
                         aria-label="Chef d'équipe" v-model="form.user_id" :options="users" :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`" optionValue="id"
-                        placeholder="Selectionner un chef d'équipe" />
+                        placeholder="Selectionner un chef d'équipe" @change="handleChangeChiefTeam" />
                     <div
                         class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
                     </div>
                 </div>
                 <div class="fv-row mb-7 fv-plugins-icon-container">
-                    <label class="fw-semibold fs-6 mb-2">Membres</label>
+                    <label class="fw-semibold fs-6 mb-2 d-block">Membres</label>
+                        <MultiSelect
+                        v-model="form.members"
+                        :options="users"
+                        :optionLabel="
+                      (user) =>
+                        `${user.name ?? ''} ${user.post_name ?? ''}  ${
+                          user.nickname ?? ''
+                        }`
+                    "
+                    :filter="true"
+                    filterBy="name,post_name, email"
+                        optionValue="id"
+                         class="w-full md:w-14rem w-100"
+                        placeholder="Selectionner les membres de l'equipes"
+                        >
 
-                        <div v-for="user in users" :key="user.id" class="form-check ">
-
-                        <Checkbox :value="user.id"  :inputId="'member-' + user.id" v-model="form.members" />
-                        <label class="form-check-label" :for="'member-' + user.id">
-                            {{ user.name }} {{ user.post_name }} {{ user.nickname }}  <span v-if="user.email">
-                                ( {{ user.email }})
-                            </span>
-                        </label>
-                        <div class="separator separator-dashed my-3"></div>
-                    </div>
+                        </MultiSelect>
 
                 </div>
             </div>
@@ -130,13 +158,16 @@
 </template>
 
 <script>
+
 import { computed, onMounted, reactive, ref } from 'vue';
+import useRegion from '../services/regionServices.js';
 import useTeams from '../services/teamServices.js';
 import useUsers from '../services/userServices.js';
 export default {
     setup() {
-        const { teams, getTeams, storeTeam, updateTeam, isLoading } = useTeams();
+        const { teams, getTeams, storeTeam,destroyTeam, updateTeam, isLoading } = useTeams();
         const { getUsers, users } = useUsers();
+        const {getRegions, regions} =useRegion();
         const isEditMode = ref(false);
         const searchQuery = ref('');
         const teamModalVisible = ref(false);
@@ -147,15 +178,19 @@ export default {
             description: '',
             user_id: null,
             members: [],
+            region_id:null,
         });
 
         onMounted(async () => {
             await getTeams();
             await getUsers();
+            await getRegions();
         });
 
         const submitTeam = async () => {
             let success = false;
+            console.log(form);
+
             if (isEditMode.value) {
                 success = await updateTeam(form.id, form);
             } else {
@@ -170,11 +205,14 @@ export default {
         };
 
         const addTeam = () => {
+            resetForm();
             isEditMode.value = false;
             teamModalVisible.value = true;
+
         };
 
         const editTeam = (team) => {
+            resetForm();
             isEditMode.value = true;
            teamModalVisible.value=true;
             Object.assign(form, { ...team, members: team.users.map(user => user.id) });
@@ -189,6 +227,7 @@ export default {
             form.description = '';
             form.user_id = null;
             form.members = [];
+            form.region_id=null;
         };
 
         const filteredTeams = computed(() => {
@@ -198,8 +237,18 @@ export default {
                        (team.user && team.user.name.toLowerCase().includes(searchQuery.value.toLowerCase()));
             });
         });
-
+const handleChangeChiefTeam =()=>{
+    // form.members.values=[1];
+    // console.log(form.members);
+}
+const deleteTeam=async(teamId)=>{
+   await destroyTeam(teamId);
+    await getTeams();
+}
         return {
+            deleteTeam,
+            handleChangeChiefTeam,
+            regions,
             teams,
             form,
             addTeam,

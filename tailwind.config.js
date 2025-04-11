@@ -4,6 +4,7 @@ import defaultTheme from 'tailwindcss/defaultTheme';
 /** @type {import('tailwindcss').Config} */
 /** @type {import('tailwindcss-primeui').Config} */
 export default {
+    darkMode: ['selector', '[class~="data-bs-theme-mode"]'],
     content: [
         './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
         './storage/framework/views/*.php',

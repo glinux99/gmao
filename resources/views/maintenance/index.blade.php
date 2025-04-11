@@ -1,4 +1,9 @@
 @extends('layouts.app')
+@section('contentSubTitle')
+
+        Gestion de la maintenance
+
+@endsection
 @section('contentTitle')
         Maintenances
 @endsection

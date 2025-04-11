@@ -26,7 +26,7 @@ export default function useProjects() {
         isLoading.value = true;
         errors.value = {};
         try {
-            const response = await instance.get(`/api/projects/${id}`);
+            const response = await instance.get(`/api/projects`);
             project.value = response.data.data;
         } catch (e) {
             errors.value = e.response.data.errors;

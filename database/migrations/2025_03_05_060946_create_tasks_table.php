@@ -21,6 +21,10 @@ return new class extends Migration
             $table->string('delay')->nullable();
             $table->string('type')->nullable();
             $table->string('category')->nullable();
+            $table->unsignedBigInteger('region_id')->nullable();
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
+            $table->double('nbre_tacherons')->nullable()->default(0);
+            $table->double('price_tacherons')->nullable()->default(0);
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('maintenance_id')->nullable()->constrained('maintenances')->onDelete('cascade');
             $table->foreignId('assigned_user_id')->nullable()->constrained('users')->onDelete('cascade');
@@ -35,6 +39,8 @@ return new class extends Migration
             $table->string('start_date_user')->nullable();
             $table->string('due_date')->nullable();
             $table->string('due_date_user')->nullable();
+            $table->unsignedBigInteger('engin_id')->nullable();
+            $table->foreign('engin_id')->references('id')->on('engins')->onDelete('set null');
             $table->timestamps();
         });
     }

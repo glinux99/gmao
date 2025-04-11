@@ -27,6 +27,8 @@ return new class extends Migration
             $table->text('address')->nullable();
             $table->text('category')->nullable();
             $table->text('token_email')->nullable();
+            $table->unsignedBigInteger('region_id')->nullable();
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
             $table->string('contrat')->nullable()->default('virunga');
             $table->string('avatar')->nullable()->default('/assets/media/avatars/defaut.png');
             $table->string('nickname')->nullable();

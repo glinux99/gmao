@@ -1,4 +1,7 @@
 @extends('layouts.app')
+@section('contentSubTitle')
+        Systeme configuration
+@endsection
 @section('contentTitle')
         Priorités
 @endsection

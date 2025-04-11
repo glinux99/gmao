@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Category;
 use App\Models\Unity;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -19,13 +20,19 @@ class ImportCategory implements ToModel, WithHeadingRow, WithValidation
     public function model(array $row)
     {
         // Find the Unity by its designation (name)
-        $unity = Unity::where('designation', $row['unite'])->first();
+        $unity = Unity::where(DB::raw('lower(designation)'), 'like', '%' . strtolower(trim($row['unite'])) . '%')->first();
         if($unity == null){
             $unity=Unity::create(['designation' =>  $row['unite'], 'abbreviation'=> $row['unite'][0]?? '']);
         }
         // If the Unity doesn't exist, set unity_id to null
         $unityId = $unity ? $unity->id : null;
-
+       $catEx= Category::where(DB::raw('lower(designation)'), 'like', '%' . strtolower(trim($row['designation'])) . '%')
+        ->where(DB::raw('lower(caracteristique)'), 'like', '%' . strtolower(trim($row['caracteristique'])) . '%')
+       ->first();
+       if($catEx) {
+        return null;
+       }
+       else{
         return new Category([
             'designation' => $row['designation'],
             'unity_id' => $unityId  ?? null, // Use the ID or null
@@ -35,6 +42,9 @@ class ImportCategory implements ToModel, WithHeadingRow, WithValidation
             // 'avatar' => $row['avatar'], // Removed because it's not in the header
             // 'description' => $row['description'], // Removed because it's not in the header
         ]);
+       }
+        // Create a new Category instance
+
     }
 
     public function rules(): array

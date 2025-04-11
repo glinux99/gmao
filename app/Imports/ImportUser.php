@@ -2,7 +2,9 @@
 
 namespace App\Imports;
 
+use App\Models\Region;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Concerns\ToModel;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
 use Maatwebsite\Excel\Concerns\WithValidation;
@@ -17,6 +19,18 @@ class ImportUser implements ToModel, WithHeadingRow, WithValidation
      */
     public function model(array $row)
     {
+        try {
+            $region = trim($row['region']); // Clean up whitespace
+        $region = strtolower($region);
+        $region =Region::where(DB::raw('lower(titre)'), 'like', '%' . $row['region'] . '%')->first();
+        if(!$region){
+            $region=  Region::create(['titre' => $row['region']]);
+        }
+        $region_id=$region->id ??null;
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
         // Create a new user instance.
         $user = new User([
             'name' => $row['name'],
@@ -35,6 +49,7 @@ class ImportUser implements ToModel, WithHeadingRow, WithValidation
             'status' => $row['status'] ?? null,
             'address' => $row['address'] ?? null,
             'contrat' => $row['contrat'] ?? null,
+            'region_id' => $region_id ?? null,
         ]);
 
         // Assign the 'technicien' role to the user.

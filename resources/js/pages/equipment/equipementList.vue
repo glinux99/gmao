@@ -212,8 +212,8 @@
                 </div>
                 <div class="row mb-6">
                     <div class="col-md-6">
-                        <label class="required fw-semibold fs-6 mb-2">Status</label>
-                        <Dropdown  aria-label="Status" class="w-full md:w-14rem"
+                        <label class="required fw-semibold fs-6 mb-2 d-block">Status</label>
+                        <Dropdown  aria-label="Status" class="w-full w-100 md:w-14rem"
                             v-model="form.status" :options="statusOptions" optionLabel="label" optionValue="value" />
                     </div>
                     <div class="col-md-6">
@@ -226,13 +226,13 @@
                 <div class="row mb-6">
                     <div class="col-md-6">
                         <label class="fw-semibold fs-6 mb-2">Projet</label>
-                        <Dropdown class="w-full md:w-14rem" aria-label="project"
+                        <Dropdown class="w-full md:w-14rem w-100" aria-label="project"
                             v-model="form.project_id" :options="projects" optionLabel="name" optionValue="id"
                             placeholder="Sélectionner un projet" />
                     </div>
                     <div class="col-md-6">
                         <label class="fw-semibold fs-6 mb-2">Utilisateur</label>
-                        <Dropdown class="w-full md:w-14rem" aria-label="user"
+                        <Dropdown class="w-full md:w-14rem w-100" aria-label="user"
                             v-model="form.user_id" :options="users" optionLabel="name" optionValue="id"
                             placeholder="Sélectionner un utilisateur" />
                     </div>
@@ -268,7 +268,7 @@
             </div>
             <template #footer>
                 <Button label="Annuler" icon="pi pi-times" class="p-button-text" @click="closeModal" />
-                <Button label="Enregistrer" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
+                <Button label="Enregistrer" severity="warn" icon="pi pi-check" class="p-button-primary" @click="submitEquipment" />
             </template>
         </Dialog>
     </div>

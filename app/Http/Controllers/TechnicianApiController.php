@@ -13,7 +13,7 @@ class TechnicianApiController extends Controller
      */
     public function index()
     {
-        $users= User::role('technicien')->get();
+        $users= User::with('region')->role('technicien')->get();
         return response()->json(['data'=>$users]);
     }
 
@@ -63,8 +63,8 @@ class TechnicianApiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Technician $technician)
+    public function destroy( $technician)
     {
-        //
+       User::find($technician)->delete();
     }
 }

@@ -19,9 +19,9 @@ return new class extends Migration
             $table->text('description')->nullable(); // Optional description of the equipment
             $table->foreignId('project_id')->nullable()->constrained('projects')->onDelete('set null'); // If equipment can be assigned to a project
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('set null'); // If equipment can be assigned to a user
-            $table->date('purchase_date')->nullable(); // When the equipment was purchased
+            $table->string('purchase_date')->nullable(); // When the equipment was purchased
             $table->decimal('purchase_price', 10, 2)->nullable(); // How much it cost
-            $table->date('warranty_end_date')->nullable(); // When the warranty expires
+            $table->string('warranty_end_date')->nullable(); // When the warranty expires
             $table->timestamps();
         });
     }

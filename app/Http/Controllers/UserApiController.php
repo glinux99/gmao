@@ -87,7 +87,7 @@ class UserApiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        User::find($id)->delete();
     }
     public function import(Request $request)
     {

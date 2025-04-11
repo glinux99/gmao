@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('vehicule')->nullable();
-            $table->date('start_date')->nullable();
-            $table->date('due_date')->nullable();
+            $table->string('start_date')->nullable();
+            $table->string('due_date')->nullable();
             $table->text('description')->nullable();
+            $table->unsignedBigInteger('region_id')->nullable();
+            $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
+            $table->unsignedBigInteger('engin_id')->nullable();
+            $table->foreign('engin_id')->references('id')->on('engins')->onDelete('set null');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

@@ -30,7 +30,7 @@ instance.interceptors.request.use(
         ) {
             try {
                 // Redirect to login if there's an attempt to access a protected resource without a token
-              // window.location.href = "/login";
+              window.location.href = "/login";
                 console.error("Error: No token provided for protected request. Redirecting to login.");
 
             } catch (error) {

@@ -103,10 +103,11 @@
                 </div>
             </template>
                     <Column field="description" header="Description" sortable />
+                    <Column field="region.titre" header="Region" sortable />
 
                     <Column field="priority" header="Priorité" sortable >
                         <template #body="slotProps">
-                            <span
+                            <span v-if="slotProps.data.priority"
                           class="badge"
                           :style="
                             'background-color: ' +slotProps.data.priority.color ?? 'dark'
@@ -297,20 +298,32 @@
                                                     class="path2"></span><span class="path3"></span><span
                                                     class="path4"></span><span class="path5"></span></i>
                                             </button> -->
-
-                      <button
-                        @click="editTask(task)"
-                        class="col-12 btn btn-light btn-active-light-primary my-1"
-                        data-bs-toggle="modal"
-                        data-bs-target="#kt_modal_update_task"
-                      >
-                        Editer
-                        <i class="ki-duotone ki-pencil fs-3 ms-5"
-                          ><span class="path1"></span><span class="path2"></span
-                          ><span class="path3"></span><span class="path4"></span
-                          ><span class="path5"></span
-                        ></i>
-                      </button>
+                                            <Button
+                          @click="editTask(task)"
+                          class="btn btn-icon btn-active-light-primary w-30px h-30px"
+                          severity="warning"
+                        >
+                          <i class="ki-duotone ki-pencil fs-3"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span
+                            ><span class="path4"></span
+                            ><span class="path5"></span
+                          ></i>
+                        </Button>
+                        <Button
+                          @click="deleteTask(task)"
+                          severity="danger"
+                          class="btn btn-icon btn-active-light-primary w-30px h-30px"
+                        >
+                          <i class="ki-duotone ki-trash fs-3"
+                            ><span class="path1"></span
+                            ><span class="path2"></span
+                            ><span class="path3"></span
+                            ><span class="path4"></span
+                            ><span class="path5"></span
+                          ></i>
+                        </Button>
                     </div>
                   </div>
                 </div>
@@ -582,6 +595,7 @@ export default {
       getTaskCategories,
       errors,
       storeImport,
+      destroyTask,
       isLoading,
     } = useTasks();
     const { getProjects, projects } = useProjects();
@@ -708,6 +722,7 @@ export default {
     };
 
     const addTask = () => {
+        resetForm();
       isEditMode.value = false;
       visible.value = true;
       form.start_date = setDefaultTime(new Date().toISOString());
@@ -717,12 +732,14 @@ export default {
     };
 
     const editTask = (task) => {
+        resetForm();
       isEditMode.value = true;
       visible.value = true;
       Object.assign(form, task);
       form.assignToType = task.assigned_user_id ? "user" : "team";
       form.assigned_user_id = task.assigned_user_id;
       form.assigned_team_id = task.assigned_team_id;
+
       calculateDelay();
     };
 
@@ -1013,7 +1030,26 @@ export default {
       }
       return str;
     };
+    const deleteTask=async(taskId)=>{
+        await destroyTask(taskId);
+    }
+    const addInstructionToTask = () => {
+        form.instructions.push({
+          description: "",
+          response_type: "",
+        });
+      };
+      const addInstructionValueToTask = (type, value, index) => {
+        form.instructions[index][type] = value;
+      };
+      const removeInstructionFromTask = (index) => {
+        form.instructions.splice(index, 1);
+      };
     return {
+        addInstructionValueToTask,
+        removeInstructionFromTask,
+        addInstructionToTask,
+        deleteTask,
         dt,
         exportCSV,
         filters,

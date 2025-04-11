@@ -55,11 +55,24 @@ export default function useTeams() {
             isLoading.value = false;
         }
     };
+    const destroyTeam = async (id) => {
+        isLoading.value = true;
+        errors.value = [];
+        try {
+            await instance.delete(`/api/teams/${id}`);
+            return true;
+        } catch (e) {
+            errors.value = e.response.data.errors;
+        } finally {
+            isLoading.value = false;
+        }
+    };
 
     return {
         teams,
         getTeams,
         storeTeam,
+        destroyTeam,
         updateTeam,
         updateTeamMembers,
         isLoading,

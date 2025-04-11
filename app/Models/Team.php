@@ -17,9 +17,13 @@ class Team extends Model
         "start_date",
         "due_date",
         'user_id', // Foreign key for the team leader
-        'vehicule',
+        'engin_id',
+        'region_id',
     ];
-
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class, 'region_id');
+    }
     /**
      * Get the user that is the leader of the team.
      *

@@ -1,6 +1,11 @@
 <template>
-    <div class="techniciens-container">
-        <div class="card" v-if="!isLoading">
+    <div class="techniciens-container  login-page">
+      <div v-if="isLoading" class="loading-overlay">
+        <div class="loading-spinner">
+          <span class="spinner-border text-white" role="status" aria-hidden="true"></span>
+        </div>
+      </div>
+        <div class="card" >
             <div class="card-header">
                 <div class="card-title">
                     <div class="d-flex align-items-center position-relative my-1">
@@ -35,6 +40,7 @@
                         </template>
                     </Column>
                     <Column header="Matricule" field="mat"></Column>
+                    <Column header="Region" field="region.titre"></Column>
                     <Column field="roles" header="Fonction">
                         <template #body="slotProps">
                             <template v-for="role in slotProps.data.roles" :key="role.id">
@@ -69,13 +75,30 @@
                 </DataTable>
             </div>
         </div>
-        <div v-else class="text-center">
-            <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
-                animationDuration=".5s" />
-        </div>
 
-        <Dialog v-model:visible="visible" header="Ajouter un technicien" :style="{ width: '50vw' }"
+
+        <Dialog v-model:visible="visible" :style="{ width: '50vw' }"
             :breakpoints="{ '960px': '75vw', '640px': '100vw' }" :modal="true" class="p-fluid">
+            <template #header>
+                <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <span class="me-4 ">
+                <span class="fw-bold">Ajouter un technicien</span>
+                pour la région de
+              </span>
+            </div>
+            <div>
+              <Dropdown
+                class="w-full md:w-14rem"
+                :options="regions"
+                v-model="form.region_id"
+                optionLabel="titre"
+                optionValue="id"
+                placeholder="Choisissez la region"
+              />
+            </div>
+          </div>
+            </template>
                 <div class="row">
                     <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
                         <label class="required fw-semibold fs-6 mb-2">Nom</label>
@@ -200,7 +223,7 @@
                     <div class="d-flex justify-content-end">
                     <Button label="Annuler" icon="pi pi-times" class="p-button-text"
                         @click="hideAddTechnicienDialog" />
-                    <Button label="Envoyer" @click="submitTechnicien" icon="pi pi-check" class="p-button-primary" type="submit" />
+                    <Button label="Envoyer" severity="warn" @click="submitTechnicien" icon="pi pi-check" class="p-button-primary" type="submit" />
                 </div>
                 </template>
 
@@ -229,9 +252,9 @@
 
 <script>
   import { useToast } from 'primevue';
-import Column from 'primevue/column';
 import { onMounted, reactive, ref } from 'vue';
 import useTechniens from '../../../js/services/technicienServices';
+import useRegion from '../../services/regionServices';
 
 export default {
 
@@ -280,6 +303,7 @@ export default {
          onMounted(async()=>{
             await getTechniciens();
             fetchTechniciens();
+            await getRegions();
          });
 
         const filterTechniciens = () => {
@@ -301,7 +325,8 @@ export default {
             if (confirm(`Voulez-vous vraiment supprimer ${technicien.name} ?`)) {
                 try {
                     await deleteTechnicien(technicien.id);
-                    await fetchTechniciens();
+                    await getTechniciens();
+                  await  fetchTechniciens();
                 } catch (error) {
                     console.error('Error deleting technicien:', error);
                     errors.value = error.response?.data?.errors || {};
@@ -342,6 +367,7 @@ export default {
         // Import logic
         const toast=useToast();
         const submitImport = async () => {
+            isLoading.value=true;
             const file = fileInput.value.files[0];
             const formData = new FormData();
             formData.append('file', file);
@@ -357,10 +383,12 @@ export default {
             //         life: 3000,
             //     });
             // })
-
+            isLoading.value=false;
 
         };
+        const {getRegions, regions}=useRegion();
         return {
+            regions,
             filteredTechniciens,
             searchQuery,
             isLoading,
@@ -381,3 +409,25 @@ export default {
     }
 }
 </script>
+<style scoped>
+/* Add any component-specific styles here */
+.login-page {
+  position: relative;
+}
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999; /* Ensure it's on top */
+}
+
+.loading-spinner {
+  /* Add any styling for the spinner container if needed */
+}
+</style>

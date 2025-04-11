@@ -191,6 +191,7 @@ class MaintenanceApiController extends Controller
                         $taskData['owner'] = $request->owner;
                         $taskData['user_id'] = $request->user_id;
                         $taskData['status'] = 'pending';
+                        $taskData['region_id']= $maintenance->region_id;
                         $task = Task::create($taskData);
 
                         // Handle instructions for each task
@@ -312,16 +313,17 @@ class MaintenanceApiController extends Controller
             'description' => 'Maintenance sur l\'équipement ' . ($maintenance->equipment->name ?? "N/A") . ' : ' . $maintenance->description,
             'priority_id' => 2, // Default priority to Moyen
             'status' => 'planned',
-            'user_id' => $maintenance->assigned_user_id,
+            'user_id' => $maintenance->user_id,
             'assigned_user_id' => $maintenance->assigned_user_id,
             'assigned_team_id' => $maintenance->assigned_team_id,
             'equipment_id' => $maintenance->equipment_id,
             'start_date' => $start_date,
             'due_date' => $end_date->format('Y-m-d H:i:s'), // Use $end_date here
             'type' => 'Maintenance',
+            "region_id" =>  $maintenance->region_id,
             'maintenance_id' => $maintenance->id,
             'project_id' => $maintenance->equipment->project_id ?? null,
-            'owner' => $maintenance->assigned_user_id,
+            'owner' => $maintenance->owner,
         ];
         $task = Task::create($taskData);
         $instructions = Instruction::where('maintenance_id', $maintenance->id)->get();
@@ -589,29 +591,109 @@ class MaintenanceApiController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    // public function update(Request $request, Maintenance $maintenance)
+    // {
+    //     try {
+    //         DB::beginTransaction();
+
+    //         $maintenance->update($request->all());
+    //         $depIds=[];
+    //         $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
+    //         foreach($allDep as $dep){
+    //             $dep->delete();
+    //         }
+    //         foreach($request->expenses  as $expense){
+    //             $expense['maintenance_id']=$maintenance->id;
+    //             // return $expense;
+    //           if(isset($expense['readonly'])){
+    //             $readOnly = Depense::where('maintenance_id', $maintenance->id)
+    //             ->where('readonly', true)
+    //             ->firstOrCreate($expense);
+    //           }
+    //           else{
+    //             Depense::updateOrCreate($expense);
+    //           }
+
+    //         }
+
+    //         // Sync technicians
+    //         if ($request->has('techniciens')) {
+    //             $maintenance->technicians()->sync($request->techniciens);
+    //         }
+    //         // Sync materials
+    //         $maintenance->materials()->detach();
+    //         if ($request->has('materials') && is_array($request->materials)) {
+    //             foreach ($request->materials as $materialData) {
+    //                 $material = Category::find($materialData['id']);
+    //                 if ($material) {
+    //                     $maintenance->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+    //                 }
+    //             }
+    //         }
+    //         // Sync instructions
+    //         $maintenance->instructions()->delete();
+    //         if ($request->has('instructions')) {
+    //             foreach ($request->instructions as $instructionData) {
+    //                 $instruction = new Instruction($instructionData);
+    //                 $maintenance->instructions()->save($instruction);
+    //             }
+    //         }
+    //         //schedule the next task
+    //         $tasks = Task::where('maintenance_id', $maintenance->id)
+    //         ->where('status', '!=', 'completed')
+    //         ->where('status', '!=', 'canceled')
+    //         ->get();
+    //         foreach($tasks as $task){
+    //             $task->delete();
+    //         }
+    //         $this->scheduleNextTasks($maintenance);
+    //         $duplicateTasks= Task::where('maintenance_id', $maintenance->id)
+    //         ->select('start_date', 'due_date', DB::raw('count(*) as count'))
+    //         ->groupBy('start_date', 'due_date')
+    //         ->having('count', '>',1)->get();
+    //         // return $duplicateTasks;
+    //         foreach($duplicateTasks as $duplicateTask){
+    //             $taskIds = Task::where('maintenance_id', $maintenance->id)
+    //             ->where('start_date', $duplicateTask->start_date)
+    //             ->where('due_date', $duplicateTask->due_date)
+    //             ->pluck('id')
+    //             ->toArray();
+    //             array_shift($taskIds);
+    //             Task::whereIn('id',$taskIds)->delete();
+    //         }
+    //         DB::commit();
+    //         return response()->json(['data' => $maintenance->load(['technicians','expenses', 'materials' => function ($query) {
+    //             $query->select('categories.*', 'maintenance_material.quantity');
+    //         }, 'instructions'])]);
+    //     } catch (\Illuminate\Validation\ValidationException $e) {
+    //         DB::rollBack();
+    //         return response()->json(['errors' => $e->errors()], 422);
+    //     } catch (\Throwable $th) {
+    //         DB::rollBack();
+    //         return response()->json(['error' => $th->getMessage()], 500);
+    //     }
+    // }
     public function update(Request $request, Maintenance $maintenance)
     {
+
         try {
             DB::beginTransaction();
 
             $maintenance->update($request->all());
-            $depIds=[];
+            $depIds = [];
             $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
-            foreach($allDep as $dep){
+            foreach ($allDep as $dep) {
                 $dep->delete();
             }
-            foreach($request->expenses  as $expense){
-                $expense['maintenance_id']=$maintenance->id;
-                // return $expense;
-              if(isset($expense['readonly'])){
-                $readOnly = Depense::where('maintenance_id', $maintenance->id)
-                ->where('readonly', true)
-                ->firstOrCreate($expense);
-              }
-              else{
-                Depense::updateOrCreate($expense);
-              }
-
+            foreach ($request->expenses as $expense) {
+                $expense['maintenance_id'] = $maintenance->id;
+                if (isset($expense['readonly'])) {
+                    $readOnly = Depense::where('maintenance_id', $maintenance->id)
+                        ->where('readonly', true)
+                        ->firstOrCreate($expense);
+                } else {
+                    Depense::updateOrCreate($expense);
+                }
             }
 
             // Sync technicians
@@ -637,32 +719,74 @@ class MaintenanceApiController extends Controller
                 }
             }
             //schedule the next task
-            $tasks = Task::where('maintenance_id', $maintenance->id)
-            ->where('status', '!=', 'completed')
-            ->where('status', '!=', 'canceled')
-            ->get();
-            foreach($tasks as $task){
-                $task->delete();
+
+            // Get current tasks for this maintenance
+             $currentTasks = Task::where('maintenance_id', $maintenance->id)->get();
+             //determine the tasks to create
+             $tasksToCreate = $this->calculateTasksDates($request->tasks, $maintenance->start_date, $maintenance->end_date, $maintenance->frequency);
+            // Delete existing tasks related to this maintenance
+            Task::where('maintenance_id', $maintenance->id)->delete();
+
+            foreach ($tasksToCreate as $taskData) {
+                 $taskData['maintenance_id'] = $maintenance->id;
+                 $taskData['owner'] = $request->owner;
+                 $taskData['user_id'] = $request->user_id;
+                 $taskData['status'] = 'pending';
+                 $taskData['region_id'] = $maintenance->region_id;
+                $task = Task::create($taskData);
+
+                // Handle instructions for each task
+                if (isset($taskData['instructions']) && is_array($taskData['instructions'])) {
+                    foreach ($taskData['instructions'] as $instructionData) {
+                        $instructionData['task_id'] = $task->id;
+                        Instruction::create($instructionData);
+                    }
+                }
+
+                // Handle materials for each task
+                if (isset($taskData['materials']) && is_array($taskData['materials'])) {
+                    foreach ($taskData['materials'] as $materialData) {
+                        $material = Category::find($materialData['id']);
+                        if ($material) {
+                            $task->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                        }
+                    }
+                }
+
+                 //assign user to task
+                 if (isset($taskData['assigned_user_id'])) {
+                     $task->assigned_user_id = $taskData['assigned_user_id'];
+                     $task->assigned_team_id = null;
+                     $task->save();
+                 }
+                 //assign team to task
+                 if (isset($taskData['assigned_team_id'])) {
+                     $task->assigned_team_id = $taskData['assigned_team_id'];
+                     $task->assigned_user_id = null;
+                     $task->save();
+                 }
+
             }
-            $this->scheduleNextTasks($maintenance);
-            $duplicateTasks= Task::where('maintenance_id', $maintenance->id)
-            ->select('start_date', 'due_date', DB::raw('count(*) as count'))
-            ->groupBy('start_date', 'due_date')
-            ->having('count', '>',1)->get();
-            // return $duplicateTasks;
-            foreach($duplicateTasks as $duplicateTask){
-                $taskIds = Task::where('maintenance_id', $maintenance->id)
-                ->where('start_date', $duplicateTask->start_date)
-                ->where('due_date', $duplicateTask->due_date)
-                ->pluck('id')
-                ->toArray();
-                array_shift($taskIds);
-                Task::whereIn('id',$taskIds)->delete();
-            }
+
+            // $duplicateTasks = Task::where('maintenance_id', $maintenance->id)
+            //     ->select('start_date', 'due_date', DB::raw('count(*) as count'))
+            //     ->groupBy('start_date', 'due_date')
+            //     ->having('count', '>', 1)->get();
+
+            // foreach ($duplicateTasks as $duplicateTask) {
+            //     $taskIds = Task::where('maintenance_id', $maintenance->id)
+            //         ->where('start_date', $duplicateTask->start_date)
+            //         ->where('due_date', $duplicateTask->due_date)
+            //         ->pluck('id')
+            //         ->toArray();
+            //     array_shift($taskIds);
+            //     Task::whereIn('id', $taskIds)->delete();
+            // }
+
             DB::commit();
-            return response()->json(['data' => $maintenance->load(['technicians','expenses', 'materials' => function ($query) {
+            return response()->json(['data' => $maintenance->load(['technicians', 'expenses', 'materials' => function ($query) {
                 $query->select('categories.*', 'maintenance_material.quantity');
-            }, 'instructions'])]);
+            }, 'instructions', 'tasks'])]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             DB::rollBack();
             return response()->json(['errors' => $e->errors()], 422);
@@ -671,16 +795,36 @@ class MaintenanceApiController extends Controller
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
-
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Maintenance $maintenance)
     {
         try {
+            DB::beginTransaction();
+
+            // Delete related tasks
+            $maintenance->tasks()->delete();
+
+            // Delete related expenses
+            $maintenance->expenses()->delete();
+
+            // Delete related instructions
+            $maintenance->instructions()->delete();
+
+            // Detach related materials
+            $maintenance->materials()->detach();
+
+            // Detach related technicians
+            $maintenance->technicians()->detach();
+
+            // Finally, delete the maintenance record
             $maintenance->delete();
-            return response()->json(['message' => 'Maintenance deleted successfully'], 200);
+
+            DB::commit();
+            return response()->json(['message' => 'Maintenance and related data deleted successfully'], 200);
         } catch (\Throwable $th) {
+            DB::rollBack();
             return response()->json(['error' => $th->getMessage()], 500);
         }
     }
