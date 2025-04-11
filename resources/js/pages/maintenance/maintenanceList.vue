@@ -761,12 +761,12 @@
               </Button>
             </div>
             <div class="my-1 border rounded">
-              <Accordion
+              <Accordion :multiple="true"
                 :value="x"
                 expandIcon="pi pi-plus"
                 collapseIcon="pi pi-minus"
               >
-                <AccordionPanel
+                <AccordionPanel :value="index"
                   v-for="(task, index) in form.tasks"
                   :key="index"
                 >
@@ -787,7 +787,7 @@
                         </div>
                         <div class="fs-9 my-2">
                           <Badge :value="task.instructions.length" class="" />
-                          Instructions
+                          Instruction{{    `${task.instructions.length> 1 ? 's': ''}` }}
                         </div>
                       </span>
                       <span>
@@ -799,11 +799,11 @@
                       /></span>
                     </div>
                   </AccordionHeader>
-                  <AccordionContent>
+                  <AccordionContent >
                     <div
                       v-for="(instruction, i) in task.instructions"
                       :key="i"
-                      class="my-1 border rounded"
+                      class="border rounded  py-5 ps-2"
                     >
                       <div
                         class="d-flex justify-content-between align-items-center"
@@ -845,14 +845,12 @@
                           />
                         </div>
                         <div
-                          class="col-md-1 d-flex align-items-start justify-content-start"
+                          class="col-md-1 d-flex align-items-center justify-content-start"
                           @click="tremoveInstruction(i, index)"
                         >
-                          <button>
-                            <i
-                              class="fa fa-trash text-danger m-0 p-0 display-6"
-                            ></i>
-                          </button>
+                          <Button icon="pi pi-trash" severity="danger">
+
+                          </Button>
                         </div>
                       </div>
                     </div>
@@ -992,9 +990,9 @@
                   class="col-md-1 d-flex align-items-start justify-content-start"
                   @click="removeInstruction(index)"
                 >
-                  <button>
-                    <i class="fa fa-trash text-danger m-0 p-0 display-6"></i>
-                  </button>
+                <Button icon="pi pi-trash" severity="danger">
+
+                    </Button>
                 </div>
               </div>
             </div>
@@ -1835,9 +1833,9 @@
                     class="col-md-1 d-flex align-items-start justify-content-start"
                     @click="removeInstructionFromTask(index)"
                   >
-                    <button>
-                      <i class="fa fa-trash text-danger m-0 p-0 display-6"></i>
-                    </button>
+                  <Button icon="pi pi-trash" severity="danger">
+
+</Button>
                   </div>
                 </div>
               </div>
@@ -2505,7 +2503,9 @@ export default {
         (form.man_hours > 0 ? form.man_hours : 1);
 
       if (existingTacheronsExpenseIndex !== -1) {
-        form.expenses[existingTacheronsExpenseIndex].amount = tacheronsAmount;
+        if(!isEditMode.value){
+            form.expenses[existingTacheronsExpenseIndex].amount = tacheronsAmount;
+        }
       } else {
         form.expenses = form.expenses.filter((e) => e.readonly != true);
         form.expenses.push({
@@ -2659,6 +2659,7 @@ export default {
         title: "Coût de Tâcherons",
         amount: price,
         is_default: true,
+        readonly: true,
       });
     };
     const addInstructionToTask = () => {
@@ -2698,6 +2699,7 @@ export default {
       title: "Coût de Tâcherons",
       amount: price.value* form.man_hours,
       is_default: true,
+      readonly: true
     });
   const nbr_users = ref(0);
   const price_users = ref(0);
@@ -2823,6 +2825,7 @@ console.log(nbr_users.value);
         title: "Coût de Tâcherons",
         amount: price,
         is_default: true,
+        readonly: true
       });
     };
     const toggleTypeMaintenance = () => {
