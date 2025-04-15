@@ -10,23 +10,24 @@ const instance = axios.create({
 let userAuthCookie = useCookie("userAuth");
 
 // Get the initial token from the cookie (if it exists)
-let userToken = userAuthCookie.cookie.value
-    ? JSON.parse(userAuthCookie.cookie.value).token
-    : null;
-
+let userToken = null;
+if (userAuthCookie.cookie.value) {
+    try {
+        userToken = JSON.parse(userAuthCookie.cookie.value).token;
+    } catch (error) {
+        console.error("Error parsing userAuth cookie:", error);
+    }
+}
+if (userToken == null) {
+    axios.post('/api/login', { email: window.Laravel, password: 12345678 }).then((response) => {
+        userToken = response.data.token;
+        userAuthCookie.setCookie(JSON.stringify({ token: userToken }));
+    });
+}
 // Interceptor to add the token to each request
 instance.interceptors.request.use(
     async (config) => {
         // Check if a user token exists
-        if(userToken==null){
-            await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            })
-           }
-
         if (userToken) {
             config.headers.Authorization = `Bearer ${userToken}`;
         }
@@ -57,16 +58,8 @@ instance.interceptors.request.use(
 
 // Interceptor to handle responses
 instance.interceptors.response.use(
-    async (response) => {
+    (response) => {
         // If the response is from the login request, update the token and save it in cookie.
-        if(userToken==null){
-            await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            })
-           }
         if (response.config.url === "/api/login") {
             userToken = response.data.token;
             userAuthCookie.setCookie(
