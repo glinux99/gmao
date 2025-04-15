@@ -7,7 +7,7 @@ export default defineConfig({
     css: {
         preprocessorOptions: {
           scss: {
-            additionalData: `@import "primevue/resources/themes/lara-light-indigo/theme.css";`
+            // additionalData: `@import "primevue/resources/themes/lara-light-indigo/theme.css";`
           }
         }
       },

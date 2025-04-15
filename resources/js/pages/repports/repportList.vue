@@ -6,15 +6,8 @@
                     index
                 )} 0%, ${getDarkerColor(index)} 100%)`,
             }">
-            dddd
-            <number
-    ref="number1"
-	:from="100"
-	:to="10000"
-	:format="theFormat"
-	:duration="5"
-    :delay="2"
-    easing="Power1.easeOut"/>
+
+
                 <div class="card-body">
                     <div class="mb-6">
                         <h3 class="fs-2x fw-semibold text-white">

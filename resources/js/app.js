@@ -143,6 +143,7 @@ import TreeTable from 'primevue/treetable';
 
 import OrganizationChart from 'primevue/organizationchart';
 import VueNumber from "vue-number-animation";
+import VueHtml2pdf from 'vue3-html2pdf';
 // import VueApexCharts from "vue3-apexcharts";
 
 
@@ -184,10 +185,11 @@ app.component('OrganizationChart', OrganizationChart);
 app.component('Tree', Tree);
 app.component('TreeTable', TreeTable);
 app.component('MeterGroup', MeterGroup);
+app.use(VueHtml2pdf)
+app.use(VueNumber);
 
 
 app.use(ToastService);
-app.use(VueNumber );
 app.use(ConfirmationService);
 // app.use(VueApexCharts);
 
