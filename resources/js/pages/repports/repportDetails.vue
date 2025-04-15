@@ -164,7 +164,7 @@
                 <hr>
               </div>
               <Accordion :multiple="true" class="w-full">
-                <AccordionTab v-for="item in accordionData" :key="item.id">
+                <AccordionTab  v-for="item in accordionData" :key="item.id">
                   <template #header>
                     <MeterGroup :value="getMeterGroupValue(item)" />
                   </template>

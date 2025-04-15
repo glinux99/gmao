@@ -20,12 +20,12 @@
     "src": "node_modules/primeicons/fonts/primeicons.woff2"
   },
   "resources/js/app.js": {
-    "file": "assets/app-ClzeqNko.js",
+    "file": "assets/app-CdvsEVJS.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-z4LdVf9B.css"
+      "assets/app-Dw8dbAVX.css"
     ],
     "assets": [
       "assets/primeicons-DMOk5skT.eot",

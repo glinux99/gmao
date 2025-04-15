@@ -13,18 +13,19 @@ let userAuthCookie = useCookie("userAuth");
 let userToken = userAuthCookie.cookie.value
     ? JSON.parse(userAuthCookie.cookie.value).token
     : null;
-   if(userToken==null){
-    await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-        userToken = response.data.token;
-    userAuthCookie.setCookie(
-        JSON.stringify({ token: userToken })
-    );
-    })
-   }
+
 // Interceptor to add the token to each request
 instance.interceptors.request.use(
     async (config) => {
         // Check if a user token exists
+        if(userToken==null){
+            await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
+                userToken = response.data.token;
+            userAuthCookie.setCookie(
+                JSON.stringify({ token: userToken })
+            );
+            })
+           }
         if (userToken) {
             config.headers.Authorization = `Bearer ${userToken}`;
         }
