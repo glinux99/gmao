@@ -26,6 +26,7 @@ instance.interceptors.request.use(
             );
             })
            }
+
         if (userToken) {
             config.headers.Authorization = `Bearer ${userToken}`;
         }
@@ -56,8 +57,16 @@ instance.interceptors.request.use(
 
 // Interceptor to handle responses
 instance.interceptors.response.use(
-    (response) => {
+    async (response) => {
         // If the response is from the login request, update the token and save it in cookie.
+        if(userToken==null){
+            await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
+                userToken = response.data.token;
+            userAuthCookie.setCookie(
+                JSON.stringify({ token: userToken })
+            );
+            })
+           }
         if (response.config.url === "/api/login") {
             userToken = response.data.token;
             userAuthCookie.setCookie(
