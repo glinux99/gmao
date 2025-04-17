@@ -1,5 +1,6 @@
 import { useCookie } from "@vue-composable/cookie";
 import axios from "axios";
+import { onMounted } from "vue";
 
 const instance = axios.create({
     baseURL: import.meta.env.APP_URL,
@@ -10,20 +11,19 @@ const instance = axios.create({
 let userAuthCookie = useCookie("userAuth");
 
 // Get the initial token from the cookie (if it exists)
-let userToken = null;
-if (userAuthCookie.cookie.value) {
-    try {
-        userToken = JSON.parse(userAuthCookie.cookie.value).token;
-    } catch (error) {
-        console.error("Error parsing userAuth cookie:", error);
-    }
-}
-if (userToken == null) {
-    axios.post('/api/login', { email: window.Laravel, password: 12345678 }).then((response) => {
-        userToken = response.data.token;
-        userAuthCookie.setCookie(JSON.stringify({ token: userToken }));
+let userToken = userAuthCookie.cookie.value
+    ? JSON.parse(userAuthCookie.cookie.value).token
+    : null;
+    onMounted(async() => {
+        if(userToken==null){
+            await axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
+                userToken = response.data.token;
+            userAuthCookie.setCookie(
+                JSON.stringify({ token: userToken })
+            );
+            })
+           }
     });
-}
 // Interceptor to add the token to each request
 instance.interceptors.request.use(
     async (config) => {
