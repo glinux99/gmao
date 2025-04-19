@@ -18,8 +18,8 @@
                 </div>
 
                 <div v-if="isLoading" class="text-center">
-                    <ProgressSpinner style="width: 50px; height: 50px" strokeWidth="8" fill="var(--surface-ground)"
-                        animationDuration=".5s" />
+                    <!-- <ProgressSpinner style="width: 200px; height: 200px" strokeWidth="1"
+                        animationDuration=".5s" /> -->
                 </div>
                 <div v-else id="kt_app_content" class="app-content flex-column-fluid">
                     <div id="kt_app_content_container" class="app-container container-xxl">

@@ -2,7 +2,7 @@
     var hostUrl = "assets/";
 </script>
 <script type="text/ecmascript-6">
-    window.Laravel.user = 1234;
+    window.Laravel = 1234;
 </script>
 
 <!--begin::Javascript-->

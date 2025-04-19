@@ -19,6 +19,7 @@ class Team extends Model
         'user_id', // Foreign key for the team leader
         'engin_id',
         'region_id',
+
     ];
     public function region(): BelongsTo
     {

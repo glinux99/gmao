@@ -1,5 +1,14 @@
 <template>
   <div class="login-page">
+    <div v-if="uploadProgress > 0" class="col-md-12 mt-3">
+                        <div class="progress">
+                          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
+                            :style="{ width: `${uploadProgress}%` }" :aria-valuenow="uploadProgress" aria-valuemin="0"
+                            aria-valuemax="100">
+                            {{ uploadProgress.toFixed(0) ?? 0 }}%
+                          </div>
+                        </div>
+                      </div>
     <div v-if="isLoading" class="loading-overlay">
       <div class="loading-spinner">
         <span
@@ -942,6 +951,7 @@ export default {
       const file = event.target.files[0];
       selectedFileName.value = file ? file.name : null;
     };
+const  uploadProgress = ref(0);
     const importTasksToServer = async () => {
       if (!selectedFileName.value) {
         toast.add({
@@ -955,9 +965,16 @@ export default {
       const file = fileInput.value.files[0];
       const formDataFile = new FormData();
       formDataFile.append("file", file);
-
+      uploadProgress.value = 0;
       try {
-        await storeImport(formDataFile);
+        const config = {
+              onUploadProgress: (progressEvent) => {
+                const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                uploadProgress.value = percentCompleted;
+              },
+            };
+        await storeImport(formDataFile, config);
+
         await getTasks();
         taskCategories.value = await getTaskCategories();
         await getUsers();
@@ -965,6 +982,7 @@ export default {
         await getTeams(); // Fetch teams on component mount
         await getPriorities();
         selectedFileName.value = null;
+        uploadProgress.value = 0;
         toast.add({
           severity: "success",
           summary: "Success",
@@ -980,6 +998,7 @@ export default {
           life: 3000,
         });
       }
+
     };
     const isNewWeek = (task, index) => {
         if (index === 0) return true; // First task is always the start of a "week"
@@ -1114,6 +1133,7 @@ export default {
   });
 };
     return {
+        uploadProgress,
         confirmDeleteTask,
         addInstructionValueToTask,
         removeInstructionFromTask,

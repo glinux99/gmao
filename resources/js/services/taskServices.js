@@ -1,24 +1,32 @@
-import { useCookie } from "@vue-composable/cookie";
+import { useCookie } from '@vue-composable/cookie';
 import { ref } from 'vue';
 import instance from '../api/index.js';
 
 export default function useTasks() {
-    let userAuthCookie = useCookie ("userAuth");
+    let userAuthCookie = useCookie("userAuth");
     const tasks = ref([]);
     const task = ref({});
     const errors = ref({});
     const isLoading = ref(false);
+    const getUserLogin=async()=>{
+        let provider =JSON.parse(document.querySelector("meta[name='user_auth']").getAttribute('content')).provider;
+        let email =JSON.parse(document.querySelector("meta[name='user_auth']").getAttribute('content')).email;
+        if(provider=="google"){
+         await   axios.post('/api/login', {email: email, password: 12345678}).then((response)=>{
+            if(response.data.token!=null)    {
+                userAuthCookie.setCookie(
+                    JSON.stringify({ token: response.data.token })
+                );
+            }
+            });
+        }
 
+    }
     const getTasks = async () => {
+       await getUserLogin();
         errors.value = {};
         isLoading.value = true;
         try {
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            })
             const response = await instance.get('/api/tasks');
             tasks.value = response.data.data;
         } catch (e) {
@@ -33,12 +41,6 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            });
             const response = await instance.get(`/api/tasks/${id}`);
             task.value = response.data.data;
         } catch (e) {
@@ -53,12 +55,6 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            });
             const response = await instance.post('/api/tasks', data);
             // tasks.value.push(response.data.data);
              return true;
@@ -74,12 +70,6 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            });
             const response = await instance.put(`/api/tasks/${id}`, data);
             // const index = tasks.value.findIndex((t) => t.id === id);
             // if (index !== -1) {
@@ -98,12 +88,6 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            });
             await instance.delete(`/api/tasks/${id}`);
             tasks.value = tasks.value.filter((task) => task.id !== id);
         } catch (e) {
@@ -121,19 +105,10 @@ export default function useTasks() {
            {"name": "Inspection"}
         ];
     }
-    const storeImport=async(data)=>{
+    const storeImport=async(data, config)=>{
           try{
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            });
-              const res= await instance.post('/api/tasks/import',data,{
-                  headers: {
-                      'Content-Type': 'multipart/form-data',
-                  }
-              })
+              const res= await instance.post('/api/tasks/import',data,config
+              )
              console.log(res.data);
 
           }catch(e){
@@ -153,6 +128,7 @@ export default function useTasks() {
         updateTask,
         destroyTask,
         getTaskCategories,
+        getUserLogin,
         storeImport
     };
 }

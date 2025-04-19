@@ -13,7 +13,6 @@ let userAuthCookie = useCookie("userAuth");
 let userToken = userAuthCookie.cookie.value
     ? JSON.parse(userAuthCookie.cookie.value).token
     : null;
-
 // Interceptor to add the token to each request
 instance.interceptors.request.use(
     async (config) => {
@@ -53,6 +52,7 @@ instance.interceptors.response.use(
         if (response.config.url === "/api/login") {
             userToken = response.data.token;
             userAuthCookie.setCookie(
+
                 JSON.stringify({ token: userToken })
             );
              console.log("token set : ",userToken);

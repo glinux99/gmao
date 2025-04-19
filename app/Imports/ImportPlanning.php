@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Engin;
 use App\Models\Team;
 use App\Models\Task;
 use App\Models\TeamUser;
@@ -69,8 +70,11 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
             $vehicule = $row['vehicules'] ?? '';
 
             $authUser = Auth::id();
-            $team = Team::create(['name' => $teamName, 'vehicule'=> $vehicule,  'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
-            $team->save();
+            if($vehicule!=null){
+                $vehicule = Engin::where(DB::raw('lower(name)'), 'like', '%' .strtolower(trim( $vehicule)) . '%')->firstOrCreate(['name'=>$vehicule, 'user_id'=>Auth::id()]);
+            }
+            $team = Team::create(['name' => $teamName, 'engin_id'=> $vehicule->id ?? null ,  'user_id' => $authUser, 'start_date'=>$startDateTime, 'due_date'=>$endDateTime]);
+            // $team->save();
             foreach ($technicianNames as $technicianName) {
                 $technicianName = trim($technicianName); // Clean up whitespace
                 if (empty($technicianName)) continue;
@@ -108,14 +112,22 @@ class ImportPlanning implements ToCollection, WithHeadingRow, WithMultipleSheets
                     'description' => $row['priorite'],
                     'status' => "pending",
                     'priority_id' => $this->getPriorityIdFromPriorityString($row['priorite']),
-                    'type' => "Plannification", // Set the type as 'Plannification'
+                    'type' => "Planned", // Set the type as 'Plannification'
                     'start_date' => $startDateTime,
                     'due_date' => $endDateTime,
                     'assigned_team_id' => $team->id,
                     'owner' => Auth::id(),
                     'objectif_hebdo' => $row['objectif_hebdo'],
                 ];
-                Task::create($taskData);
+               $double= Task::where('assigned_team_id',$team->id)
+                ->where('start_date',$startDateTime )
+                ->where('due_date', $endDateTime)
+                ->where('type', "planned")
+                ->where('owner',  Auth::id())->first();
+                    if(!$double){
+                        Task::firstOrCreate($taskData);
+                    }
+
             }
         }
 

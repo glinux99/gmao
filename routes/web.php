@@ -71,6 +71,7 @@ Route::get('/artisan/{command}', function ($command) {
 
 
 Route::group(['middleware' =>[ 'auth']], function(){
+    Route::get('userAuth', [LoginApiController::class, 'userAp'])->name('authUser');
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Route::get('/redirect-home1', [App\Http\Controllers\HomeController::class, 'redirect_home1'])->name('home1');
     Route::post('/redirect-home2', [App\Http\Controllers\HomeController::class, 'makePostRequestWithGuzzle'])->name('home2');
@@ -105,7 +106,8 @@ Route::group(['middleware' =>[ 'auth']], function(){
     ]);
 
     Route::get('/import2/{id}', [TaskApiController::class, 'extractDatesFromSheetName'])->name('extractDatesFromSheetName.imports');
-
+    // Route::post('tasks/import', [TaskApiController::class, 'import'])->name('tasks.import');
+    Route::post('tasks/import', [TaskApiController::class, 'import'])->name('tasks.imports');
     Route::post('/maintenance/import2', [MaintenanceApiController::class, 'import'])->name('maintenances.imports');
     Route::put('instruction-task', [InstructionApiController::class,'updateInstructions'])->name('instruction.updateInstructions');
         Route::get('users/{id}', action: [UserController::class, 'edit'])->name('users.edit');
