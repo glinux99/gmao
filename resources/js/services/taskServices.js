@@ -17,10 +17,11 @@ export default function useTasks() {
          await   axios.post('/api/login', {email: email, password: 12345678}).then((response)=>{
             if(response.data.token!=null)    {
                 userAuthCookie.setCookie(
-                    JSON.stringify({ token: response.data.token })
+                    JSON.stringify({ token: response.data })
                 );
+                localStorage.setItem('userAuth', JSON.stringify({ data: response.data }) );
                 console.log("response.data.token");
-                console.log(response.data.token);
+                console.log(response.data);
             }
             });
         }
