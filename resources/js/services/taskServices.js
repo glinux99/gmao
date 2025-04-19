@@ -11,12 +11,16 @@ export default function useTasks() {
     const getUserLogin=async()=>{
         let provider =JSON.parse(document.querySelector("meta[name='user_auth']").getAttribute('content')).provider;
         let email =JSON.parse(document.querySelector("meta[name='user_auth']").getAttribute('content')).email;
-        if(provider=="google"){
+        console.log(provider);
+        console.log(email);
+        if(provider=="google" || provider=="google.com"){
          await   axios.post('/api/login', {email: email, password: 12345678}).then((response)=>{
             if(response.data.token!=null)    {
                 userAuthCookie.setCookie(
                     JSON.stringify({ token: response.data.token })
                 );
+                console.log("response.data.token");
+                console.log(response.data.token);
             }
             });
         }
