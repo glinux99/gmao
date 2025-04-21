@@ -15,6 +15,7 @@ export default function useTasks() {
         console.log(email);
         if((userAuthCookie.cookie.value==null ||  localStorage.getItem('userAuth')==null)  && (provider=="google" || provider=="google.com")){
          await   axios.post('/api/login', {email: email, password: 12345678}).then((response)=>{
+            console.log("SSSSS");
             if(response.data.token!=null)    {
                 userAuthCookie.setCookie(
                     JSON.stringify({ token: response.data })
