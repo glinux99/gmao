@@ -98,8 +98,8 @@ export default {
                     Responsable : ${info.event.extendedProps.owner} <br/>
                     Technicien : ${info.event.extendedProps.user} <br/>
                     Status : ${info.event.extendedProps.status}<br/>
-                    Debut : ${info.event.start.toLocaleDateString()}<br/>
-                    Fin : ${info.event}<br/>
+                    Debut : ${info.event.start}<br/>
+                    Fin :  ${info.event.end}<br/>
                     `,
                     html: true,
                     placement: 'top',

@@ -47,7 +47,7 @@ export default function useCalendar() {
             id: task.id,
             title: task.description ? task.description + ` (${task.assigned_user ? task.assigned_user.name : assigned_team.value? assigned_team.value: "No User"})` : "Task ID : " + task.id,
             start: task.start_date ? task.start_date : task.created_at,
-            end:  task.start_date ? task.start_date : task.created_at,
+            end:  task.due_date ? task.due_date : task.created_at,
             color: task.priority.color ? task.priority.color : getPriorityColor(task.priority.name), // Use priority-based color
             description: task.description ? task.description : "No description",
             projectId: task.project ? task.project.id : null, // Add project id
