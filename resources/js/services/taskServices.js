@@ -13,7 +13,7 @@ export default function useTasks() {
         let email =JSON.parse(document.querySelector("meta[name='user_auth']").getAttribute('content')).email;
         console.log(provider);
         console.log(email);
-        if(userAuthCookie.cookie.value!=null && (provider=="google" || provider=="google.com")){
+        if(userAuthCookie.cookie.value==null && (provider=="google" || provider=="google.com")){
          await   axios.post('/api/login', {email: email, password: 12345678}).then((response)=>{
             if(response.data.token!=null)    {
                 userAuthCookie.setCookie(
