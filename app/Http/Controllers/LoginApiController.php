@@ -37,25 +37,25 @@ class LoginApiController extends Controller
             if ($request->provider == 'google') {
 
                 $user = User::where('email', $request->email)->first();
-if (!$user) {
-    // User doesn't exist, create a new one
-    $request['name'] = $request->displayName;
-    $request['provider'] = 'google'; // Set the provider name
-    if (isset($request['password']) && $request['password'] != null && $request['password'] != "") {
-        $request['password'] = bcrypt($request['password']);
-    } else {
-        // Generate a random password if not provided
-        $request['password'] = bcrypt(Str::random(10));
-    }
-    $request['avatar'] = $request->avatar;
-    $user = User::create($request->all());
-} else {
-    // User exists, update the avatar and provider
-    $user->update([
-        'avatar' => $request->avatar,
-        'provider' => 'google', // Update the provider name
-    ]);
-}
+                if (!$user) {
+                    // User doesn't exist, create a new one
+                    $request['name'] = $request->displayName;
+                    $request['provider'] = 'google'; // Set the provider name
+                    if (isset($request['password']) && $request['password'] != null && $request['password'] != "") {
+                        $request['password'] = bcrypt($request['password']);
+                    } else {
+                        // Generate a random password if not provided
+                        $request['password'] = bcrypt(Str::random(10));
+                    }
+                    $request['avatar'] = $request->avatar;
+                    $user = User::create($request->all());
+                } else {
+                    // User exists, update the avatar and provider
+                    $user->update([
+                        'avatar' => $request->avatar,
+                        'provider' => 'google', // Update the provider name
+                    ]);
+                }
 
                 // Log in the user directly
                 Auth::login($user, true);
@@ -70,48 +70,48 @@ if (!$user) {
                 $user = User::where('email', $request->email)->first();
             }
 
-        if (!$user) {
-            return response()->json(['errors' => 'login error!', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
-        }
-
-        try {
-            if (!Hash::check($request->passwordR, $user->password)) {
-                return response()->json(['errors' => 'login error x', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
+            if (!$user) {
+                return response()->json(['errors' => 'login error!', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
             }
-        } catch (\Throwable $th) {
-            return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
-        }
+
+            try {
+                if (!Hash::check($request->passwordR, $user->password)) {
+                    return response()->json(['errors' => 'login error x', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
+                }
+            } catch (\Throwable $th) {
+                return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
+            }
 
 
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->passwordR], $request->has('remember'))) {
-            // Generate a token for the user (for API)
-            $token = $user->createToken('authToken')->plainTextToken;
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->passwordR], $request->has('remember'))) {
+                // Generate a token for the user (for API)
+                $token = $user->createToken('authToken')->plainTextToken;
 
-            // Log in the user into the Laravel web session.
-            //  Auth::login($user, $request->has('remember')); is deprecated so we will use Auth::loginUsingId instead
-            Auth::loginUsingId($user->id);
-            //  Auth::loginUsingId($user->id, $request->has('remember'));
-            // For API: Return JSON response with user and token
-            if ($request->expectsJson()) {
+                // Log in the user into the Laravel web session.
+                //  Auth::login($user, $request->has('remember')); is deprecated so we will use Auth::loginUsingId instead
+                Auth::loginUsingId($user->id);
+                //  Auth::loginUsingId($user->id, $request->has('remember'));
+                // For API: Return JSON response with user and token
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'user' => $user,
+                        'token' => $token,
+                        'token_type' => 'Bearer',
+                    ], 200);
+                }
                 return response()->json([
                     'user' => $user,
                     'token' => $token,
                     'token_type' => 'Bearer',
                 ], 200);
-            }
-            return response()->json([
-                'user' => $user,
-                'token' => $token,
-                'token_type' => 'Bearer',
-            ], 200);
-        } else {
-            return response()->json([], 401);
+            } else {
+                return response()->json([], 401);
 
-            //  return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
-        }
-       } catch (\Throwable $th) {
+                //  return response()->json(['errors' => 'login error', 'message' => 'Les informations d\'identification fournies sont incorrectes.'], 401);
+            }
+        } catch (\Throwable $th) {
             return response()->json(['errors' => 'login error', 'message' => $th->getMessage()], 500);
-       }
+        }
     }
 
 

@@ -54,6 +54,7 @@ import enginList from "./pages/engin/enginList.vue";
 import entryList from "./pages/entry/entryList.vue";
 import equipmentList from './pages/equipment/equipementList.vue';
 import maintenanceList from './pages/maintenance/maintenanceList.vue';
+import googleMaps from "./pages/maps/googleMaps.vue";
 import priorityList from "./pages/priority/priorityList.vue";
 import projectList from './pages/project/projectList.vue';
 import regionList from "./pages/region/regionList.vue";
@@ -95,6 +96,7 @@ const app = createApp({
         documentList,
         repportList,
         repportDetails,
+        googleMaps,
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
