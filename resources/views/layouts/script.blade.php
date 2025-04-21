@@ -16,20 +16,20 @@
 <!--end::Page Vendors Javascript-->
 <!--begin::Page Custom Javascript(used by this page)-->
 <script src="{{asset('assets/js/widgets.bundle.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/create-app.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/upgrade-plan.js')}}"></script>
-<script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>
-<script src="{{asset('assets/js/custom/apps/projects/list/list.js')}}"></script>
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/create-app.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/upgrade-plan.js')}}"></script>  --}}
+{{--  <script src="{{ asset('assets/plugins/custom/datatables/datatables.bundle.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/apps/projects/list/list.js')}}"></script>  --}}
 <script src="{{asset('assets/js/widgets.bundle.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/upgrade-plan.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/create-account.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/create-campaign.js')}}"></script>
-<script src="{{asset('assets/js/custom/utilities/modals/users-search.js')}}"></script>
-<script src="{{asset('assets/js/custom/apps/user-management/users/list/table.js')}}"></script>
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/upgrade-plan.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/create-account.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/create-campaign.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/utilities/modals/users-search.js')}}"></script>  --}}
+{{--  <script src="{{asset('assets/js/custom/apps/user-management/users/list/table.js')}}"></script>  --}}
 <script src="{{asset('assets/js/custom/account/settings/signin-methods.js')}}"></script>
-<script src="{{asset('assets/js/custom/account/settings/profile-details.js')}}"></script>
+{{--  <script src="{{asset('assets/js/custom/account/settings/profile-details.js')}}"></script>  --}}
 <script src="{{asset('assets/js/custom/account/settings/deactivate-account.js')}}"></script>
-<script src="{{asset('assets/js/custom/pages/user-profile/general.js')}}"></script>
+{{--  <script src="{{asset('assets/js/custom/pages/user-profile/general.js')}}"></script>  --}}
 
 <script>
     function updateFunction(self){
