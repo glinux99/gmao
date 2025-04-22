@@ -8,6 +8,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EnginController;
 use App\Http\Controllers\EntryController;
 use App\Http\Controllers\EquipmentController;
+use App\Http\Controllers\GoogleMapsController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\InventoryController;
 use App\Http\Controllers\LoginApiController;
@@ -100,7 +101,8 @@ Route::group(['middleware' =>[ 'auth']], function(){
         'regions'=>RegionController::class,
         'engins'=>EnginController::class,
         'documents'=>DocumentController::class,
-        'repports'=>RepportController::class
+        'repports'=>RepportController::class,
+        'googlemaps'=>GoogleMapsController::class,
 
 
     ]);

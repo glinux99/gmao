@@ -17,15 +17,15 @@ let userToken = userAuthCookie.cookie.value
 instance.interceptors.request.use(
     async (config) => {
         // Check if a user token exists
-        if (JSON.parse(localStorage.getItem('userAuth'))!=null && JSON.parse(localStorage.getItem('userAuth')).data.token && (JSON.parse(localStorage.getItem('userAuth')).data.user.provider =="google" || JSON.parse(localStorage.getItem('userAuth')).data.user.provider =="google.com")) {
-            config.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('userAuth')).data.token}`;
-        }else{
-            config.headers.Authorization = `Bearer ${userToken}`;
-        }
 
-        console.log('xxxxxxxxxxxxxxxxxxxxxxxxx');
-        console.log('xxxxxxxxxxxxxxxxxxxxxxxxx');
-        console.log(userToken);
+        try {
+            config.headers.Authorization = `Bearer ${JSON.parse(localStorage.getItem('userAuth')).data.token}`;
+            console.log('xxxxxxxxxxxxxxxxxxxxxxxxx');
+            console.log('xxxxxxxxxxxxxxxxxxxxxxxxx');
+            console.log(JSON.parse(localStorage.getItem('userAuth')).data.token);
+        } catch (error) {
+
+        }
             // Check if the request is for login or logout to adjust token handling
         if (
             config.url != "/api/login" && config.url != "/api/logout" &&

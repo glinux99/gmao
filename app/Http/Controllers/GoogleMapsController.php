@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\GoogleMapsImport;
 use App\Models\GoogleMaps;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class GoogleMapsController extends Controller
 {
@@ -12,9 +14,18 @@ class GoogleMapsController extends Controller
      */
     public function index()
     {
-        //
+        return view('maps.index');
     }
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
 
+        Excel ::import(new GoogleMapsImport , $request->file('file'));
+
+        return back()->with('success', 'Google Maps imported successfully.');
+    }
     /**
      * Show the form for creating a new resource.
      */
@@ -28,13 +39,22 @@ class GoogleMapsController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls',
+        ]);
+        $maps = GoogleMaps::all();
+        foreach($maps as $map){
+            $map->delete();
+        }
+        Excel ::import(new GoogleMapsImport , $request->file('file'));
+
+        dd('success', 'Google Maps imported successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(GoogleMaps $googleMaps)
+    public function show(GoogleMaps $GoogleMapss)
     {
         //
     }
@@ -42,7 +62,7 @@ class GoogleMapsController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(GoogleMaps $googleMaps)
+    public function edit(GoogleMaps $GoogleMapss)
     {
         //
     }
@@ -50,7 +70,7 @@ class GoogleMapsController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, GoogleMaps $googleMaps)
+    public function update(Request $request, GoogleMaps $GoogleMapss)
     {
         //
     }
@@ -58,7 +78,7 @@ class GoogleMapsController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(GoogleMaps $googleMaps)
+    public function destroy(GoogleMaps $GoogleMapss)
     {
         //
     }

@@ -33,6 +33,13 @@ export default function useTasks() {
         errors.value = {};
         isLoading.value = true;
         try {
+            // let userAuthCookie = useCookie ("userAuth");
+            // console.log(localStorage.getItem('userAuth'));
+            // userAuthCookie.setCookie(
+            //     JSON.stringify({ data: JSON.parse(localStorage.getItem('userAuth')).data })
+            // )
+            // console.log("userAuthCookie.cookie.value");
+            // console.log(userAuthCookie.cookie.value);
             const response = await instance.get('/api/tasks');
             tasks.value = response.data.data;
         } catch (e) {

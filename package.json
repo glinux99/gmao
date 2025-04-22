@@ -63,6 +63,7 @@
         "vue-number-animation": "^2.0.2",
         "vue-router": "^4.5.0",
         "vue3-apexcharts": "^1.8.0",
+        "vue3-google-map": "^0.21.1",
         "vue3-html2pdf": "^1.1.2",
         "vue3-select2-component": "^0.1.7",
         "vuex": "^4.1.0"

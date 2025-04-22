@@ -16,6 +16,7 @@ use App\Http\Controllers\DocumentMaintenanceTaskApiController;
 use App\Http\Controllers\EnginApiController;
 use App\Http\Controllers\EntryApiController;
 use App\Http\Controllers\EntryController;
+use App\Http\Controllers\GoogleApiController;
 use App\Http\Controllers\InstructionApiController;
 use App\Http\Controllers\LoginApiController;
 use App\Http\Controllers\LookerStudioExportController;
@@ -42,6 +43,7 @@ Route::middleware('auth:sanctum')->group(function(){
     Route::post('categories/import', [CategoryApiController::class, 'import'])->name('categories.import');
     Route::post('users/import', [UserApiController::class, 'import'])->name('users.import');
     Route::post('tasks/import', [TaskApiController::class, 'import'])->name('tasks.import');
+    Route::post('googlemaps/import', [GoogleApiController::class, 'import'])->name('google.import');
 
     // Route::post('taskss/{id}', [TaskApiController::class, 'extractDatesFromSheetName'])->name('extractDatesFromSheetName.import');
 
@@ -66,6 +68,7 @@ Route::middleware('auth:sanctum')->group(function(){
         'documents'=>DocumentApiController::class,
         'document_maintenance_task'=>DocumentMaintenanceTaskApiController::class,
         'repports'=>RepportApiController::class,
+        'googlemaps'=>GoogleApiController::class,
 
 
     ]);
