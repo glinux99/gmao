@@ -85,7 +85,8 @@ const nearestMarker = computed(() => {
 });
 const { getLocations, locations, storeImport } = useGoogleMaps();
 const handleMarkerClick = (marker, location) => {
-    selectedMarker.value = marker;
+
+    selectedMarker.value = location;
     infoWindowPosition.value = {
         lat: location.latitude,
         lng: location.longitude,
@@ -99,6 +100,10 @@ const handleMarkerClick = (marker, location) => {
             <p>Zone: ${location.zone}</p>
         </div>
     `;
+};
+const handleInfoWindowClose = () => {
+    selectedMarker.value = null;
+    infoWindowPosition.value = null;
 };
 onMounted(async () => {
     await getLocations();
@@ -190,7 +195,7 @@ onMounted(async () => {
         <Marker v-for="(coord, index) in markerCoordinates" :key="index" :options="{ position: coord }"
             @click="handleMarkerClick($event, coord)" >
         <InfoWindow v-if="infoWindowPosition" :position="infoWindowPosition" :options="infoWindowOptions"
-            @close="selectedMarker = null">
+            @close="handleInfoWindowClose">
             <div v-html="infoWindowContent"></div>
         </InfoWindow>
         </Marker>

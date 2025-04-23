@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\UserLoginProcess;
 use App\Imports\GoogleMapsImport;
 use App\Models\GoogleMaps;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class GoogleMapsController extends Controller
      */
     public function index()
     {
+        event(new UserLoginProcess);
         return view('maps.index');
     }
     public function import(Request $request)
