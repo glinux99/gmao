@@ -8,24 +8,19 @@ const LoginService = {
     login(credentials) {
         console.log("Attempting login...");
         return new Promise((resolve, reject) => {
-            try {
-
-                axios.post("/login", credentials);
-            } catch (error) {
-                console.error("Login failed:", error);
-                // reject(error);
-
-            }
+            axios.post("/login", credentials);
             axios.post("/api/login", credentials)
                 .then((response) => {
                     console.log("Login successful:", response.data);
                     localStorage.setItem('userAuth', JSON.stringify({ data: response.data }) );
+
                     resolve(response.data);
                 })
                 .catch((error) => {
                     console.error("Login failed:", error);
                     reject(error);
                 });
+
         });
     },
 };

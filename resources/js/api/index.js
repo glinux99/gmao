@@ -53,22 +53,22 @@ instance.interceptors.request.use(
 instance.interceptors.response.use(
     (response) => {
         // If the response is from the login request, update the token and save it in cookie.
-        if (response.config.url === "/api/login") {
-            userToken = response.data.token;
-            userAuthCookie.setCookie(
+        // if (response.config.url === "/api/login") {
+        //     userToken = response.data.token;
+        //     userAuthCookie.setCookie(
 
-                JSON.stringify({ token: userToken })
-            );
-             console.log("token set : ",userToken);
-        }
-        if(response.config.url === "home"){
-            axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
-                userToken = response.data.token;
-            userAuthCookie.setCookie(
-                JSON.stringify({ token: userToken })
-            );
-            })
-        }
+        //         JSON.stringify({ token: userToken })
+        //     );
+        //      console.log("token set : ",userToken);
+        // }
+        // if(response.config.url === "home"){
+        //     axios.post('/api/login', {email: window.Laravel, password: 12345678}).then((response)=>{
+        //         userToken = response.data.token;
+        //     userAuthCookie.setCookie(
+        //         JSON.stringify({ token: userToken })
+        //     );
+        //     })
+        // }
         return response;
     },
     (error) => {

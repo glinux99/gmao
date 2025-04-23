@@ -1,4 +1,5 @@
 <template>
+
     <div class="row">
         <div class="col-xl-6" v-for="(maintenance, index) in maintenances" :key="maintenance.id">
             <div class="card h-lg-100" :style="{
@@ -70,13 +71,11 @@
                                 <div class="mb-7">
                                     <div class="mb-6 d-flex flex-column justity-content-center">
                                         <h3 class="fs-2x text-center fw-semibold text-white opacity-75 d-block">
-
-                                            {{
-                                            maintenance.expenses.reduce(
-                      (total, expense) => total + (expense.amount || 0),
-                      0
-                    ).toFixed(2)
-                                            }} $</h3>
+                                            <vue3-autocounter ref='counter' :startAmount='0' :endAmount='   maintenance.expenses.reduce(
+                                                (total, expense) => total + (expense.amount || 0),
+                                                0
+                                            ).toFixed(2)' :duration='3' prefix='' suffix='$' separator=',' decimalSeparator='.' :decimals='2' :autoinit='true' />
+                                            </h3>
                                         <span class="fw-bold text-white fs-7 d-block text-center">
                                             Budget estimatif
                                         </span>
@@ -96,6 +95,7 @@
 <script setup>
 import { useCookie } from '@vue-composable/cookie';
 import { onMounted } from 'vue';
+import vue3Autocounter from 'vue3-autocounter';
 import useMaintenances from '../../services/maintenanceService';
 
 const { getMaintenances, maintenances } = useMaintenances();
@@ -164,12 +164,13 @@ const calculateTotalExpenses = (expenses) => {
     }
     return total.toFixed(2); // Format to 2 decimal places
 };
-const {setCookie}=useCookie('maintenanceId');
+const { setCookie } = useCookie('maintenanceId');
 const viewMaintenance = (maintenanceId) => {
     window.location.href = `/repports/${maintenanceId}`;
     setCookie(maintenanceId);
 }
 // Lifecycle Hooks
+
 onMounted(async () => {
     await getMaintenances();
 });
@@ -177,3 +178,6 @@ const  theFormat=(number)=> {
             return number.toFixed(2);
         };
 </script>
+<style scoped>
+
+</style>

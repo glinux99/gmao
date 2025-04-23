@@ -29,7 +29,9 @@ export default function useTasks() {
 
     }
     const getTasks = async () => {
-       await getUserLogin();
+       if(localStorage.getItem('userAuth')==null){
+        await getUserLogin();
+       }
         errors.value = {};
         isLoading.value = true;
         try {

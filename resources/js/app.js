@@ -49,6 +49,7 @@ import modalComponent from "./components/modals/modalComponent.vue";
 import loginUser from './pages/auth/loginUser.vue';
 import calendarList from "./pages/calendar/calendarList.vue";
 import categoryList from "./pages/categories/categoryList.vue";
+import dashboard from "./pages/dashboard/dashboard.vue";
 import documentList from "./pages/documents/documentList.vue";
 import enginList from "./pages/engin/enginList.vue";
 import entryList from "./pages/entry/entryList.vue";
@@ -97,6 +98,7 @@ const app = createApp({
         repportList,
         repportDetails,
         googleMaps,
+        dashboard,
     },
 });
 // app.component("dash-bord", require("./pages/Dashbord.vue").default);
@@ -190,8 +192,9 @@ app.component('MeterGroup', MeterGroup);
 app.use(VueHtml2pdf)
 app.use(VueNumber);
 
-
+import Vue3Autocounter from 'vue3-autocounter';
 app.use(ToastService);
+app.component('vue3-autocounter', Vue3Autocounter)
 app.use(ConfirmationService);
 // app.use(VueApexCharts);
 

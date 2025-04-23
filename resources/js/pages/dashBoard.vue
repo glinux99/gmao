@@ -453,23 +453,22 @@
   </div>
 </template>
 <script>
-import modalComponent from "../components/modals/modalComponent.vue";
-import useProducts from "../services/productservices.js";
-import useEntreprises from "../services/enterpriseservices.js";
-import useDeposit from "../services/depositservices.js";
-import productStore from "./products/productStore.vue";
-import BarChart from "../components/charts/testChart.vue";
 import Chart from "chart.js/auto";
 import { loadLanguageAsync } from "laravel-vue-i18n";
+import BarChart from "../components/charts/testChart.vue";
+import modalComponent from "../components/modals/modalComponent.vue";
+import useDeposit from "../services/depositservices.js";
+import useEntreprises from "../services/enterpriseservices.js";
+import useProducts from "../services/productservices.js";
 
 import { useToastr } from "../toastr.js";
 
-import { onMounted, onUpdated, reactive, ref } from "vue";
 import { useCookie } from "@vue-composable/cookie";
-import { notifications } from "../notifications/notifications";
-import useUsers from "../services/userservices";
+import { onMounted, reactive, ref } from "vue";
 import CountUp from "vue-countup-v3";
+import { notifications } from "../notifications/notifications";
 import { getTranslations } from "../services/getTrasnlation";
+import useUsers from "../services/userservices";
 export default {
   components: {
     modalComponent,
