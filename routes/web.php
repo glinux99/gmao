@@ -38,6 +38,22 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Config;
 
+use Symfony\Component\Process\Process;
+
+Route::get('/start-reverb', function () {
+    // Vérifier si le serveur n'est pas déjà en cours d'exécution
+    if (app()->isProduction()) {
+        return response()->json(['error' => 'Not allowed in production'], 403);
+    }
+
+    // Démarrer Reverb en arrière-plan
+    $process = new Process(['php', 'artisan', 'reverb:start']);
+    $process->setTimeout(null);
+    $process->disableOutput();
+    $process->start();
+
+    return response()->json(['message' => 'Reverb server started 2']);
+});
 Route::get('/', function () {
     // Artisan::queue('repport:send')->onQueue('commands');
     // Moved this to a dedicated route for better control and security
@@ -52,6 +68,27 @@ Route::get('/test', function () {
     });
 
 // New route to execute Artisan commands
+Route::get('/queue/{command}', function ($command) {
+
+    // List of allowed commands
+    // $allowedCommands = [
+    //     'repport:send',
+    //     'app:check-task',
+    //     // Add other commands here if needed
+    // ];
+
+    // if (!in_array($command, $allowedCommands)) {
+    //     return "Command not allowed.";
+    // }
+
+    try {
+        Artisan::queue($command);
+        return "Command '$command' executed successfully.\n" . Artisan::output();
+    } catch (\Exception $e) {
+        return "Error executing command '$command': " . $e->getMessage();
+    }
+})->middleware('auth')->name('artisan.run'); // Added auth middleware for security
+
 Route::get('/artisan/{command}', function ($command) {
 
     // List of allowed commands
