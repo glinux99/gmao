@@ -92,13 +92,20 @@ class LoginApiController extends Controller
                 Auth::loginUsingId($user->id);
                 //  Auth::loginUsingId($user->id, $request->has('remember'));
                 // For API: Return JSON response with user and token
+                $data=[
+                    "user"=>$user,
+                    "token"=>$token,
+                    "token_type"=>"Bearer",
+                ];
                 if ($request->expectsJson()) {
+                    event (new \App\Events\LoginUserAuthEvent ($data));
                     return response()->json([
                         'user' => $user,
                         'token' => $token,
                         'token_type' => 'Bearer',
                     ], 200);
                 }
+                event (new \App\Events\LoginUserAuthEvent ($data));
                 return response()->json([
                     'user' => $user,
                     'token' => $token,

@@ -71,5 +71,13 @@ import TechniciansWidget from './TechniciansWidget.vue';
         required: true,
       },
     },
+    setup(){
+        window.Echo.channel ('user-auth')
+                .listen('LoginUserAuthEvent', (e) => {
+                    console.log('LoginUserAuthEvent', e);
+                    localStorage.setItem("userAuth", JSON.stringify(e));
+                   });
+}
   };
+
   </script>

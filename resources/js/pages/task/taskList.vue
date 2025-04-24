@@ -1,6 +1,7 @@
+
 <template>
     <div class="login-page">
-        <div v-if="uploadProgress > 0" class="col-md-12 mt-3">
+        <div v-if="uploadProgress > 0" class="col-md-12 mt-3" >
             <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
                     :style="{ width: `${uploadProgress}%` }" :aria-valuenow="uploadProgress" aria-valuemin="0"
@@ -600,6 +601,7 @@ export default {
             isLoading.value = false;
         }
         const isLoading = ref(true);
+
         onMounted(async () => {
 
             syncdata();
@@ -1006,6 +1008,12 @@ export default {
                 },
             });
         };
+        window.Echo.channel ('channel-name')
+                .listen('TestEvent', (e) => {
+                    console.log('TestEvent', e);
+                    toast.add({ severity: 'success', summary: 'Success', detail: e.message, life: 3000 });
+                });
+
         return {
             uploadProgress,
             confirmDeleteTask,
@@ -1051,6 +1059,7 @@ export default {
             addInstructionValue,
             removeInstruction,
             closeModal,
+
         };
     },
 };

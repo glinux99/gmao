@@ -46,7 +46,10 @@ Route::get('/', function () {
     // })->everyMinute()->runInBackground()->emailOutputTo(Config('app.email'));;
     return redirect()->route('login');
 });
-
+Route::get('/test', function () {
+    event (new \App\Events\TestEvent());
+    return 'Event envoye';
+    });
 
 // New route to execute Artisan commands
 Route::get('/artisan/{command}', function ($command) {
