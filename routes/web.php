@@ -32,12 +32,14 @@ use App\Http\Controllers\UserRepportController;
 use App\Http\Controllers\TeamController;
 use App\Models\User;
 use App\Notifications\NewRegister;
+use Illuminate\Process\Pipe;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Config;
-
+use Illuminate\Support\Facades\Process as FacadesProcess;
+use Symfony\Component\Process\Exception\ProcessFailedException;
 use Symfony\Component\Process\Process;
 
 Route::get('/start-reverb', function () {
@@ -53,6 +55,17 @@ Route::get('/start-reverb', function () {
     $process->start();
 
     return response()->json(['message' => 'Reverb server started 2']);
+});
+Route::get('/process', function () {
+    $process = new Process(['/usr/bin/php', 'artisan reverb:start']);
+    $process->start();
+    dd ($process);
+    // ... do other things
+
+    // waits until the given anonymous function returns true
+    $process->waitUntil(function ($type, $output): bool {
+        return $output === 'Ready. Waiting for commands...';
+    });
 });
 Route::get('/', function () {
     // Artisan::queue('repport:send')->onQueue('commands');
@@ -90,25 +103,13 @@ Route::get('/queue/{command}', function ($command) {
 })->middleware('auth')->name('artisan.run'); // Added auth middleware for security
 
 Route::get('/artisan/{command}', function ($command) {
-
-    // List of allowed commands
-    // $allowedCommands = [
-    //     'repport:send',
-    //     'app:check-task',
-    //     // Add other commands here if needed
-    // ];
-
-    // if (!in_array($command, $allowedCommands)) {
-    //     return "Command not allowed.";
-    // }
-
     try {
         Artisan::call($command);
         return "Command '$command' executed successfully.\n" . Artisan::output();
     } catch (\Exception $e) {
         return "Error executing command '$command': " . $e->getMessage();
     }
-})->middleware('auth')->name('artisan.run'); // Added auth middleware for security
+})->middleware('auth')->name('artisan.run');
 
 
 Route::group(['middleware' =>[ 'auth']], function(){
