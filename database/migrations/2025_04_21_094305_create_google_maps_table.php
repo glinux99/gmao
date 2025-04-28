@@ -28,6 +28,7 @@ return new class extends Migration {
             $table->date('payment_date')->nullable();
             $table->boolean('need_small_pole')->default(false)->nullable();
             $table->integer('pole')->nullable();
+            $table->foreignId('user_id')->nullable()->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
