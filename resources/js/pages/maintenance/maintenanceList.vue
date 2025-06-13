@@ -741,7 +741,7 @@
                     ? `${form.tasks.length} Tâches`
                     : `${form.tasks.length} Tâche`
                 }}
-                à éffectuer lors de la maintenance trimestriel</span
+                à éffectuer lors de la maintenance {{ form.frequency}}</span
               >
               <Button
                 label="Ajouter une tâche"
@@ -1091,7 +1091,7 @@
       <div class="">
         <label class="col-form-label fw-bold fs-6">
           <span class=""
-            >Quelle est le montant sera donné à un tâcheron par
+            >Quel est le montant sera donné à un tâcheron par
             <span class="text-danger text-bold">heure</span>(usd) pour la tache
             ?</span
           >
@@ -1161,8 +1161,8 @@
       :id="id"
       :header="
         isEditMode
-          ? 'Modifier le paiement de tâcherons'
-          : 'Ajouter un paiement de tâcherons'
+          ? 'Modifier le paiement des tâcherons'
+          : 'Ajouter un paiement des tâcherons'
       "
       v-model:visible="tVisible"
       :style="{ width: '400px' }"
@@ -1175,7 +1175,7 @@
       <div class="">
         <label class="col-form-label fw-bold fs-6">
           <span class=""
-            >Quelle est le montant sera donné à un tâcheron par
+            >Quel est le montant sera donné à un tâcheron par
             <span class="text-danger text-bold">heure</span>(usd) ?</span
           >
         </label>
@@ -1427,7 +1427,7 @@
               <InputText
                 id="caracteristique"
                 type="text"
-                placeholder="Caracteristique de la catégorie"
+                placeholder="Caractéristique de la catégorie"
                 v-model="mform.caracteristique"
                 class="w-full w-100"
               />
@@ -1472,7 +1472,7 @@
                 v-model="mform.is_remise"
                 :binary="true"
               />
-              <label for="is_remise" class="ml-2 me-3"
+              <label for="is_remise" class="ml-2 me-3 p-2"
                 >A remettre au magasin?</label
               >
             </div>
