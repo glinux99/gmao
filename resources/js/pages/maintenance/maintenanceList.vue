@@ -824,7 +824,7 @@
                           <Dropdown
                             class="w-full md:w-14rem"
                             v-model="instruction.response_type"
-                            :options="['checkbox', 'text / valeur']"
+                            :options="['checkbox', 'text / valeur', 'signature']"
                             placeholder="Type de reponse"
                             @change="
                               taddInstructionValue(
@@ -967,7 +967,7 @@
                   <Dropdown
                     class="w-full md:w-14rem"
                     v-model="instruction.response_type"
-                    :options="['checkbox', 'text / valeur']"
+                    :options="['checkbox', 'text / valeur','signature']"
                     placeholder="Type de reponse"
                     @change="
                       addInstructionValue(
@@ -1810,7 +1810,7 @@
                     <Dropdown
                       class="w-full md:w-14rem"
                       v-model="instruction.response_type"
-                      :options="['checkbox', 'text / valeur']"
+                      :options="['checkbox', 'text / valeur','signature']"
                       placeholder="Type de reponse"
                       @change="
                         addInstructionValueToTask(
@@ -2879,14 +2879,6 @@ export default {
         getTeams();
       }
       return;
-      if (form.region_id !== null) {
-        users.value = users.value.filter((user) => {
-          return user.region_id === form.region_id || user.region_id === null;
-        });
-      } else {
-        // If no region is selected, reset to all users
-        getUsers();
-      }
     };
     const handlPriceTacherons = () => {
 

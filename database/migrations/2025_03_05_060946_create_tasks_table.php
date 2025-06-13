@@ -36,6 +36,7 @@ return new class extends Migration
             $table->foreignId('task_id')->nullable()->constrained('tasks')->nullOnDelete();
             $table->string('assigned_date')->nullable();
             $table->string('start_date')->nullable();
+            $table->string('recurrence_type')->nullable();
             $table->string('start_date_user')->nullable();
             $table->string('due_date')->nullable();
             $table->string('due_date_user')->nullable();

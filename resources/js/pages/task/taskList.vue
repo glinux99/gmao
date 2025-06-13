@@ -1,7 +1,6 @@
-
 <template>
     <div class="login-page">
-        <div v-if="uploadProgress > 0" class="col-md-12 mt-3" >
+        <div v-if="uploadProgress > 0" class="col-md-12 mt-3">
             <div class="progress">
                 <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
                     :style="{ width: `${uploadProgress}%` }" :aria-valuenow="uploadProgress" aria-valuemin="0"
@@ -133,7 +132,7 @@
                                                     {{
                                                         slotProps.data.assigned_user
                                                             ? slotProps.data.assigned_user.name
-                                                    : "N/A"
+                                                            : "N/A"
                                                     }}
                                                 </span>
                                             </template>
@@ -152,19 +151,29 @@
 
                                     <Column header="Actions">
                                         <template #body="slotProps">
-                                            <Button @click="editTask(slotProps.data)"
-                                                class="btn btn-icon btn-active-light-primary w-30px h-30px"
-                                                severity="warning">
-                                                <i class="ki-duotone ki-pencil fs-3"><span class="path1"></span><span
-                                                        class="path2"></span><span class="path3"></span><span
-                                                        class="path4"></span><span class="path5"></span></i>
-                                            </Button>
-                                            <Button @click="confirmDeleteTask(slotProps.data.id)" severity="danger"
-                                                class="btn btn-icon btn-active-light-primary w-30px h-30px">
-                                                <i class="ki-duotone ki-trash fs-3"><span class="path1"></span><span
-                                                        class="path2"></span><span class="path3"></span><span
-                                                        class="path4"></span><span class="path5"></span></i>
-                                            </Button>
+                                            <div class="d-flex">
+                                                <Button @click="showTask(slotProps.data)"
+                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px d-inline-block"
+                                                    severity="warn">
+                                                    <i class="ki-duotone ki-eye fs-3"><span class="path1"></span><span
+                                                            class="path2"></span><span class="path3"></span><span
+                                                            class="path4"></span><span class="path5"></span></i>
+                                                </Button>
+                                                <Button @click="editTask(slotProps.data)"
+                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px d-inline-block"
+                                                    severity="warning">
+                                                    <i class="ki-duotone ki-pencil fs-3"><span
+                                                            class="path1"></span><span class="path2"></span><span
+                                                            class="path3"></span><span class="path4"></span><span
+                                                            class="path5"></span></i>
+                                                </Button>
+                                                <Button @click="confirmDeleteTask(slotProps.data.id)" severity="danger"
+                                                    class="btn btn-icon btn-active-light-primary w-30px h-30px">
+                                                    <i class="ki-duotone ki-trash fs-3"><span class="path1"></span><span
+                                                            class="path2"></span><span class="path3"></span><span
+                                                            class="path4"></span><span class="path5"></span></i>
+                                                </Button>
+                                            </div>
                                         </template>
                                     </Column>
                                 </DataTable>
@@ -220,8 +229,8 @@
                                                             formatDeadline(
                                                                 task.due_date,
                                                                 task.start_date,
-                                                        task
-                                                        )
+                                                                task
+                                                            )
                                                         }}</span>
                                                 </span>
                                             </div>
@@ -284,49 +293,61 @@
                 <Card class="bg-secondary">
                     <template #content>
                         <div class="row">
-                            <div class="fv-row fv-plugins-icon-container col-md-6 col-md-6">
-                                <label class="required fw-semibold fs-6 mb-2">Description</label>
-                                <InputText type="text" name="designation" class="form-control  mb-3 mb-lg-0"
-                                    placeholder="Perte de puissance signalée" v-model="form.description" />
-                                <div
-                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                            <div class="col-md-6">
+                                <div class="fv-row fv-plugins-icon-container">
+                                    <label class="required fw-semibold fs-6 mb-2">Description</label>
+                                    <FloatLabel variant="in">
+                                        <Textarea id="over_label" v-model="form.description" rows="5" size="large"
+                                            class="w-full md:w-14rem w-100" cols="30" style="resize: none" />
+                                        <label for="in_label">Description de la tâche</label>
+                                    </FloatLabel>
+
+                                    <div
+                                        class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="fv-row fv-plugins-icon-container col-md-6">
-                                <label class="required fw-semibold fs-6 mb-2 d-block">Responsable</label>
-                                <Dropdown v-model="form.owner" :options="users"
-                                    :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`"
-                                    optionValue="id" placeholder="Sélectionner un responsable"
-                                    class="w-full md:w-14rem w-100" :filter="true" filterBy="name,post_name, email" />
-                                <div
-                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                            <div class="col-md-6">
+
+                                <div class="fv-row fv-plugins-icon-container col-md-12">
+                                    <label class="required fw-semibold fs-6 mb-2 d-block">Responsable</label>
+                                    <Dropdown v-model="form.owner" :options="users"
+                                        :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`"
+                                        optionValue="id" placeholder="Sélectionner un responsable"
+                                        class="w-full md:w-14rem w-100" :filter="true"
+                                        filterBy="name,post_name, email" />
+                                    <div
+                                        class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                    </div>
+                                </div>
+                                <div class="col-md-12 ">
+                                    <!--begin::Label-->
+                                    <label class="fw-semibold fs-6 mb-2">
+                                        <span class="">Status</span>
+                                    </label>
+                                    <!--end::Label-->
+                                    <!--begin::Col-->
+                                    <div class="fv-row ">
+                                        <Dropdown v-model="form.status" :options="[
+                                            { name: 'En attente', value: 'pending' },
+                                            { name: 'En cours', value: 'in_progress' },
+                                            { name: 'Terminée', value: 'completed' },
+                                            { name: 'Annulée', value: 'canceled' },
+                                        ]" optionLabel="name" optionValue="value" placeholder="Sélectionner un status"
+                                            class="w-full md:w-14rem w-100" />
+                                    </div>
+                                    <!--end::Col-->
+                                </div>
+                                <div class="fv-row mb-7 fv-plugins-icon-container col-md-12">
+                                    <label class="required fw-semibold fs-6 mb-2 d-block">Priorité</label>
+                                    <Dropdown v-model="form.priority_id" :options="priorities" optionLabel="title"
+                                        optionValue="id" placeholder="Sélectionner une priorité"
+                                        class="w-full md:w-14rem w-100" required />
                                 </div>
                             </div>
-                            <div class="col-md-6 ">
-                                <!--begin::Label-->
-                                <label class="fw-semibold fs-6 mb-2">
-                                    <span class="">Status</span>
-                                </label>
-                                <!--end::Label-->
-                                <!--begin::Col-->
-                                <div class="fv-row ">
-                                    <Dropdown v-model="form.status" :options="[
-                                        { name: 'En attente', value: 'pending' },
-                                        { name: 'En cours', value: 'in_progress' },
-                                        { name: 'Terminée', value: 'completed' },
-                                        { name: 'Annulée', value: 'canceled' },
-                                    ]" optionLabel="name" optionValue="value" placeholder="Sélectionner un status"
-                                        class="w-full md:w-14rem w-100" />
-                                </div>
-                                <!--end::Col-->
-                            </div>
-                            <div class="fv-row mb-7 fv-plugins-icon-container col-md-6">
-                                <label class="required fw-semibold fs-6 mb-2 d-block">Priorité</label>
-                                <Dropdown v-model="form.priority_id" :options="priorities" optionLabel="title"
-                                    optionValue="id" placeholder="Sélectionner une priorité"
-                                    class="w-full md:w-14rem w-100" required />
-                            </div>
+
                         </div>
+
                     </template>
                 </Card>
 
@@ -388,6 +409,42 @@
 
                     </template>
                 </Card>
+                <Card class="bg-secondary my-2">
+                    <template #title>
+                        Planification et Récurrence
+                    </template>
+                    <template #content>
+                        <div class="row">
+                            <div class="fv-row fv-plugins-icon-container col-md-4">
+                                <label class="fw-semibold fs-6 mb-2">Date de début</label>
+                                <Calendar v-model="form.start_date" dateFormat="dd/mm/yy" showIcon :showTime="true"
+                                    :hourFormat="'24'" class="w-full md:w-14rem w-100"
+                                    placeholder="Sélectionner la date de début" />
+                                <div
+                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                </div>
+                            </div>
+                            <div class="fv-row fv-plugins-icon-container col-md-4">
+                                <label class="fw-semibold fs-6 mb-2">Date de Fin</label>
+                                <Calendar v-model="form.due_date" dateFormat="dd/mm/yy" showIcon :showTime="true"
+                                    :hourFormat="'24'" class="w-full md:w-14rem w-100"
+                                    placeholder="Sélectionner la date de début" />
+                                <div
+                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                </div>
+                            </div>
+                            <div class="fv-row fv-plugins-icon-container col-md-4">
+                                <label class="fw-semibold fs-6 mb-2">Type de récurrence</label>
+                                <Dropdown v-model="form.recurrence_type" :options="recurrenceOptions" optionLabel="name"
+                                    optionValue="value" placeholder="Sélectionner la récurrence"
+                                    class="w-full md:w-14rem w-100" />
+                                <div
+                                    class="fv-plugins-message-container fv-plugins-message-container--enabled invalid-feedback">
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+                </Card>
                 <Card class="bg-secondary">
                     <template #content>
                         <div class="fv-row mb-7 fv-plugins-icon-container">
@@ -409,7 +466,8 @@
                                     </div>
                                     <div class="col-md-3">
                                         <Dropdown class="w-full md:w-14rem" v-model="instruction.response_type"
-                                            :options="['checkbox', 'text / valeur']" placeholder="Type de reponse"
+                                            :options="['checkbox', 'text / valeur', 'signature']"
+                                            placeholder="Type de reponse"
                                             @change="addInstructionValueToTask('response_type', instruction.response_type, index)" />
                                     </div>
                                     <div class="col-md-1 d-flex align-items-start justify-content-start"
@@ -421,21 +479,81 @@
                         </div>
                     </template>
                 </Card>
-                <Card class="bg-secondary mt-2">
+                   <Card class="mt-2 bg-secondary mb-2">
+          <template #title> Assigner un vehicule à </template>
+
+          <template #content>
+            <div class="row">
+              <div class="fv-row mb-7 col-md-6">
+                <label class="required fw-semibold fs-6 mb-2 d-block"
+                  >Choisir un engin roulant</label
+                >
+
+                <Dropdown
+                  v-model="form.engin_id"
+                  :options="engins"
+                  optionLabel="name"
+                  optionValue="id"
+                  :filter="true"
+                  filterBy="name"
+                  placeholder="Sélectionner un vehicule"
+                  class="w-full md:w-14rem w-100"
+                />
+              </div>
+                <div class="col-md-6">
+              <label class="fw-semibold col-md-12 fs-6 mb-2">
+                <span class="">Tâcherons</span>
+              </label>
+              <div class="fv-row">
+                <InputText
+                  type="number"
+                  class="w-full md:w-14rem w-100"
+                  placeholder=""
+                  v-model="form.nbre_tacherons"
+                  @change="addTModal"
+                  required
+                />
+              </div>
+            </div>
+            </div>
+          </template>
+        </Card>
+                <!-- ici -->
+                <Card class="bg-secondary mt-2" id="materials">
                     <template #title>Matériels à utiliser</template>
                     <template #content>
                         <div class="row">
                             <div class="col-md-12">
                                 <label class="col-form-label fw-bold fs-6">Matériel</label>
-
                                 <InputGroup>
-                                    <AutoComplete v-model="form.materials" class="w-full md:w-14rem"
-                                        placeholder="Rechercher un matériel" :suggestions="filteredSuggestions"
-                                        @complete="search" field="designation" optionLabel="designation"
-                                        optionValue="id" @item-select="handleMaterialSelect" multiple />
-                                    <Button icon="pi pi-plus-circle" @click="addMateriels" severity="warn"
-                                        class="p-button-primary" />
-                                </InputGroup>
+                  <AutoComplete
+                    v-model="form.materials"
+                    class="w-full md:w-14rem"
+                    placeholder="Rechercher un matériel"
+                    :suggestions="filteredSuggestions"
+                    @complete="search"
+                    field="designation"
+                    :optionLabel="
+                      (materiel) => {
+                        const caracteristique = materiel.caracteristique
+                          ? `(${materiel.caracteristique})`
+                          : '';
+                        return `${
+                          materiel.designation ?? ''
+                        } ${caracteristique}`;
+                      }
+                    "
+                    optionValue="id"
+                    @item-select="handleMaterialSelect"
+                    multiple
+                  />
+                  <Button
+                    icon="pi pi-plus-circle"
+                    @click="addMateriels"
+                    severity="warn"
+                    class="p-button-primary"
+                  />
+                </InputGroup>
                             </div>
                         </div>
                         <div class="mt-4">
@@ -443,23 +561,28 @@
                                 Matériels ajoutés
                             </label>
                             <ul class="list-group">
-                                <li v-for="(material, index) in form.materials" :key="index" class="list-group-item  ">
-                                    <div class="row">
-                                        <div class="col-md-6 ">
+                                <li v-for="(material, index) in form.materials" :key="index" class="list-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-5">
                                             {{ getMaterialName(material.id) }}
+                                            <span v-if="material.unity" class="text-muted fs-sm">
+                                                ({{ material.unity.designation }})
+                                            </span>
                                         </div>
                                         <div class="col-md-4">
-                                            <InputText type="text" name="designation" class="w-full md:w-14rem"
-                                                placeholder="0" v-model="material.quantity" />
+                                            <InputNumber type="text" name="designation" class="w-full md:w-14rem"
+                                                placeholder="0" v-model="material.quantity" showButtons :min="1" >
+                                                  <template #incrementicon></template>
+                                                </InputNumber>
                                         </div>
-                                        <div class="col-md-1 d-flex align-items-center">
+                                        <div class="col-md-1 d-flex align-items-center" v-if="false">
                                             <span v-if="material.unity">
                                                 {{ material.unity.designation }}
                                             </span>
                                         </div>
-                                        <div class="col-md-1">
+                                        <div class="col-md-2 text-end">
                                             <Button icon="pi pi-trash" severity="danger"
-                                                @click="thandleRemoveMaterial(index)" />
+                                                @click="handleRemoveMaterial(material)" text rounded />
                                         </div>
                                     </div>
                                 </li>
@@ -475,6 +598,73 @@
                     @click="submitTask()" />
             </template>
         </Dialog>
+        <Dialog header="Quantité du Matériel" v-model:visible="qVisible" :style="{ width: '400px' }" position="center"
+            :modal="true" @hide="hideQuantityDialog" :closable="true">
+            <div class="">
+                <label class="col-form-label fw-bold fs-6">
+                    <span class="">
+                        Quelle Quantité à utiliser pour
+                        <span class="text-warning">{{ selectMaterial.designation }}</span>?
+                    </span>
+                </label>
+                <div class="row align-items-center">
+                    <div :class="selectMaterial.unity ? 'col-md-8' : 'col-md-12'">
+                        <div class="fv-row">
+                            <InputNumber v-model="selectMaterial.quantity" class="w-100" placeholder="0" showButtons
+                                :min="1" />
+                        </div>
+                    </div>
+                    <div v-if="selectMaterial.unity" class="col-md-4">
+                        <InputText type="text" v-model="selectMaterial.unity.designation" class="form-control"
+                            readOnly />
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Annuler" icon="pi pi-times" severity="secondary" @click="hideQuantityDialog" text />
+                <Button label="Enregistrer" icon="pi pi-check" severity="warn" @click="submitQuantity" />
+            </template>
+        </Dialog>
+
+        <Dialog :header="cEditMode ? 'Modifier une catégorie' : 'Ajouter une catégorie/Matériel'"
+            v-model:visible="mVisible" :style="{ width: '700px' }" position="center" :modal="true"
+            @hide="mVisible = false" :closable="true">
+            <div class="p-fluid">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="required fw-semibold fs-6 mb-2 d-block" for="designation">Designation</label>
+                        <InputText id="designation" type="text" placeholder="Designation de la catégorie"
+                            v-model="mform.designation" class="w-full w-100" required />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-semibold fs-6 mb-2 d-block" for="caracteristique">Caractéristiques</label>
+                        <InputText id="caracteristique" type="text" placeholder="Caracteristique de la catégorie"
+                            v-model="mform.caracteristique" class="w-full w-100" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-semibold fs-6 mb-2 d-block" for="unity">Unité</label>
+                        <Dropdown id="unity" v-model="mform.unity_id" :options="unities" optionLabel="designation"
+                            optionValue="id" placeholder="Selectionner une unité..." class="w-full w-100" />
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="fw-semibold fs-6 mb-2 d-block" for="type">Type d'équipement</label>
+                        <Dropdown id="type" v-model="mform.type" :options="typeOptions" optionLabel="label"
+                            optionValue="value" placeholder="Selectionner un type..." class="w-full w-100" />
+                    </div>
+                    <div class="col-md-6">
+                        <div class="field-checkbox my-2">
+                            <Checkbox id="is_remise" v-model="mform.is_remise" :binary="true" />
+                            <label for="is_remise" class="ml-2 me-3">A remettre au magasin?</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <template #footer>
+                <Button label="Annuler" icon="pi pi-times" @click="mVisible = false" text />
+                <Button label="Enregistrer" icon="pi pi-check" severity="warn" @click="submitCategory" />
+            </template>
+        </Dialog>
+
         <Toast />
         <ConfirmDialog></ConfirmDialog>
     </div>
@@ -483,13 +673,20 @@
 import { FilterMatchMode } from '@primevue/core/api';
 import { useCookie } from "@vue-composable/cookie";
 import { useConfirm, useToast } from "primevue";
+import AutoComplete from 'primevue/autocomplete';
+import Calendar from 'primevue/calendar';
+import Checkbox from 'primevue/checkbox';
+import InputGroup from 'primevue/inputgroup';
+import InputNumber from 'primevue/inputnumber';
 import { computed, onMounted, reactive, ref } from "vue";
 import useCategories from "../../services/categoryServices.js";
+import useEngins from '../../services/enginServices';
 import useInstructions from "../../services/instructionServices.js";
 import usePriorities from "../../services/priorityServices.js";
 import useProjects from "../../services/projectServices.js";
 import useTasks from "../../services/taskServices.js";
 import useTeams from "../../services/teamServices.js"; // Import useTeams
+import useUnities from "../../services/unityServices.js";
 import useUsers from "../../services/userservices.js";
 export default {
     setup() {
@@ -504,19 +701,23 @@ export default {
             destroyTask,
 
         } = useTasks();
+            const { getEngins, engins } = useEngins();
         const confirm = useConfirm();
         const { getProjects, projects } = useProjects();
         const { getUsers, users } = useUsers();
         const { getTeams, teams } = useTeams(); // Initialize useTeams
         const taskCategories = ref([]);
+        const { categories, getCategories, storeCategory } = useCategories();
+        const { unities, getUnities } = useUnities();
         const isEditMode = ref(false);
         const searchQuery = ref("");
         const showTableView = ref(false);
-        const { priorities, getPriorities } = usePriorities();
+        const { priorities, getPriorities, storePriority } = usePriorities();
         const { storeInstruction, deleteInstruction, getInstructions } =
             useInstructions();
         const form = reactive({
             id: null,
+            nbre_tacherons: 0,
             priority: "Moyen", //set default value
             status: "pending",
             comments: "",
@@ -534,10 +735,13 @@ export default {
             delay: null,
             end_time: null,
             start_time: null,
+            engin_id: null,
             assignToType: "user", // Default to assigning to a user
             assigned_user_id: null,
             assigned_team_id: null,
             instructions: [],
+            materials: [],
+            recurrence_type: 'none', // Ajout pour le type de récurrence
         });
         const instructions = ref({});
         const visible = ref(false);
@@ -595,6 +799,8 @@ export default {
             await getTeams(); // Fetch teams on component mount
             await getPriorities();
             await getCategories();
+            await getUnities();
+            await getEngins();
             showTableView.value = true; //add
             form.start_date = setDefaultTime(new Date().toISOString());
             form.due_date = setDefaultTime(new Date().toISOString());
@@ -602,15 +808,190 @@ export default {
         }
         const isLoading = ref(true);
 
+        const filteredSuggestions = ref([]);
+        const search = (event) => {
+      if (event.query) {
+        filteredSuggestions.value = categories.value.filter((m) =>
+          m.designation.toLowerCase().includes(event.query.toLowerCase())
+        );
+      } else {
+        filteredSuggestions.value = categories.value;
+      }
+    };
+        const materialSearchText = ref(null);
+        const qVisible = ref(false);
+        const qEditMode = ref(false);
+        const selectMaterial = reactive({ id: null, designation: '', unity: null, quantity: 1 });
+
+        const mVisible = ref(false);
+        const cEditMode = ref(false);
+        const mform = reactive({
+            id: null,
+            designation: "",
+            caracteristique: "",
+            unity_id: null,
+            type: "Equipement", // Default type
+            is_remise: false,
+        });
+        const typeOptions = ref([
+            { label: "Outils de travail", value: "Outils de travail" },
+            { label: "Equipement", value: "Equipement" },
+            { label: "Autres", value: "Autres" },
+        ]);
+   const handleMaterialSelect = (e) => {
+      qVisible.value = true;
+      qEditMode.value = false;
+      const existingMaterial = form.materials.find((m) => m.id == e.value.id);
+      if (existingMaterial) {
+        selectMaterial.quantity = existingMaterial.quantity;
+      } else {
+        selectMaterial.quantity = 1;
+      }
+
+      selectMaterial.designation = e.value.designation;
+      selectMaterial.unity = e.value.unity;
+      selectMaterial.id = e.value.id;
+    };
+        // const handleMaterialSelect = (event) => {
+
+        //     const selectedCategory = event.value;
+        //     if (!selectedCategory) return;
+
+        //     const existingMaterial = form.materials.find(m => m.id === selectedCategory.id);
+        //     if (existingMaterial) {
+        //         selectMaterial.id = existingMaterial.id;
+        //         selectMaterial.designation = getMaterialName(existingMaterial.id) || selectedCategory.designation;
+        //         selectMaterial.quantity = existingMaterial.quantity;
+        //         selectMaterial.unity = existingMaterial.unity || selectedCategory.unity;
+        //         qEditMode.value = true;
+        //     } else {
+        //         selectMaterial.id = selectedCategory.id;
+        //         selectMaterial.designation = selectedCategory.designation;
+        //         selectMaterial.quantity = 1; // Default quantity
+        //         selectMaterial.unity = selectedCategory.unity;
+        //         qEditMode.value = false;
+        //     }
+        //     qVisible.value = true;
+        //     materialSearchText.value = ''; // Clear autocomplete input
+        // };
+  const addMaterialToTask = () => {
+      const materialId = selectMaterial.id;
+      if (materialId) {
+        const quantity = selectMaterial.quantity;
+        const existingMaterialIndex = form.materials.findIndex(
+          (m) => m.id === materialId
+        );
+        const existingMaterialIndex2 = form.materials.findIndex(
+          (m) => m.id === materialId
+        );
+        if (existingMaterialIndex2 == -1) {
+          if (existingMaterialIndex !== -1) {
+            // If material already exists, update quantity
+            form.materials[existingMaterialIndex].quantity = quantity;
+          } else {
+            // Add material to the form
+            form.materials.push({
+              material_id: materialId,
+              quantity: quantity,
+            });
+          }
+        }
+        if (existingMaterialIndex2 !== -1) {
+          // If material already exists, update quantity
+          form.materials[existingMaterialIndex2].quantity = quantity;
+        } else {
+          // Add material to the form
+          form.materials.push({
+            material_id: materialId,
+            quantity: quantity,
+          });
+        }
+        // Add the material to the chips array
+        const materialToAdd = categories.value.find(
+          (cat) => cat.id === materialId
+        );
+        if (materialToAdd) {
+          //check if the material is already selected
+          if (
+            !selectedMaterials.value.find((e) => e == materialToAdd.designation)
+          ) {
+            selectedMaterials.value.push(materialToAdd.designation);
+          }
+        }
+        selectMaterial.quantity = 1;
+        selectMaterial.id = null;
+        selectMaterial.unity = null;
+        selectMaterial.designation = "";
+      }
+    };
+        const submitQuantity = () => {
+            // const existingMaterialIndex = form.materials.findIndex(m => m.id === selectMaterial.id);
+            // if (existingMaterialIndex !== -1) {
+            //     form.materials[existingMaterialIndex].quantity = selectMaterial.quantity;
+            // } else {
+            //     form.materials.push({
+            //         id: selectMaterial.id,
+            //         quantity: selectMaterial.quantity,
+            //         unity: selectMaterial.unity, // Store unity object
+            //     });
+            // }
+            addMaterialToTask();
+            hideQuantityDialog();
+        };
+
+        const hideQuantityDialog = () => {
+            qVisible.value = false;
+            selectMaterial.id = null;
+            selectMaterial.designation = '';
+            selectMaterial.quantity = 1;
+            selectMaterial.unity = null;
+            qEditMode.value = false;
+        };
+        const selectedMaterials = ref([]);
+        const materialToRemove = ref(null);
+        const handleRemoveMaterial = (e) => {
+            const index = form.materials.findIndex(m => m.id === e.id);
+            if (index !== -1) {
+            form.materials.splice(index, 1);
+            }
+
+        };
+
+        const addMateriels = () => {
+            cEditMode.value = false;
+            // Reset mform
+            mform.id = null;
+            mform.designation = "";
+            mform.caracteristique = "";
+            mform.unity_id = null;
+            mform.type = "Equipement";
+            mform.is_remise = false;
+            mVisible.value = true;
+        };
+
+        const submitCategory = async () => {
+            isLoading.value = true;
+            const success = await storeCategory({ ...mform });
+            if (success) {
+                await getCategories(); // Refresh categories list
+                toast.add({ severity: 'success', summary: 'Succès', detail: 'Catégorie ajoutée avec succès', life: 3000 });
+                mVisible.value = false;
+            } else {
+                toast.add({ severity: 'error', summary: 'Erreur', detail: 'Erreur lors de l\'ajout de la catégorie', life: 3000 });
+            }
+            isLoading.value = false;
+        };
+
         onMounted(async () => {
 
             syncdata();
 
         });
         const submitTask = async () => {
+
             isLoading.value = true;
             let success = false;
-            success = await updateTask(form.id, form);
+            // success = await updateTask(form.id, form);
             visible.value = false;
             // Check if it's assigned to a user or a team
             if (form.assignToType === "user") {
@@ -618,6 +999,7 @@ export default {
             } else if (form.assignToType === "team") {
                 form.assigned_user_id = null;
             }
+            console.log({...form});
             if (isEditMode.value) {
                 success = await updateTask(form.id, form);
                 await getTasks();
@@ -676,10 +1058,12 @@ export default {
 
         const resetForm = () => {
             form.id = null;
+            form.engin_id=null;
             form.priority_id = null;
             form.status = "pending";
             form.comments = "";
             form.complete = null;
+            form.nbre_tacherons=0;
             form.description = "";
             form.type = "";
             form.user_id = null;
@@ -697,6 +1081,8 @@ export default {
             form.assigned_user_id = null;
             form.assigned_team_id = null;
             form.instructions = [];
+            form.materials = [];
+            form.recurrence_type = 'none'; // Réinitialiser le type de récurrence
         };
         const addInstruction = () => {
             form.instructions.push({
@@ -704,6 +1090,16 @@ export default {
                 response_type: "",
             });
         };
+        const recurrenceOptions = ref([
+            { name: 'Aucune', value: 'none' },
+            { name: 'Journalière', value: 'daily' },
+            { name: 'Hebdomadaire', value: 'weekly' },
+            { name: 'Mensuelle', value: 'monthly' },
+            { name: 'Trimestrielle', value: 'quarterly' },
+            { name: 'Annuelle', value: 'annually' },
+        ]);
+
+
         const filteredTasks = computed(() => {
             return tasks.value.filter((task) => {
                 return (
@@ -903,11 +1299,12 @@ export default {
                 )
             );
         };
-        const { categories, getCategories } = useCategories();
+        // const { categories, getCategories } = useCategories(); // Already defined
         const getMaterialName = (materialId) => {
             const material = categories.value.find((m) => m.id === materialId);
             return material ? material.designation : "Matériel inconnu";
         };
+
         const filters = ref({
             global: { value: null, matchMode: FilterMatchMode.CONTAINS },
             description: { value: null, matchMode: FilterMatchMode.CONTAINS },
@@ -1008,18 +1405,39 @@ export default {
                 },
             });
         };
-        window.Echo.channel ('channel-name')
-                .listen('TestEvent', (e) => {
-                    console.log('TestEvent', e);
-                    toast.add({ severity: 'success', summary: 'Success', detail: e.message, life: 3000 });
-                });
-
+        window.Echo.channel('channel-name')
+            .listen('TestEvent', (e) => {
+                console.log('TestEvent', e);
+                toast.add({ severity: 'success', summary: 'Success', detail: e.message, life: 3000 });
+            });
+        const showTask = (task) => {
+            window.location.pathname = "/tasks/" + task.id;
+        }
         return {
+            addMaterialToTask,
+            showTask,
             uploadProgress,
             confirmDeleteTask,
             addInstructionValueToTask,
             removeInstructionFromTask,
             addInstructionToTask,
+            search, // Added search function
+            filteredSuggestions, // Added filteredSuggestions ref
+            materialSearchText,
+            qVisible,
+            qEditMode,
+            selectMaterial,
+            handleMaterialSelect,
+            submitQuantity,
+            hideQuantityDialog,
+            handleRemoveMaterial,
+            mVisible,
+            cEditMode,
+            engins,
+            mform,
+            typeOptions,
+            addMateriels,
+            submitCategory,
             deleteTask,
             dt,
             exportCSV,
@@ -1059,6 +1477,8 @@ export default {
             addInstructionValue,
             removeInstruction,
             closeModal,
+            recurrenceOptions, // Exposer les options de récurrence
+            unities,
 
         };
     },

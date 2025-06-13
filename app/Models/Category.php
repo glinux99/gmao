@@ -27,4 +27,9 @@ class Category extends Model
     {
         return $this->belongsToMany(Maintenance::class, 'maintenance_material')->withPivot('quantity');
     }
+     public function tasks(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'maintenance_material')->withPivot('quantity');
+    }
+
 }

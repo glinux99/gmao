@@ -41,6 +41,7 @@ class Task extends Model
         'nbre_tacherons',
         'price_tacherons',
         'engin_id',
+        'recurrence_type'
 
     ];
     protected $casts=[
@@ -77,10 +78,11 @@ class Task extends Model
     {
         return $this->belongsTo(User::class, 'owner');
     }
-    public function materials(): BelongsToMany
-    {
-        return $this->belongsToMany(Category::class, 'maintenance_material')->withPivot('quantity');
-    }
+
+ public function materials(): BelongsToMany
+ {
+ return $this->belongsToMany(Category::class, 'maintenance_material', 'task_id', 'category_id')->withPivot('quantity');
+ }
     /**
      * Get the parent task.
      *

@@ -66,6 +66,7 @@ class LoginApiController extends Controller
                     'token_type' => 'Bearer',
                 ], 200);
             } else {
+
                 $request['passwordR'] = $request['password'];
                 $user = User::where('email', $request->email)->first();
             }
@@ -98,14 +99,14 @@ class LoginApiController extends Controller
                     "token_type"=>"Bearer",
                 ];
                 if ($request->expectsJson()) {
-                    event (new \App\Events\LoginUserAuthEvent ($data));
+                    // event (new \App\Events\LoginUserAuthEvent ($data));
                     return response()->json([
                         'user' => $user,
                         'token' => $token,
                         'token_type' => 'Bearer',
                     ], 200);
                 }
-                event (new \App\Events\LoginUserAuthEvent ($data));
+                // event (new \App\Events\LoginUserAuthEvent ($data));
                 return response()->json([
                     'user' => $user,
                     'token' => $token,

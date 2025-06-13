@@ -172,7 +172,7 @@ export default {
             const statusCounts = {};
 
             data.forEach((item) => {
-                const status = item.priority.title;
+                const status = item.priority ? item.priority.title : "";
                 if (status) {
                     statusCounts[status] = (statusCounts[status] || 0) + 1;
                     if (statusCounts[status] == 1) {
@@ -209,6 +209,9 @@ export default {
                                 break;
                             case "canceled":
                                 colorsSatus.value.push('#000000FF');
+                                break;
+                            case "paused":
+                                colorsSatus.value.push('#382F2FA4');
                                 break;
                         }
                     }

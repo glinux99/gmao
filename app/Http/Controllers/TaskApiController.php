@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Imports\ImportPlanning;
+use App\Models\Category;
 use App\Models\Task;
 use App\Models\Team;
 use App\Models\TeamUser;
@@ -69,17 +70,42 @@ class TaskApiController extends Controller
 
     public function show(Task $task)
     {
-        $task->load('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority');
+        $task->load('project', 'instructions', 'assigned_team', 'assigned_user', 'owner_user', 'priority', 'materials');
         return response()->json(['data' => $task]);
     }
 
     public function store(Request $request)
     {
         DB::beginTransaction();
-        $request['type']="Task";
+        $request['type'] = "Task";
         try {
             $taskData = $request->except('instructions');
-            $task = Task::create($taskData);
+            $task = Task::create($taskData);            // Calculate due date based on recurrence type
+            if ($request->has('recurrence_type') && $request->recurrence_type !== 'none') {
+                $startDate = Carbon::parse($task->start_date);
+                switch ($request->recurrence_type) {
+                    case 'daily':
+                        $task->due_date = $startDate->copy()->addDay();
+                        break;
+                    case 'weekly':
+                        $task->due_date = $startDate->copy()->addWeek();
+                        break;
+                    case 'monthly':
+                        $task->due_date = $startDate->copy()->addMonth();
+                        break;
+                    case 'quarterly':
+                        $task->due_date = $startDate->copy()->addQuarter();
+                        break;
+                    case 'annually':
+                        $task->due_date = $startDate->copy()->addYear();
+                        break;
+                    default:
+                        // No specific due date calculation for 'none' or other types
+                        break;
+                }
+                $task->save();
+            }
+
 
             // Create instructions
             if ($request->has('instructions')) {
@@ -88,10 +114,22 @@ class TaskApiController extends Controller
                 }
             }
 
+            // Handle materials for each task
+            if ($request->has('materials') && is_array($request->materials)) {
+                foreach ($request->materials as $materialData) {
+                    $material = Category ::find($materialData['id']);
+                    if ($material) {
+
+                           $material->quantity = $materialData['quantity'] ?? 0;
+                        $task->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                    }
+                }
+            }
+
             // Send notifications after creating the task
            try {
             $this->sendTaskNotifications($task);
-           } catch (\Throwable $th) {
+            } catch (\Throwable $th) {
             //throw $th;
            }
 
@@ -119,6 +157,27 @@ class TaskApiController extends Controller
                 foreach ($request->input('instructions') as $instructionData) {
                     $task->instructions()->create($instructionData);
                 }
+            }
+            if($request->has('materials')){
+
+                $task->materials()->detach();
+                if (is_array($request->materials)) {
+
+                foreach ($request->materials as $materialData) {
+                    $material = Category::find($materialData['id']);
+
+                    if ($material) {
+
+                        $material->quantity = $materialData['quantity'] ?? 0;
+                        try{
+                            $task->materials()->attach($material, ['quantity' => $materialData['quantity']]);
+                        }catch(\Throwable $th){
+
+                        }
+                    }
+                }
+            }
+
             }
 
             // Send notifications after updating the task

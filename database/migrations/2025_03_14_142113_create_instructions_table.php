@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('task_id')->nullable(); // Foreign key linking to the task
             $table->text('description'); // The instruction text
             $table->text('value')->nullable(); // The instruction text
-            $table->enum('response_type', ['checkbox', 'text / valeur', 'number','text']); // Type of response
+            $table->enum('response_type', ['checkbox', 'text / valeur', 'number','text', 'signature','images']); // Type of response
             $table->timestamps();
 
             $table->foreign('task_id')->references('id')->on('tasks')->onDelete('cascade');

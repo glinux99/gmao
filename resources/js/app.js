@@ -141,7 +141,9 @@ import Chart from "primevue/chart";
 import ColumnGroup from 'primevue/columngroup'; // optional
 import ConfirmationService from 'primevue/confirmationservice';
 import DataTable from 'primevue/datatable';
+import FloatLabel from "primevue/floatlabel";
 import Password from "primevue/password";
+import Textarea from 'primevue/textarea';
 
 import TreeTable from 'primevue/treetable';
 
@@ -189,6 +191,8 @@ app.component('OrganizationChart', OrganizationChart);
 app.component('Tree', Tree);
 app.component('TreeTable', TreeTable);
 app.component('MeterGroup', MeterGroup);
+app.component('Textarea', Textarea);
+app.component('FloatLabel', FloatLabel);
 app.use(VueHtml2pdf)
 app.use(VueNumber);
 
