@@ -45,6 +45,8 @@ class PermissionSeeder extends Seeder
         $priority = Permission::create(['name' => 'priority']);
         $tasks = Permission::create(['name' => 'tasks']);
         $tasksGraph = Permission::create(['name' => 'tasksGraph']);
+        $expenses = Permission::create(['name' => 'expenses']);
+
         $buget = Permission::create(['name' => 'buget']);
 
 
@@ -54,7 +56,7 @@ class PermissionSeeder extends Seeder
         $techniciens = Role::create(['name' => 'technicien']);
         $magasinier = Role::create(['name' => 'magasinier']);
         $techniciens->syncPermissions([$sorties,$teams, $tasksGraph, $tasks, $calendar, $equipment, $users]);
-        $magasinier->syncPermissions([$add, $edit, $delete, $view_all, $view, $inventories, $sorties, $entries, $categories, $unities, $projets, $teams, $techniciens, $maintenances, $calendar, $equipment, $users, $repports, $priority, $buget]);
+        $magasinier->syncPermissions([$add, $edit,$expenses, $delete, $view_all, $view, $inventories, $sorties, $entries, $categories, $unities, $projets, $teams, $techniciens, $maintenances, $calendar, $equipment, $users, $repports, $priority, $buget]);
         $root->syncPermissions(Permission::all());
     }
 }

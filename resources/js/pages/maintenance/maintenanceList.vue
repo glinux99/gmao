@@ -182,7 +182,10 @@
                       </span>
                       <span class="fs-8 text-center">
                         <span class="badge badge-light-success">
+
                           {{
+                              slotProps.data.delay ?    `${slotProps.data.delay} heures` :
+
                             formatDeadline(
                               slotProps.data.end_date,
                               slotProps.data.start_date,
@@ -297,7 +300,9 @@
                         Duree :
                         <span class="fs-8 text-center">
                           <span class="badge badge-light-success">
+
                             {{
+                                maintenance.delay ?    `${maintenance.delay} heures` :
                               formatDeadline(
                                 maintenance.end_date,
                                 maintenance.start_date,
@@ -379,7 +384,7 @@
       <template #header>
         <div class="d-flex justify-content-between align-items-center">
           <div>
-            <span class="me-4">
+            <span class="me-4 required">
               {{
                 isEditMode
                   ? "Modifier une Maintenance"
@@ -399,6 +404,11 @@
               @change="handleChangeRegion"
             />
           </div>
+           <i
+                  class="fas fa-exclamation-circle ms-1 fs-7"
+                  data-bs-toggle="tooltip"
+                  title="Ajouter la region"
+                ></i>
         </div>
       </template>
       <Card class="bg-secondary">
@@ -410,21 +420,22 @@
                 <i
                   class="fas fa-exclamation-circle ms-1 fs-7"
                   data-bs-toggle="tooltip"
-                  title="designationn de la maintenance"
+                  title="Une brève description de la maintenance à réaliser"
                 ></i>
               </label>
               <div class="fv-row">
-                <InputText
-                  type="text"
+ <Textarea
                   name="designation"
                   class="form-control mb-3 mb-lg-0"
                   placeholder="maintenance du transfo de la zone 17"
                   v-model="form.description"
                   required
+ autoResize rows="5" cols="30"
                 />
               </div>
             </div>
             <div class="col-md-6">
+                <div class="col-md-12">
               <label class="col-form-label fw-bold fs-6">
                 <span class="">Type de maintenance</span>
                 <i
@@ -443,7 +454,7 @@
                 class="w-full md:w-14rem w-100"
               />
             </div>
-            <div class="col-md-6" v-if="form.type == 'equipment'">
+            <div class="col-md-12" v-if="form.type == 'equipment'">
               <label class="col-form-label fw-bold fs-6">
                 <span class="required">Equipement</span>
                 <i
@@ -470,6 +481,8 @@
                 </InputGroup>
               </div>
             </div>
+            </div>
+
           </div>
         </template>
       </Card>
@@ -509,7 +522,7 @@
                 <Dropdown
                   v-model="form.assigned_user_id"
                   :options="users"
-                  optionLabel="name"
+                   :optionLabel="(user) => `${user.name ?? ''} ${user.post_name ?? ''}  ${user.nickname ?? ''}`"
                   optionValue="id"
                   :filter="true"
                   filterBy="name,post_name,nickname, email"
@@ -629,7 +642,7 @@
             </div>
             <div class="col-md-3" v-if="form.frequency != 'daily'">
               <label class="fw-bold fs-6 col-form-label d-block"
-                >Heure/jour</label
+                >Heure de travail  par jour</label
               >
               <InputText
                 type="number"
@@ -783,10 +796,16 @@
                         </div>
                       </span>
                       <span>
-                        <Button
+                         <Button
                           icon="pi pi-pencil"
                           @click="editTask(task)"
                           severity="warn"
+                          class="me-5"
+                      />
+                        <Button
+                          icon="pi pi-trash"
+                          @click="deleteTask(task)"
+                          severity="danger"
                           class="me-5"
                       /></span>
                     </div>
@@ -1992,7 +2011,7 @@ export default {
     const form = reactive({
       id: null,
       description: "",
-      region_id: null,
+      region_id: 1,
       status: "pending",
       work_order: "",
       equipment_id: null,
@@ -2059,8 +2078,8 @@ export default {
     //         depenses.value+=e.
     //   });
     //   form.expenses=form.expenses.filter((e) => e.title != "Coût de techniciens");
-    //   console.log({ ...form });
-    //   console.log("form.value");
+      console.log({ ...form });
+      console.log("form.value");
       let success = false;
       if (isEditMode.value) {
         success = await updateMaintenance(form.id, { ...form });
@@ -2152,7 +2171,7 @@ export default {
       form.price_technicien = 2.92;
       form.description = "";
       form.status = "pending";
-      form.region_id = null;
+      form.region_id = 1;
       form.work_order = "";
       form.equipment_id = null;
       form.user_id = null;
@@ -2664,6 +2683,38 @@ export default {
       selectedTask.due_date = setDefaultTime(new Date().toISOString());
       resetTaskForm();
     };
+    const deleteTask=(task)=>{
+         confirm.require({
+         message: "Voulez-vous vraiment supprimer cette tâche ?",
+        header: "Confirmation de suppression",
+        icon: "pi pi-info-circle",
+        rejectClass: "p-button-secondary p-button-outlined",
+        rejectLabel: "Annuler",
+        acceptLabel: "Supprimer",
+        acceptClass: "p-button-danger",
+        accept: () => {
+          const index = form.tasks.findIndex((t) => t.id === task.id);
+          if (index !== -1) {
+            // Remove the task from the form.tasks array
+            form.tasks.splice(index, 1);
+            toast.add({
+              severity: "success",
+              summary: "Succès",
+              detail: "Tâche supprimée avec succès",
+              life: 3000,
+            });
+          }
+        },
+        reject: () => {
+          toast.add({
+            severity: "info",
+            summary: "Suppression annulée",
+            detail: "La suppression a été annulée.",
+            life: 3000,
+          });
+        },
+      });
+    }
     const editTask = (task) => {
       tEditMode.value = true;
       taskVisible.value = true;
@@ -2938,7 +2989,7 @@ export default {
       addInstructionToTask,
       addInstructionValueToTask,
       removeInstructionFromTask,
-      addTask,
+      addTask,deleteTask,
       taskVisible,
       selectedTask,
       projects,

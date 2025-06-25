@@ -24,7 +24,8 @@ return new class extends Migration
             $table->unsignedBigInteger('region_id')->nullable();
             $table->foreign('region_id')->references('id')->on('regions')->onDelete('set null');
             $table->double('nbre_tacherons')->nullable()->default(0);
-            $table->double('price_tacherons')->nullable()->default(0);
+            $table->double('nbre_tacherons')->nullable()->default(0);
+            $table->double('man_hours')->nullable()->default(8);
             $table->foreignId('user_id')->nullable()->constrained('users')->onDelete('cascade');
             $table->foreignId('maintenance_id')->nullable()->constrained('maintenances')->onDelete('cascade');
             $table->foreignId('assigned_user_id')->nullable()->constrained('users')->onDelete('cascade');

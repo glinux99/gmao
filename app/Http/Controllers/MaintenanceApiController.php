@@ -49,7 +49,7 @@ class MaintenanceApiController extends Controller
                 });
             }
 
-            $maintenances = $query->get()->map(function ($maintenance) {
+            $maintenances = $query->orderBy('id', 'DESC')->get()->map(function ($maintenance) {
                 $maintenance->materials = $maintenance->materials->map(function ($material) {
                     return [
                         'id' => $material->id,
@@ -107,7 +107,7 @@ class MaintenanceApiController extends Controller
             default => 1, // Default to 1 task if frequency is not recognized
         };
         $numberOfTasks=1; //REMOVE THIS LINE
-        // Iterate over each original task to calculate start and due dates
+ // Iterate over each original task to calculate start and due dates
         foreach ($tasksData as $originalTask) {
             for ($i = 0; $i < $numberOfTasks; $i++) {
                 // Determine the start and due dates for the current task iteration
@@ -126,23 +126,60 @@ class MaintenanceApiController extends Controller
                 $newTask = $originalTask;
                 $newTask['start_date'] = $taskStartDate->format('Y-m-d H:i:s');
                 $newTask['due_date'] = $taskDueDate->format('Y-m-d H:i:s');
+
+                // Calculate delay based on man_hours and number of days
+                $manHours = $originalTask['man_hours'] ?? 0;
+                $numberOfDays = $taskStartDate->diffInDays($taskDueDate) + 1;
+                $newTask['delay'] = $manHours * $numberOfDays;
+
                 $tasksToCreate[] = $newTask;
             }
         }
 
         return $tasksToCreate;
     }
+     protected function getNumberOfOccurrences(Carbon $startDate, Carbon $endDate, string $frequency): int
+    {
+        $start = $startDate->copy()->startOfDay(); // Normalize to start of day
+        $end = $endDate->copy()->startOfDay();
+
+        if ($start->gt($end)) {
+            return 0;
+        }
+
+        $count = 0;
+        $current = $start->copy();
+
+        while ($current->lte($end)) {
+            $count++;
+            if ($frequency === 'default') { // 'default' or 'custom' if it means a one-time, non-repeating event
+                break;
+            }
+            match ($frequency) {
+                'daily' => $current->addDay(),
+                'weekly' => $current->addWeek(),
+                'bimonthly' => $current->addMonths(2),
+                'quarterly' => $current->addQuarter(),
+                'biannual' => $current->addMonths(6),
+                'annual' => $current->addYear(),
+                default => $current->addYears(1000), // Effectively break loop for unknown frequencies
+            };
+        }
+        return $count;
+    }
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+
+        try {
+            $validator = Validator::make($request->all(), [
             'description' => 'required|string|max:255',
             'region_id' => 'nullable|exists:regions,id',
             'status' => 'nullable|in:pending,in_progress,completed,canceled',
             'work_order' => 'nullable|string|max:255',
-            'equipment_id' => 'nullable|exists:equipments,id',
+            'equipment_id' => 'nullable|exists:equipment,id',
             'user_id' => 'nullable|exists:users,id',
             'start_date' => 'required|date',
             // 'end_date' => 'nullable|date|after:start_date',
@@ -265,11 +302,24 @@ class MaintenanceApiController extends Controller
 
         if($request->has('tasks') && is_array($request->tasks) && Count($request->tasks)>0){
             try {
+
                 DB::beginTransaction();
 
                 // Create the maintenance record
                 $maintenanceData = $request->except(['daysOfWeek', 'techniciens', 'materials', 'instructions', 'tasks', 'expenses']);
+                $startDate = Carbon::parse($maintenanceData['start_date']);
+                $endDate = Carbon::parse($maintenanceData['end_date']);
+                $manHours = $maintenanceData['man_hours'] ?? 0;
+                $numberOfDays = $startDate->diffInDays($endDate) + 1;
+                 $numberOfOccurrences = $this->getNumberOfOccurrences($startDate, $endDate, $request->frequency);
+            $maintenanceData['delay'] = $manHours * $numberOfOccurrences;
+
+                // $maintenanceData['delay'] = $manHours * $numberOfDays;
                 $maintenance = Maintenance::create($maintenanceData);
+                // Calculate delay based on man_hours and number of days
+
+
+                $maintenance->save();
 
                 // Handle Expenses
                 $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
@@ -310,12 +360,13 @@ class MaintenanceApiController extends Controller
                 }
 
                 // Handle tasks
+
                 if ($request->has('tasks') && is_array($request->tasks)) {
                     $tasksToCreate=$this->calculateTasksDates($request->tasks, $maintenance->start_date, $maintenance->end_date, $maintenance->frequency);
                     foreach ($tasksToCreate as $taskData) {
 
                         $taskData['maintenance_id'] = $maintenance->id;
-                        $taskData['owner'] = $request->owner;
+                        $taskData['owner'] = $request->owner ?? $request->user_id;
                         $taskData['user_id'] = $request->user_id;
                         $taskData['status'] = 'pending';
                         $taskData['region_id']= $maintenance->region_id;
@@ -375,7 +426,15 @@ class MaintenanceApiController extends Controller
         try {
             DB::beginTransaction();
             // Create the maintenance record
+             $startDate = Carbon::parse($request['start_date']);
+                $endDate = Carbon::parse($request['end_date']);
+                $manHours = $request['man_hours'] ?? 0;
+            $frequency = $request['frequency'];
+
+            $numberOfOccurrences = $this->getNumberOfOccurrences($startDate, $endDate, $frequency);
+            $request['delay'] = $manHours * $numberOfOccurrences;
             $maintenance = Maintenance::create($request->except(['daysOfWeek', 'techniciens', 'materials', 'instructions']));
+
             // return $maintenance->id;
             $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
             foreach ($allDep as $dep) {
@@ -429,6 +488,10 @@ class MaintenanceApiController extends Controller
             $query->select('categories.*', 'maintenance_material.quantity');
         }, 'instructions'])]);
         }
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(['error' => $th->getMessage()], 500);
+        }
 
     }
 
@@ -447,10 +510,11 @@ class MaintenanceApiController extends Controller
             'start_date' => $start_date,
             'due_date' => $end_date->format('Y-m-d H:i:s'), // Use $end_date here
             'type' => 'Maintenance',
+            'delay' => $maintenance->man_hours, // Assuming delay is directly related to man_hours for now
             "region_id" =>  $maintenance->region_id,
             'maintenance_id' => $maintenance->id,
             'project_id' => $maintenance->equipment->project_id ?? null,
-            'owner' => $maintenance->owner,
+            'owner' => $maintenance->owner ?? $maintenance->user_id,
         ];
         $task = Task::create($taskData);
         $instructions = Instruction::where('maintenance_id', $maintenance->id)->get();
@@ -781,7 +845,13 @@ class MaintenanceApiController extends Controller
 
         try {
             DB::beginTransaction();
+             $startDate = Carbon::parse($request['start_date'] ?? $maintenance->start_date) ;
+                $endDate = Carbon::parse($request['end_date'] ??  $maintenance->end_date);
+              $manHours = $request['man_hours'] ?? 0;
+            $frequency = $request['frequency'];
 
+            $numberOfOccurrences = $this->getNumberOfOccurrences($startDate, $endDate, $frequency);
+            $maintenanceData['delay'] = $manHours * $numberOfOccurrences;
             $maintenance->update($request->all());
             $depIds = [];
             $allDep = Depense::where('maintenance_id', $maintenance->id)->get();
@@ -832,7 +902,7 @@ class MaintenanceApiController extends Controller
 
             foreach ($tasksToCreate as $taskData) {
                  $taskData['maintenance_id'] = $maintenance->id;
-                 $taskData['owner'] = $request->owner;
+                 $taskData['owner'] = $request->owner ?? $request->user_id;
                  $taskData['user_id'] = $request->user_id;
                  $taskData['status'] = 'pending';
                  $taskData['region_id'] = $maintenance->region_id;

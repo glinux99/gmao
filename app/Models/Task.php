@@ -40,6 +40,7 @@ class Task extends Model
         "region_id",
         'nbre_tacherons',
         'price_tacherons',
+        'man_hours',
         'engin_id',
         'recurrence_type'
 

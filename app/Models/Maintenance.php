@@ -17,6 +17,7 @@ class Maintenance extends Model
         'work_order',
         'equipment_id',
         'user_id',
+        'delay',
         'start_date',
         'end_date',
         'man_hours',
